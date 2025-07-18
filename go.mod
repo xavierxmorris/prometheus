@@ -12,7 +12,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d
 	github.com/armon/go-metrics v0.3.3 // indirect
-	github.com/aws/aws-sdk-go v1.33.5
+	github.com/aws/aws-sdk-go v1.34.28
 	github.com/cespare/xxhash v1.1.0
 	github.com/containerd/containerd v1.3.4 // indirect
 	github.com/davecgh/go-spew v1.1.1
@@ -62,7 +62,7 @@ require (
 	github.com/soheilhy/cmux v0.1.4
 	github.com/uber/jaeger-client-go v2.24.0+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible
-	go.mongodb.org/mongo-driver v1.3.2 // indirect
+	go.mongodb.org/mongo-driver v1.5.1 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d

@@ -554,6 +554,10 @@ func (c *EC2) AllocateAddressRequest(input *AllocateAddressInput) (req *request.
 // For more information, see Elastic IP Addresses (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
+// You can allocate a carrier IP address which is a public IP address from a
+// telecommunication carrier, to a network interface which resides in a subnet
+// in a Wavelength Zone (for example an EC2 instance).
+//
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
 // the error.
@@ -955,7 +959,8 @@ func (c *EC2) AssociateAddressRequest(input *AssociateAddressInput) (req *reques
 
 // AssociateAddress API operation for Amazon Elastic Compute Cloud.
 //
-// Associates an Elastic IP address with an instance or a network interface.
+// Associates an Elastic IP address, or carrier IP address (for instances that
+// are in subnets in Wavelength Zones) with an instance or a network interface.
 // Before you can use an Elastic IP address, you must allocate it to your account.
 //
 // An Elastic IP address is for use in either the EC2-Classic platform or in
@@ -975,6 +980,9 @@ func (c *EC2) AssociateAddressRequest(input *AssociateAddressInput) (req *reques
 // interface, you get an error unless you allow reassociation. You cannot associate
 // an Elastic IP address with an instance or network interface that has an existing
 // Elastic IP address.
+//
+// [Subnets in Wavelength Zones] You can associate an IP address from the telecommunication
+// carrier to the instance or network interface.
 //
 // You cannot associate an Elastic IP address with an interface in a different
 // network border group.
@@ -1943,7 +1951,7 @@ func (c *EC2) AttachVolumeRequest(input *AttachVolumeInput) (req *request.Reques
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // After you attach an EBS volume, you must make it available. For more information,
-// see Making an EBS Volume Available For Use (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html).
+// see Making an EBS volume available for use (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html).
 //
 // If a volume has an AWS Marketplace product code:
 //
@@ -1957,7 +1965,7 @@ func (c *EC2) AttachVolumeRequest(input *AttachVolumeInput) (req *request.Reques
 //    the product. For example, you can't detach a volume from a Windows instance
 //    and attach it to a Linux instance.
 //
-// For more information, see Attaching Amazon EBS Volumes (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html)
+// For more information, see Attaching Amazon EBS volumes (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -3325,7 +3333,7 @@ func (c *EC2) CopySnapshotRequest(input *CopySnapshotInput) (req *request.Reques
 // Snapshots created by copying another snapshot have an arbitrary volume ID
 // that should not be used for any purpose.
 //
-// For more information, see Copying an Amazon EBS Snapshot (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-copy-snapshot.html)
+// For more information, see Copying an Amazon EBS snapshot (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-copy-snapshot.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -3448,6 +3456,82 @@ func (c *EC2) CreateCapacityReservation(input *CreateCapacityReservationInput) (
 // for more information on using Contexts.
 func (c *EC2) CreateCapacityReservationWithContext(ctx aws.Context, input *CreateCapacityReservationInput, opts ...request.Option) (*CreateCapacityReservationOutput, error) {
 	req, out := c.CreateCapacityReservationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opCreateCarrierGateway = "CreateCarrierGateway"
+
+// CreateCarrierGatewayRequest generates a "aws/request.Request" representing the
+// client's request for the CreateCarrierGateway operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See CreateCarrierGateway for more information on using the CreateCarrierGateway
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the CreateCarrierGatewayRequest method.
+//    req, resp := client.CreateCarrierGatewayRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/CreateCarrierGateway
+func (c *EC2) CreateCarrierGatewayRequest(input *CreateCarrierGatewayInput) (req *request.Request, output *CreateCarrierGatewayOutput) {
+	op := &request.Operation{
+		Name:       opCreateCarrierGateway,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &CreateCarrierGatewayInput{}
+	}
+
+	output = &CreateCarrierGatewayOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// CreateCarrierGateway API operation for Amazon Elastic Compute Cloud.
+//
+// Creates a carrier gateway. For more information about carrier gateways, see
+// Carrier gateways (https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html#wavelength-carrier-gateway)
+// in the AWS Wavelength Developer Guide.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation CreateCarrierGateway for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/CreateCarrierGateway
+func (c *EC2) CreateCarrierGateway(input *CreateCarrierGatewayInput) (*CreateCarrierGatewayOutput, error) {
+	req, out := c.CreateCarrierGatewayRequest(input)
+	return out, req.Send()
+}
+
+// CreateCarrierGatewayWithContext is the same as CreateCarrierGateway with the addition of
+// the ability to pass a context and additional request options.
+//
+// See CreateCarrierGateway for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) CreateCarrierGatewayWithContext(ctx aws.Context, input *CreateCarrierGatewayInput, opts ...request.Option) (*CreateCarrierGatewayOutput, error) {
+	req, out := c.CreateCarrierGatewayRequest(input)
 	req.SetContext(ctx)
 	req.ApplyOptions(opts...)
 	return out, req.Send()
@@ -3653,7 +3737,7 @@ func (c *EC2) CreateCustomerGatewayRequest(input *CreateCustomerGatewayInput) (r
 // Provides information to AWS about your VPN customer gateway device. The customer
 // gateway is the appliance at your end of the VPN connection. (The device on
 // the AWS side of the VPN connection is the virtual private gateway.) You must
-// provide the Internet-routable IP address of the customer gateway's external
+// provide the internet-routable IP address of the customer gateway's external
 // interface. The IP address must be static and can be behind a device performing
 // network address translation (NAT).
 //
@@ -3662,9 +3746,16 @@ func (c *EC2) CreateCustomerGatewayRequest(input *CreateCustomerGatewayInput) (r
 // ASN assigned to your network. If you don't have an ASN already, you can use
 // a private ASN (in the 64512 - 65534 range).
 //
-// Amazon EC2 supports all 2-byte ASN numbers in the range of 1 - 65534, with
-// the exception of 7224, which is reserved in the us-east-1 Region, and 9059,
-// which is reserved in the eu-west-1 Region.
+// Amazon EC2 supports all 4-byte ASN numbers in the range of 1 - 2147483647,
+// with the exception of the following:
+//
+//    * 7224 - reserved in the us-east-1 Region
+//
+//    * 9059 - reserved in the eu-west-1 Region
+//
+//    * 17943 - reserved in the ap-southeast-1 Region
+//
+//    * 10124 - reserved in the ap-northeast-1 Region
 //
 // For more information, see AWS Site-to-Site VPN (https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html)
 // in the AWS Site-to-Site VPN User Guide.
@@ -5942,7 +6033,7 @@ func (c *EC2) CreateSnapshotRequest(input *CreateSnapshotInput) (req *request.Re
 // protected.
 //
 // You can tag your snapshots during creation. For more information, see Tagging
-// Your Amazon EC2 Resources (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
+// your Amazon EC2 resources (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // For more information, see Amazon Elastic Block Store (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
@@ -6891,6 +6982,81 @@ func (c *EC2) CreateTransitGatewayPeeringAttachmentWithContext(ctx aws.Context, 
 	return out, req.Send()
 }
 
+const opCreateTransitGatewayPrefixListReference = "CreateTransitGatewayPrefixListReference"
+
+// CreateTransitGatewayPrefixListReferenceRequest generates a "aws/request.Request" representing the
+// client's request for the CreateTransitGatewayPrefixListReference operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See CreateTransitGatewayPrefixListReference for more information on using the CreateTransitGatewayPrefixListReference
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the CreateTransitGatewayPrefixListReferenceRequest method.
+//    req, resp := client.CreateTransitGatewayPrefixListReferenceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/CreateTransitGatewayPrefixListReference
+func (c *EC2) CreateTransitGatewayPrefixListReferenceRequest(input *CreateTransitGatewayPrefixListReferenceInput) (req *request.Request, output *CreateTransitGatewayPrefixListReferenceOutput) {
+	op := &request.Operation{
+		Name:       opCreateTransitGatewayPrefixListReference,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &CreateTransitGatewayPrefixListReferenceInput{}
+	}
+
+	output = &CreateTransitGatewayPrefixListReferenceOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// CreateTransitGatewayPrefixListReference API operation for Amazon Elastic Compute Cloud.
+//
+// Creates a reference (route) to a prefix list in a specified transit gateway
+// route table.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation CreateTransitGatewayPrefixListReference for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/CreateTransitGatewayPrefixListReference
+func (c *EC2) CreateTransitGatewayPrefixListReference(input *CreateTransitGatewayPrefixListReferenceInput) (*CreateTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.CreateTransitGatewayPrefixListReferenceRequest(input)
+	return out, req.Send()
+}
+
+// CreateTransitGatewayPrefixListReferenceWithContext is the same as CreateTransitGatewayPrefixListReference with the addition of
+// the ability to pass a context and additional request options.
+//
+// See CreateTransitGatewayPrefixListReference for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) CreateTransitGatewayPrefixListReferenceWithContext(ctx aws.Context, input *CreateTransitGatewayPrefixListReferenceInput, opts ...request.Option) (*CreateTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.CreateTransitGatewayPrefixListReferenceRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opCreateTransitGatewayRoute = "CreateTransitGatewayRoute"
 
 // CreateTransitGatewayRouteRequest generates a "aws/request.Request" representing the
@@ -7179,10 +7345,10 @@ func (c *EC2) CreateVolumeRequest(input *CreateVolumeInput) (req *request.Reques
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // You can tag your volumes during creation. For more information, see Tagging
-// Your Amazon EC2 Resources (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
+// your Amazon EC2 resources (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
-// For more information, see Creating an Amazon EBS Volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-creating-volume.html)
+// For more information, see Creating an Amazon EBS volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-creating-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -7695,15 +7861,15 @@ func (c *EC2) CreateVpnConnectionRequest(input *CreateVpnConnectionInput) (req *
 
 // CreateVpnConnection API operation for Amazon Elastic Compute Cloud.
 //
-// Creates a VPN connection between an existing virtual private gateway and
-// a VPN customer gateway. The supported connection type is ipsec.1.
+// Creates a VPN connection between an existing virtual private gateway or transit
+// gateway and a customer gateway. The supported connection type is ipsec.1.
 //
 // The response includes information that you need to give to your network administrator
 // to configure your customer gateway.
 //
 // We strongly recommend that you use HTTPS when calling this operation because
 // the response contains sensitive cryptographic information for configuring
-// your customer gateway.
+// your customer gateway device.
 //
 // If you decide to shut down your VPN connection for any reason and later create
 // a new VPN connection, you must reconfigure your customer gateway with the
@@ -7898,6 +8064,84 @@ func (c *EC2) CreateVpnGateway(input *CreateVpnGatewayInput) (*CreateVpnGatewayO
 // for more information on using Contexts.
 func (c *EC2) CreateVpnGatewayWithContext(ctx aws.Context, input *CreateVpnGatewayInput, opts ...request.Option) (*CreateVpnGatewayOutput, error) {
 	req, out := c.CreateVpnGatewayRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opDeleteCarrierGateway = "DeleteCarrierGateway"
+
+// DeleteCarrierGatewayRequest generates a "aws/request.Request" representing the
+// client's request for the DeleteCarrierGateway operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DeleteCarrierGateway for more information on using the DeleteCarrierGateway
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DeleteCarrierGatewayRequest method.
+//    req, resp := client.DeleteCarrierGatewayRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DeleteCarrierGateway
+func (c *EC2) DeleteCarrierGatewayRequest(input *DeleteCarrierGatewayInput) (req *request.Request, output *DeleteCarrierGatewayOutput) {
+	op := &request.Operation{
+		Name:       opDeleteCarrierGateway,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &DeleteCarrierGatewayInput{}
+	}
+
+	output = &DeleteCarrierGatewayOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DeleteCarrierGateway API operation for Amazon Elastic Compute Cloud.
+//
+// Deletes a carrier gateway.
+//
+// If you do not delete the route that contains the carrier gateway as the Target,
+// the route is a blackhole route. For information about how to delete a route,
+// see DeleteRoute (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DeleteRoute.html).
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation DeleteCarrierGateway for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DeleteCarrierGateway
+func (c *EC2) DeleteCarrierGateway(input *DeleteCarrierGatewayInput) (*DeleteCarrierGatewayOutput, error) {
+	req, out := c.DeleteCarrierGatewayRequest(input)
+	return out, req.Send()
+}
+
+// DeleteCarrierGatewayWithContext is the same as DeleteCarrierGateway with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DeleteCarrierGateway for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) DeleteCarrierGatewayWithContext(ctx aws.Context, input *DeleteCarrierGatewayInput, opts ...request.Option) (*DeleteCarrierGatewayOutput, error) {
+	req, out := c.DeleteCarrierGatewayRequest(input)
 	req.SetContext(ctx)
 	req.ApplyOptions(opts...)
 	return out, req.Send()
@@ -9860,7 +10104,7 @@ func (c *EC2) DeleteSnapshotRequest(input *DeleteSnapshotInput) (req *request.Re
 // a registered AMI. You must first de-register the AMI before you can delete
 // the snapshot.
 //
-// For more information, see Deleting an Amazon EBS Snapshot (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-snapshot.html)
+// For more information, see Deleting an Amazon EBS snapshot (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-snapshot.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -10645,6 +10889,81 @@ func (c *EC2) DeleteTransitGatewayPeeringAttachmentWithContext(ctx aws.Context, 
 	return out, req.Send()
 }
 
+const opDeleteTransitGatewayPrefixListReference = "DeleteTransitGatewayPrefixListReference"
+
+// DeleteTransitGatewayPrefixListReferenceRequest generates a "aws/request.Request" representing the
+// client's request for the DeleteTransitGatewayPrefixListReference operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DeleteTransitGatewayPrefixListReference for more information on using the DeleteTransitGatewayPrefixListReference
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DeleteTransitGatewayPrefixListReferenceRequest method.
+//    req, resp := client.DeleteTransitGatewayPrefixListReferenceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DeleteTransitGatewayPrefixListReference
+func (c *EC2) DeleteTransitGatewayPrefixListReferenceRequest(input *DeleteTransitGatewayPrefixListReferenceInput) (req *request.Request, output *DeleteTransitGatewayPrefixListReferenceOutput) {
+	op := &request.Operation{
+		Name:       opDeleteTransitGatewayPrefixListReference,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &DeleteTransitGatewayPrefixListReferenceInput{}
+	}
+
+	output = &DeleteTransitGatewayPrefixListReferenceOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DeleteTransitGatewayPrefixListReference API operation for Amazon Elastic Compute Cloud.
+//
+// Deletes a reference (route) to a prefix list in a specified transit gateway
+// route table.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation DeleteTransitGatewayPrefixListReference for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DeleteTransitGatewayPrefixListReference
+func (c *EC2) DeleteTransitGatewayPrefixListReference(input *DeleteTransitGatewayPrefixListReferenceInput) (*DeleteTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.DeleteTransitGatewayPrefixListReferenceRequest(input)
+	return out, req.Send()
+}
+
+// DeleteTransitGatewayPrefixListReferenceWithContext is the same as DeleteTransitGatewayPrefixListReference with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DeleteTransitGatewayPrefixListReference for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) DeleteTransitGatewayPrefixListReferenceWithContext(ctx aws.Context, input *DeleteTransitGatewayPrefixListReferenceInput, opts ...request.Option) (*DeleteTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.DeleteTransitGatewayPrefixListReferenceRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opDeleteTransitGatewayRoute = "DeleteTransitGatewayRoute"
 
 // DeleteTransitGatewayRouteRequest generates a "aws/request.Request" representing the
@@ -10919,7 +11238,7 @@ func (c *EC2) DeleteVolumeRequest(input *DeleteVolumeInput) (req *request.Reques
 //
 // The volume can remain in the deleting state for several minutes.
 //
-// For more information, see Deleting an Amazon EBS Volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html)
+// For more information, see Deleting an Amazon EBS volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -12271,13 +12590,12 @@ func (c *EC2) DescribeAvailabilityZonesRequest(input *DescribeAvailabilityZonesI
 
 // DescribeAvailabilityZones API operation for Amazon Elastic Compute Cloud.
 //
-// Describes the Availability Zones and Local Zones that are available to you.
-// If there is an event impacting an Availability Zone or Local Zone, you can
-// use this request to view the state and any provided messages for that Availability
-// Zone or Local Zone.
+// Describes the Availability Zones, Local Zones, and Wavelength Zones that
+// are available to you. If there is an event impacting a zone, you can use
+// this request to view the state and any provided messages for that zone.
 //
-// For more information about Availability Zones and Local Zones, see Regions
-// and Availability Zones (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html)
+// For more information about Availability Zones, Local Zones, and Wavelength
+// Zones, see Regions, Zones and Outposts (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -12648,6 +12966,138 @@ func (c *EC2) DescribeCapacityReservationsPagesWithContext(ctx aws.Context, inpu
 
 	for p.Next() {
 		if !fn(p.Page().(*DescribeCapacityReservationsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
+}
+
+const opDescribeCarrierGateways = "DescribeCarrierGateways"
+
+// DescribeCarrierGatewaysRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeCarrierGateways operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeCarrierGateways for more information on using the DescribeCarrierGateways
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeCarrierGatewaysRequest method.
+//    req, resp := client.DescribeCarrierGatewaysRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DescribeCarrierGateways
+func (c *EC2) DescribeCarrierGatewaysRequest(input *DescribeCarrierGatewaysInput) (req *request.Request, output *DescribeCarrierGatewaysOutput) {
+	op := &request.Operation{
+		Name:       opDescribeCarrierGateways,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"NextToken"},
+			OutputTokens:    []string{"NextToken"},
+			LimitToken:      "MaxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &DescribeCarrierGatewaysInput{}
+	}
+
+	output = &DescribeCarrierGatewaysOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeCarrierGateways API operation for Amazon Elastic Compute Cloud.
+//
+// Describes one or more of your carrier gateways.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation DescribeCarrierGateways for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/DescribeCarrierGateways
+func (c *EC2) DescribeCarrierGateways(input *DescribeCarrierGatewaysInput) (*DescribeCarrierGatewaysOutput, error) {
+	req, out := c.DescribeCarrierGatewaysRequest(input)
+	return out, req.Send()
+}
+
+// DescribeCarrierGatewaysWithContext is the same as DescribeCarrierGateways with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeCarrierGateways for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) DescribeCarrierGatewaysWithContext(ctx aws.Context, input *DescribeCarrierGatewaysInput, opts ...request.Option) (*DescribeCarrierGatewaysOutput, error) {
+	req, out := c.DescribeCarrierGatewaysRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// DescribeCarrierGatewaysPages iterates over the pages of a DescribeCarrierGateways operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See DescribeCarrierGateways method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a DescribeCarrierGateways operation.
+//    pageNum := 0
+//    err := client.DescribeCarrierGatewaysPages(params,
+//        func(page *ec2.DescribeCarrierGatewaysOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *EC2) DescribeCarrierGatewaysPages(input *DescribeCarrierGatewaysInput, fn func(*DescribeCarrierGatewaysOutput, bool) bool) error {
+	return c.DescribeCarrierGatewaysPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// DescribeCarrierGatewaysPagesWithContext same as DescribeCarrierGatewaysPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) DescribeCarrierGatewaysPagesWithContext(ctx aws.Context, input *DescribeCarrierGatewaysInput, fn func(*DescribeCarrierGatewaysOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *DescribeCarrierGatewaysInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.DescribeCarrierGatewaysRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*DescribeCarrierGatewaysOutput), !p.HasNextPage()) {
 			break
 		}
 	}
@@ -17464,7 +17914,9 @@ func (c *EC2) DescribeLaunchTemplateVersionsRequest(input *DescribeLaunchTemplat
 // DescribeLaunchTemplateVersions API operation for Amazon Elastic Compute Cloud.
 //
 // Describes one or more versions of a specified launch template. You can describe
-// all versions, individual versions, or a range of versions.
+// all versions, individual versions, or a range of versions. You can also describe
+// all the latest versions or all the default versions of all the launch templates
+// in your account.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -23653,7 +24105,7 @@ func (c *EC2) DescribeVolumeStatusRequest(input *DescribeVolumeStatusInput) (req
 // status of the volume is ok. If the check fails, the overall status is impaired.
 // If the status is insufficient-data, then the checks may still be taking place
 // on your volume at the time. We recommend that you retry the request. For
-// more information about volume status, see Monitoring the Status of Your Volumes
+// more information about volume status, see Monitoring the status of your volumes
 // (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-volume-status.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
@@ -23955,7 +24407,7 @@ func (c *EC2) DescribeVolumesModificationsRequest(input *DescribeVolumesModifica
 // You can also use CloudWatch Events to check the status of a modification
 // to an EBS volume. For information about CloudWatch Events, see the Amazon
 // CloudWatch Events User Guide (https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/).
-// For more information, see Monitoring Volume Modifications (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#monitoring_mods)
+// For more information, see Monitoring volume modifications (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#monitoring_mods)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -25764,7 +26216,7 @@ func (c *EC2) DetachVolumeRequest(input *DetachVolumeInput) (req *request.Reques
 // When a volume with an AWS Marketplace product code is detached from an instance,
 // the product code is no longer associated with the instance.
 //
-// For more information, see Detaching an Amazon EBS Volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-detaching-volume.html)
+// For more information, see Detaching an Amazon EBS volume (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-detaching-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -27028,7 +27480,7 @@ func (c *EC2) EnableEbsEncryptionByDefaultRequest(input *EnableEbsEncryptionByDe
 //
 // After you enable encryption by default, you can no longer launch instances
 // using instance types that do not support encryption. For more information,
-// see Supported Instance Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances).
+// see Supported instance types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -27109,7 +27561,7 @@ func (c *EC2) EnableFastSnapshotRestoresRequest(input *EnableFastSnapshotRestore
 // state. To get the current state of fast snapshot restores, use DescribeFastSnapshotRestores.
 // To disable fast snapshot restores, use DisableFastSnapshotRestores.
 //
-// For more information, see Amazon EBS Fast Snapshot Restore (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-fast-snapshot-restore.html)
+// For more information, see Amazon EBS fast snapshot restore (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-fast-snapshot-restore.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -28523,6 +28975,138 @@ func (c *EC2) GetEbsEncryptionByDefaultWithContext(ctx aws.Context, input *GetEb
 	return out, req.Send()
 }
 
+const opGetGroupsForCapacityReservation = "GetGroupsForCapacityReservation"
+
+// GetGroupsForCapacityReservationRequest generates a "aws/request.Request" representing the
+// client's request for the GetGroupsForCapacityReservation operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetGroupsForCapacityReservation for more information on using the GetGroupsForCapacityReservation
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetGroupsForCapacityReservationRequest method.
+//    req, resp := client.GetGroupsForCapacityReservationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/GetGroupsForCapacityReservation
+func (c *EC2) GetGroupsForCapacityReservationRequest(input *GetGroupsForCapacityReservationInput) (req *request.Request, output *GetGroupsForCapacityReservationOutput) {
+	op := &request.Operation{
+		Name:       opGetGroupsForCapacityReservation,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"NextToken"},
+			OutputTokens:    []string{"NextToken"},
+			LimitToken:      "MaxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &GetGroupsForCapacityReservationInput{}
+	}
+
+	output = &GetGroupsForCapacityReservationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetGroupsForCapacityReservation API operation for Amazon Elastic Compute Cloud.
+//
+// Lists the resource groups to which a Capacity Reservation has been added.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation GetGroupsForCapacityReservation for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/GetGroupsForCapacityReservation
+func (c *EC2) GetGroupsForCapacityReservation(input *GetGroupsForCapacityReservationInput) (*GetGroupsForCapacityReservationOutput, error) {
+	req, out := c.GetGroupsForCapacityReservationRequest(input)
+	return out, req.Send()
+}
+
+// GetGroupsForCapacityReservationWithContext is the same as GetGroupsForCapacityReservation with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetGroupsForCapacityReservation for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) GetGroupsForCapacityReservationWithContext(ctx aws.Context, input *GetGroupsForCapacityReservationInput, opts ...request.Option) (*GetGroupsForCapacityReservationOutput, error) {
+	req, out := c.GetGroupsForCapacityReservationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// GetGroupsForCapacityReservationPages iterates over the pages of a GetGroupsForCapacityReservation operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See GetGroupsForCapacityReservation method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a GetGroupsForCapacityReservation operation.
+//    pageNum := 0
+//    err := client.GetGroupsForCapacityReservationPages(params,
+//        func(page *ec2.GetGroupsForCapacityReservationOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *EC2) GetGroupsForCapacityReservationPages(input *GetGroupsForCapacityReservationInput, fn func(*GetGroupsForCapacityReservationOutput, bool) bool) error {
+	return c.GetGroupsForCapacityReservationPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// GetGroupsForCapacityReservationPagesWithContext same as GetGroupsForCapacityReservationPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) GetGroupsForCapacityReservationPagesWithContext(ctx aws.Context, input *GetGroupsForCapacityReservationInput, fn func(*GetGroupsForCapacityReservationOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *GetGroupsForCapacityReservationInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.GetGroupsForCapacityReservationRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*GetGroupsForCapacityReservationOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
+}
+
 const opGetHostReservationPurchasePreview = "GetHostReservationPurchasePreview"
 
 // GetHostReservationPurchasePreviewRequest generates a "aws/request.Request" representing the
@@ -28648,6 +29232,12 @@ func (c *EC2) GetLaunchTemplateDataRequest(input *GetLaunchTemplateDataInput) (r
 //
 // Retrieves the configuration data of the specified instance. You can use this
 // data to create a launch template.
+//
+// This action calls on other describe actions to get instance information.
+// Depending on your instance configuration, you may need to allow the following
+// actions in your IAM policy: DescribeSpotInstanceRequests, DescribeInstanceCreditSpecifications,
+// DescribeVolumes, DescribeInstanceAttribute, and DescribeElasticGpus. Or,
+// you can allow describe* depending on your instance requirements.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -29369,6 +29959,139 @@ func (c *EC2) GetTransitGatewayMulticastDomainAssociationsPagesWithContext(ctx a
 
 	for p.Next() {
 		if !fn(p.Page().(*GetTransitGatewayMulticastDomainAssociationsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
+}
+
+const opGetTransitGatewayPrefixListReferences = "GetTransitGatewayPrefixListReferences"
+
+// GetTransitGatewayPrefixListReferencesRequest generates a "aws/request.Request" representing the
+// client's request for the GetTransitGatewayPrefixListReferences operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetTransitGatewayPrefixListReferences for more information on using the GetTransitGatewayPrefixListReferences
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetTransitGatewayPrefixListReferencesRequest method.
+//    req, resp := client.GetTransitGatewayPrefixListReferencesRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/GetTransitGatewayPrefixListReferences
+func (c *EC2) GetTransitGatewayPrefixListReferencesRequest(input *GetTransitGatewayPrefixListReferencesInput) (req *request.Request, output *GetTransitGatewayPrefixListReferencesOutput) {
+	op := &request.Operation{
+		Name:       opGetTransitGatewayPrefixListReferences,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"NextToken"},
+			OutputTokens:    []string{"NextToken"},
+			LimitToken:      "MaxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &GetTransitGatewayPrefixListReferencesInput{}
+	}
+
+	output = &GetTransitGatewayPrefixListReferencesOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetTransitGatewayPrefixListReferences API operation for Amazon Elastic Compute Cloud.
+//
+// Gets information about the prefix list references in a specified transit
+// gateway route table.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation GetTransitGatewayPrefixListReferences for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/GetTransitGatewayPrefixListReferences
+func (c *EC2) GetTransitGatewayPrefixListReferences(input *GetTransitGatewayPrefixListReferencesInput) (*GetTransitGatewayPrefixListReferencesOutput, error) {
+	req, out := c.GetTransitGatewayPrefixListReferencesRequest(input)
+	return out, req.Send()
+}
+
+// GetTransitGatewayPrefixListReferencesWithContext is the same as GetTransitGatewayPrefixListReferences with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetTransitGatewayPrefixListReferences for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) GetTransitGatewayPrefixListReferencesWithContext(ctx aws.Context, input *GetTransitGatewayPrefixListReferencesInput, opts ...request.Option) (*GetTransitGatewayPrefixListReferencesOutput, error) {
+	req, out := c.GetTransitGatewayPrefixListReferencesRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// GetTransitGatewayPrefixListReferencesPages iterates over the pages of a GetTransitGatewayPrefixListReferences operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See GetTransitGatewayPrefixListReferences method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a GetTransitGatewayPrefixListReferences operation.
+//    pageNum := 0
+//    err := client.GetTransitGatewayPrefixListReferencesPages(params,
+//        func(page *ec2.GetTransitGatewayPrefixListReferencesOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *EC2) GetTransitGatewayPrefixListReferencesPages(input *GetTransitGatewayPrefixListReferencesInput, fn func(*GetTransitGatewayPrefixListReferencesOutput, bool) bool) error {
+	return c.GetTransitGatewayPrefixListReferencesPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// GetTransitGatewayPrefixListReferencesPagesWithContext same as GetTransitGatewayPrefixListReferencesPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) GetTransitGatewayPrefixListReferencesPagesWithContext(ctx aws.Context, input *GetTransitGatewayPrefixListReferencesInput, fn func(*GetTransitGatewayPrefixListReferencesOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *GetTransitGatewayPrefixListReferencesInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.GetTransitGatewayPrefixListReferencesRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*GetTransitGatewayPrefixListReferencesOutput), !p.HasNextPage()) {
 			break
 		}
 	}
@@ -30154,7 +30877,8 @@ func (c *EC2) ModifyAvailabilityZoneGroupRequest(input *ModifyAvailabilityZoneGr
 
 // ModifyAvailabilityZoneGroup API operation for Amazon Elastic Compute Cloud.
 //
-// Enables or disables an Availability Zone group for your account.
+// Changes the opt-in status of the Local Zone and Wavelength Zone group for
+// your account.
 //
 // Use DescribeAvailabilityZones (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeAvailabilityZones.html)
 // to view the value for GroupName.
@@ -31913,7 +32637,7 @@ func (c *EC2) ModifySnapshotAttributeRequest(input *ModifySnapshotAttributeInput
 // be made public. Snapshots encrypted with your default CMK cannot be shared
 // with other accounts.
 //
-// For more information about modifying snapshot permissions, see Sharing Snapshots
+// For more information about modifying snapshot permissions, see Sharing snapshots
 // (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
@@ -32358,6 +33082,157 @@ func (c *EC2) ModifyTrafficMirrorSessionWithContext(ctx aws.Context, input *Modi
 	return out, req.Send()
 }
 
+const opModifyTransitGateway = "ModifyTransitGateway"
+
+// ModifyTransitGatewayRequest generates a "aws/request.Request" representing the
+// client's request for the ModifyTransitGateway operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ModifyTransitGateway for more information on using the ModifyTransitGateway
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ModifyTransitGatewayRequest method.
+//    req, resp := client.ModifyTransitGatewayRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyTransitGateway
+func (c *EC2) ModifyTransitGatewayRequest(input *ModifyTransitGatewayInput) (req *request.Request, output *ModifyTransitGatewayOutput) {
+	op := &request.Operation{
+		Name:       opModifyTransitGateway,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &ModifyTransitGatewayInput{}
+	}
+
+	output = &ModifyTransitGatewayOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ModifyTransitGateway API operation for Amazon Elastic Compute Cloud.
+//
+// Modifies the specified transit gateway. When you modify a transit gateway,
+// the modified options are applied to new transit gateway attachments only.
+// Your existing transit gateway attachments are not modified.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation ModifyTransitGateway for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyTransitGateway
+func (c *EC2) ModifyTransitGateway(input *ModifyTransitGatewayInput) (*ModifyTransitGatewayOutput, error) {
+	req, out := c.ModifyTransitGatewayRequest(input)
+	return out, req.Send()
+}
+
+// ModifyTransitGatewayWithContext is the same as ModifyTransitGateway with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ModifyTransitGateway for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) ModifyTransitGatewayWithContext(ctx aws.Context, input *ModifyTransitGatewayInput, opts ...request.Option) (*ModifyTransitGatewayOutput, error) {
+	req, out := c.ModifyTransitGatewayRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opModifyTransitGatewayPrefixListReference = "ModifyTransitGatewayPrefixListReference"
+
+// ModifyTransitGatewayPrefixListReferenceRequest generates a "aws/request.Request" representing the
+// client's request for the ModifyTransitGatewayPrefixListReference operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ModifyTransitGatewayPrefixListReference for more information on using the ModifyTransitGatewayPrefixListReference
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ModifyTransitGatewayPrefixListReferenceRequest method.
+//    req, resp := client.ModifyTransitGatewayPrefixListReferenceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyTransitGatewayPrefixListReference
+func (c *EC2) ModifyTransitGatewayPrefixListReferenceRequest(input *ModifyTransitGatewayPrefixListReferenceInput) (req *request.Request, output *ModifyTransitGatewayPrefixListReferenceOutput) {
+	op := &request.Operation{
+		Name:       opModifyTransitGatewayPrefixListReference,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &ModifyTransitGatewayPrefixListReferenceInput{}
+	}
+
+	output = &ModifyTransitGatewayPrefixListReferenceOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ModifyTransitGatewayPrefixListReference API operation for Amazon Elastic Compute Cloud.
+//
+// Modifies a reference (route) to a prefix list in a specified transit gateway
+// route table.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation ModifyTransitGatewayPrefixListReference for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyTransitGatewayPrefixListReference
+func (c *EC2) ModifyTransitGatewayPrefixListReference(input *ModifyTransitGatewayPrefixListReferenceInput) (*ModifyTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.ModifyTransitGatewayPrefixListReferenceRequest(input)
+	return out, req.Send()
+}
+
+// ModifyTransitGatewayPrefixListReferenceWithContext is the same as ModifyTransitGatewayPrefixListReference with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ModifyTransitGatewayPrefixListReference for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) ModifyTransitGatewayPrefixListReferenceWithContext(ctx aws.Context, input *ModifyTransitGatewayPrefixListReferenceInput, opts ...request.Option) (*ModifyTransitGatewayPrefixListReferenceOutput, error) {
+	req, out := c.ModifyTransitGatewayPrefixListReferenceRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opModifyTransitGatewayVpcAttachment = "ModifyTransitGatewayVpcAttachment"
 
 // ModifyTransitGatewayVpcAttachmentRequest generates a "aws/request.Request" representing the
@@ -32480,30 +33355,30 @@ func (c *EC2) ModifyVolumeRequest(input *ModifyVolumeInput) (req *request.Reques
 // size, volume type, and IOPS capacity. If your EBS volume is attached to a
 // current-generation EC2 instance type, you may be able to apply these changes
 // without stopping the instance or detaching the volume from it. For more information
-// about modifying an EBS volume running Linux, see Modifying the Size, IOPS,
-// or Type of an EBS Volume on Linux (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html).
+// about modifying an EBS volume running Linux, see Modifying the size, IOPS,
+// or type of an EBS volume on Linux (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html).
 // For more information about modifying an EBS volume running Windows, see Modifying
-// the Size, IOPS, or Type of an EBS Volume on Windows (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html).
+// the size, IOPS, or type of an EBS volume on Windows (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html).
 //
 // When you complete a resize operation on your volume, you need to extend the
 // volume's file-system size to take advantage of the new storage capacity.
 // For information about extending a Linux file system, see Extending a Linux
-// File System (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#recognize-expanded-volume-linux).
+// file system (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#recognize-expanded-volume-linux).
 // For information about extending a Windows file system, see Extending a Windows
-// File System (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html#recognize-expanded-volume-windows).
+// file system (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html#recognize-expanded-volume-windows).
 //
 // You can use CloudWatch Events to check the status of a modification to an
 // EBS volume. For information about CloudWatch Events, see the Amazon CloudWatch
 // Events User Guide (https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/).
 // You can also track the status of a modification using DescribeVolumesModifications.
 // For information about tracking status changes using either method, see Monitoring
-// Volume Modifications (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#monitoring_mods).
+// volume modifications (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html#monitoring_mods).
 //
 // With previous-generation instance types, resizing an EBS volume may require
 // detaching and reattaching the volume or stopping and restarting the instance.
-// For more information, see Modifying the Size, IOPS, or Type of an EBS Volume
+// For more information, see Modifying the size, IOPS, or type of an EBS volume
 // on Linux (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-expand-volume.html)
-// and Modifying the Size, IOPS, or Type of an EBS Volume on Windows (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html).
+// and Modifying the size, IOPS, or type of an EBS volume on Windows (https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-expand-volume.html).
 //
 // If you reach the maximum volume modification rate per volume limit, you will
 // need to wait at least six hours before applying further modifications to
@@ -33306,6 +34181,85 @@ func (c *EC2) ModifyVpnConnectionWithContext(ctx aws.Context, input *ModifyVpnCo
 	return out, req.Send()
 }
 
+const opModifyVpnConnectionOptions = "ModifyVpnConnectionOptions"
+
+// ModifyVpnConnectionOptionsRequest generates a "aws/request.Request" representing the
+// client's request for the ModifyVpnConnectionOptions operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ModifyVpnConnectionOptions for more information on using the ModifyVpnConnectionOptions
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ModifyVpnConnectionOptionsRequest method.
+//    req, resp := client.ModifyVpnConnectionOptionsRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyVpnConnectionOptions
+func (c *EC2) ModifyVpnConnectionOptionsRequest(input *ModifyVpnConnectionOptionsInput) (req *request.Request, output *ModifyVpnConnectionOptionsOutput) {
+	op := &request.Operation{
+		Name:       opModifyVpnConnectionOptions,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &ModifyVpnConnectionOptionsInput{}
+	}
+
+	output = &ModifyVpnConnectionOptionsOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ModifyVpnConnectionOptions API operation for Amazon Elastic Compute Cloud.
+//
+// Modifies the connection options for your Site-to-Site VPN VPN connection.
+//
+// When you modify the VPN connection options, the VPN endpoint IP addresses
+// on the AWS side do not change, and the tunnel options do not change. Your
+// VPN connection will be temporarily unavailable for a brief period while the
+// VPN connection is updated.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Elastic Compute Cloud's
+// API operation ModifyVpnConnectionOptions for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/ec2-2016-11-15/ModifyVpnConnectionOptions
+func (c *EC2) ModifyVpnConnectionOptions(input *ModifyVpnConnectionOptionsInput) (*ModifyVpnConnectionOptionsOutput, error) {
+	req, out := c.ModifyVpnConnectionOptionsRequest(input)
+	return out, req.Send()
+}
+
+// ModifyVpnConnectionOptionsWithContext is the same as ModifyVpnConnectionOptions with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ModifyVpnConnectionOptions for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *EC2) ModifyVpnConnectionOptionsWithContext(ctx aws.Context, input *ModifyVpnConnectionOptionsInput, opts ...request.Option) (*ModifyVpnConnectionOptionsOutput, error) {
+	req, out := c.ModifyVpnConnectionOptionsRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opModifyVpnTunnelCertificate = "ModifyVpnTunnelCertificate"
 
 // ModifyVpnTunnelCertificateRequest generates a "aws/request.Request" representing the
@@ -34085,7 +35039,7 @@ func (c *EC2) RegisterImageRequest(input *RegisterImageInput) (req *request.Requ
 //
 // Registers an AMI. When you're creating an AMI, this is the final step you
 // must complete before you can launch an instance from the AMI. For more information
-// about creating AMIs, see Creating Your Own AMIs (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami.html)
+// about creating AMIs, see Creating your own AMIs (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // For Amazon EBS-backed instances, CreateImage creates and registers the AMI
@@ -34093,12 +35047,12 @@ func (c *EC2) RegisterImageRequest(input *RegisterImageInput) (req *request.Requ
 //
 // You can also use RegisterImage to create an Amazon EBS-backed Linux AMI from
 // a snapshot of a root device volume. You specify the snapshot using the block
-// device mapping. For more information, see Launching a Linux Instance from
-// a Backup (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-launch-snapshot.html)
+// device mapping. For more information, see Launching a Linux instance from
+// a backup (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-launch-snapshot.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
-// You can't register an image where a secondary (non-root) snapshot has AWS
-// Marketplace product codes.
+// If any snapshots have AWS Marketplace product codes, they are copied to the
+// new AMI.
 //
 // Windows and some Linux distributions, such as Red Hat Enterprise Linux (RHEL)
 // and SUSE Linux Enterprise Server (SLES), use the EC2 billing product code
@@ -34119,7 +35073,7 @@ func (c *EC2) RegisterImageRequest(input *RegisterImageInput) (req *request.Requ
 // a Reserved Instance without the matching billing product code, the Reserved
 // Instance will not be applied to the On-Demand Instance. For information about
 // how to obtain the platform details and billing information of an AMI, see
-// Obtaining Billing Information (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ami-billing-info.html)
+// Obtaining billing information (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ami-billing-info.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // If needed, you can deregister an AMI at any time. Any modifications you make
@@ -36043,7 +36997,7 @@ func (c *EC2) ResetSnapshotAttributeRequest(input *ResetSnapshotAttributeInput) 
 //
 // Resets permission settings for the specified snapshot.
 //
-// For more information about modifying snapshot permissions, see Sharing Snapshots
+// For more information about modifying snapshot permissions, see Sharing snapshots
 // (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
@@ -38604,7 +39558,7 @@ func (s *AddPrefixListEntry) SetDescription(v string) *AddPrefixListEntry {
 	return s
 }
 
-// Describes an Elastic IP address.
+// Describes an Elastic IP address, or a carrier IP address.
 type Address struct {
 	_ struct{} `type:"structure"`
 
@@ -38614,6 +39568,11 @@ type Address struct {
 	// The ID representing the association of the address with an instance in a
 	// VPC.
 	AssociationId *string `locationName:"associationId" type:"string"`
+
+	// The carrier IP address associated. This option is only available for network
+	// interfaces which reside in a subnet in a Wavelength Zone (for example an
+	// EC2 instance).
+	CarrierIp *string `locationName:"carrierIp" type:"string"`
 
 	// The customer-owned IP address.
 	CustomerOwnedIp *string `locationName:"customerOwnedIp" type:"string"`
@@ -38628,7 +39587,8 @@ type Address struct {
 	// The ID of the instance that the address is associated with (if any).
 	InstanceId *string `locationName:"instanceId" type:"string"`
 
-	// The name of the location from which the IP address is advertised.
+	// The name of the unique set of Availability Zones, Local Zones, or Wavelength
+	// Zones from which AWS advertises IP addresses.
 	NetworkBorderGroup *string `locationName:"networkBorderGroup" type:"string"`
 
 	// The ID of the network interface.
@@ -38669,6 +39629,12 @@ func (s *Address) SetAllocationId(v string) *Address {
 // SetAssociationId sets the AssociationId field's value.
 func (s *Address) SetAssociationId(v string) *Address {
 	s.AssociationId = &v
+	return s
+}
+
+// SetCarrierIp sets the CarrierIp field's value.
+func (s *Address) SetCarrierIp(v string) *Address {
+	s.CarrierIp = &v
 	return s
 }
 
@@ -38824,9 +39790,11 @@ type AllocateAddressInput struct {
 	// address from the address pool.
 	CustomerOwnedIpv4Pool *string `type:"string"`
 
-	// Set to vpc to allocate the address for use with instances in a VPC.
+	// Indicates whether the Elastic IP address is for use with instances in a VPC
+	// or instances in EC2-Classic.
 	//
-	// Default: The address is for use with instances in EC2-Classic.
+	// Default: If the Region supports EC2-Classic, the default is standard. Otherwise,
+	// the default is vpc.
 	Domain *string `type:"string" enum:"DomainType"`
 
 	// Checks whether you have the required permissions for the action, without
@@ -38835,12 +39803,9 @@ type AllocateAddressInput struct {
 	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	// The location from which the IP address is advertised. Use this parameter
-	// to limit the address to this location.
-	//
-	// A network border group is a unique set of Availability Zones or Local Zones
-	// from where AWS advertises IP addresses and limits the addresses to the group.
-	// IP addresses cannot move between network border groups.
+	// A unique set of Availability Zones, Local Zones, or Wavelength Zones from
+	// which AWS advertises IP addresses. Use this parameter to limit the IP address
+	// to this location. IP addresses cannot move between network border groups.
 	//
 	// Use DescribeAvailabilityZones (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeAvailabilityZones.html)
 	// to view the network border groups.
@@ -38909,17 +39874,22 @@ type AllocateAddressOutput struct {
 	// IP address for use with instances in a VPC.
 	AllocationId *string `locationName:"allocationId" type:"string"`
 
+	// The carrier IP address. This option is only available for network interfaces
+	// which reside in a subnet in a Wavelength Zone (for example an EC2 instance).
+	CarrierIp *string `locationName:"carrierIp" type:"string"`
+
 	// The customer-owned IP address.
 	CustomerOwnedIp *string `locationName:"customerOwnedIp" type:"string"`
 
 	// The ID of the customer-owned address pool.
 	CustomerOwnedIpv4Pool *string `locationName:"customerOwnedIpv4Pool" type:"string"`
 
-	// Indicates whether this Elastic IP address is for use with instances in EC2-Classic
-	// (standard) or instances in a VPC (vpc).
+	// Indicates whether the Elastic IP address is for use with instances in a VPC
+	// (vpc) or instances in EC2-Classic (standard).
 	Domain *string `locationName:"domain" type:"string" enum:"DomainType"`
 
-	// The location from which the IP address is advertised.
+	// The set of Availability Zones, Local Zones, or Wavelength Zones from which
+	// AWS advertises IP addresses.
 	NetworkBorderGroup *string `locationName:"networkBorderGroup" type:"string"`
 
 	// The Elastic IP address.
@@ -38942,6 +39912,12 @@ func (s AllocateAddressOutput) GoString() string {
 // SetAllocationId sets the AllocationId field's value.
 func (s *AllocateAddressOutput) SetAllocationId(v string) *AllocateAddressOutput {
 	s.AllocationId = &v
+	return s
+}
+
+// SetCarrierIp sets the CarrierIp field's value.
+func (s *AllocateAddressOutput) SetCarrierIp(v string) *AllocateAddressOutput {
+	s.CarrierIp = &v
 	return s
 }
 
@@ -40237,7 +41213,7 @@ type AssociateVpcCidrBlockInput struct {
 	Ipv6CidrBlock *string `type:"string"`
 
 	// The name of the location from which we advertise the IPV6 CIDR block. Use
-	// this parameter to limit the CiDR block to this location.
+	// this parameter to limit the CIDR block to this location.
 	//
 	// You must set AmazonProvidedIpv6CidrBlock to true to use this parameter.
 	//
@@ -40994,11 +41970,13 @@ type AuthorizeClientVpnIngressInput struct {
 	_ struct{} `type:"structure"`
 
 	// The ID of the group to grant access to, for example, the Active Directory
-	// group or identity provider (IdP) group.
+	// group or identity provider (IdP) group. Required if AuthorizeAllGroups is
+	// false or not specified.
 	AccessGroupId *string `type:"string"`
 
-	// Indicates whether to grant access to all clients. Use true to grant all clients
-	// who successfully establish a VPN connection access to the network.
+	// Indicates whether to grant access to all clients. Specify true to grant all
+	// clients who successfully establish a VPN connection access to the network.
+	// Must be set to true if AccessGroupId is not specified.
 	AuthorizeAllGroups *bool `type:"boolean"`
 
 	// Unique, case-sensitive identifier that you provide to ensure the idempotency
@@ -41406,48 +42384,51 @@ func (s AuthorizeSecurityGroupIngressOutput) GoString() string {
 	return s.String()
 }
 
-// Describes a Zone.
+// Describes Availability Zones, Local Zones, and Wavelength Zones.
 type AvailabilityZone struct {
 	_ struct{} `type:"structure"`
 
 	// For Availability Zones, this parameter has the same value as the Region name.
 	//
 	// For Local Zones, the name of the associated group, for example us-west-2-lax-1.
+	//
+	// For Wavelength Zones, the name of the associated group, for example us-east-1-wl1-bos-wlz-1.
 	GroupName *string `locationName:"groupName" type:"string"`
 
-	// Any messages about the Zone.
+	// Any messages about the Availability Zone, Local Zone, or Wavelength Zone.
 	Messages []*AvailabilityZoneMessage `locationName:"messageSet" locationNameList:"item" type:"list"`
 
-	// The name of the location from which the address is advertised.
+	// The name of the network border group.
 	NetworkBorderGroup *string `locationName:"networkBorderGroup" type:"string"`
 
 	// For Availability Zones, this parameter always has the value of opt-in-not-required.
 	//
-	// For Local Zones, this parameter is the opt in status. The possible values
-	// are opted-in, and not-opted-in.
+	// For Local Zones and Wavelength Zones, this parameter is the opt-in status.
+	// The possible values are opted-in, and not-opted-in.
 	OptInStatus *string `locationName:"optInStatus" type:"string" enum:"AvailabilityZoneOptInStatus"`
 
-	// The ID of the zone that handles some of the Local Zone control plane operations,
-	// such as API calls.
+	// The ID of the zone that handles some of the Local Zone or Wavelength Zone
+	// control plane operations, such as API calls.
 	ParentZoneId *string `locationName:"parentZoneId" type:"string"`
 
-	// The name of the zone that handles some of the Local Zone control plane operations,
-	// such as API calls.
+	// The name of the zone that handles some of the Local Zone or Wavelength Zone
+	// control plane operations, such as API calls.
 	ParentZoneName *string `locationName:"parentZoneName" type:"string"`
 
 	// The name of the Region.
 	RegionName *string `locationName:"regionName" type:"string"`
 
-	// The state of the Zone.
+	// The state of the Availability Zone, Local Zone, or Wavelength Zone.
 	State *string `locationName:"zoneState" type:"string" enum:"AvailabilityZoneState"`
 
-	// The ID of the Zone.
+	// The ID of the Availability Zone, Local Zone, or Wavelength Zone.
 	ZoneId *string `locationName:"zoneId" type:"string"`
 
-	// The name of the Zone.
+	// The name of the Availability Zone, Local Zone, or Wavelength Zone.
 	ZoneName *string `locationName:"zoneName" type:"string"`
 
-	// The type of zone. The valid values are availability-zone and local-zone.
+	// The type of zone. The valid values are availability-zone, local-zone, and
+	// wavelength-zone.
 	ZoneType *string `locationName:"zoneType" type:"string"`
 }
 
@@ -41527,11 +42508,12 @@ func (s *AvailabilityZone) SetZoneType(v string) *AvailabilityZone {
 	return s
 }
 
-// Describes a message about a Zone.
+// Describes a message about an Availability Zone, Local Zone, or Wavelength
+// Zone.
 type AvailabilityZoneMessage struct {
 	_ struct{} `type:"structure"`
 
-	// The message about the Zone.
+	// The message about the Availability Zone, Local Zone, or Wavelength Zone.
 	Message *string `locationName:"message" type:"string"`
 }
 
@@ -42914,6 +43896,39 @@ func (s *CapacityReservation) SetTotalInstanceCount(v int64) *CapacityReservatio
 	return s
 }
 
+// Describes a resource group to which a Capacity Reservation has been added.
+type CapacityReservationGroup struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN of the resource group.
+	GroupArn *string `locationName:"groupArn" type:"string"`
+
+	// The ID of the AWS account that owns the resource group.
+	OwnerId *string `locationName:"ownerId" type:"string"`
+}
+
+// String returns the string representation
+func (s CapacityReservationGroup) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CapacityReservationGroup) GoString() string {
+	return s.String()
+}
+
+// SetGroupArn sets the GroupArn field's value.
+func (s *CapacityReservationGroup) SetGroupArn(v string) *CapacityReservationGroup {
+	s.GroupArn = &v
+	return s
+}
+
+// SetOwnerId sets the OwnerId field's value.
+func (s *CapacityReservationGroup) SetOwnerId(v string) *CapacityReservationGroup {
+	s.OwnerId = &v
+	return s
+}
+
 // Describes the strategy for using unused Capacity Reservations for fulfilling
 // On-Demand capacity.
 //
@@ -43012,7 +44027,7 @@ func (s *CapacityReservationOptionsRequest) SetUsageStrategy(v string) *Capacity
 // to run as an On-Demand Instance or to run in any open Capacity Reservation
 // that has matching attributes (instance type, platform, Availability Zone).
 // Use the CapacityReservationTarget parameter to explicitly target a specific
-// Capacity Reservation.
+// Capacity Reservation or a Capacity Reservation group.
 type CapacityReservationSpecification struct {
 	_ struct{} `type:"structure"`
 
@@ -43024,11 +44039,10 @@ type CapacityReservationSpecification struct {
 	//
 	//    * none - The instance avoids running in a Capacity Reservation even if
 	//    one is available. The instance runs as an On-Demand Instance.
-	//
-	// When CapacityReservationPreference is not specified, it defaults to open.
 	CapacityReservationPreference *string `type:"string" enum:"CapacityReservationPreference"`
 
-	// Information about the target Capacity Reservation.
+	// Information about the target Capacity Reservation or Capacity Reservation
+	// group.
 	CapacityReservationTarget *CapacityReservationTarget `type:"structure"`
 }
 
@@ -43059,7 +44073,8 @@ func (s *CapacityReservationSpecification) SetCapacityReservationTarget(v *Capac
 // instance is configured to run in On-Demand capacity, or if it is configured
 // in run in any open Capacity Reservation that has matching attributes (instance
 // type, platform, Availability Zone). The action returns the capacityReservationTarget
-// response element if the instance explicily targets a specific Capacity Reservation.
+// response element if the instance explicily targets a specific Capacity Reservation
+// or Capacity Reservation group.
 type CapacityReservationSpecificationResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -43073,7 +44088,8 @@ type CapacityReservationSpecificationResponse struct {
 	//    one is available. The instance runs in On-Demand capacity.
 	CapacityReservationPreference *string `locationName:"capacityReservationPreference" type:"string" enum:"CapacityReservationPreference"`
 
-	// Information about the targeted Capacity Reservation.
+	// Information about the targeted Capacity Reservation or Capacity Reservation
+	// group.
 	CapacityReservationTarget *CapacityReservationTargetResponse `locationName:"capacityReservationTarget" type:"structure"`
 }
 
@@ -43099,12 +44115,15 @@ func (s *CapacityReservationSpecificationResponse) SetCapacityReservationTarget(
 	return s
 }
 
-// Describes a target Capacity Reservation.
+// Describes a target Capacity Reservation or Capacity Reservation group.
 type CapacityReservationTarget struct {
 	_ struct{} `type:"structure"`
 
-	// The ID of the Capacity Reservation.
+	// The ID of the Capacity Reservation in which to run the instance.
 	CapacityReservationId *string `type:"string"`
+
+	// The ARN of the Capacity Reservation resource group in which to run the instance.
+	CapacityReservationResourceGroupArn *string `type:"string"`
 }
 
 // String returns the string representation
@@ -43123,12 +44142,21 @@ func (s *CapacityReservationTarget) SetCapacityReservationId(v string) *Capacity
 	return s
 }
 
-// Describes a target Capacity Reservation.
+// SetCapacityReservationResourceGroupArn sets the CapacityReservationResourceGroupArn field's value.
+func (s *CapacityReservationTarget) SetCapacityReservationResourceGroupArn(v string) *CapacityReservationTarget {
+	s.CapacityReservationResourceGroupArn = &v
+	return s
+}
+
+// Describes a target Capacity Reservation or Capacity Reservation group.
 type CapacityReservationTargetResponse struct {
 	_ struct{} `type:"structure"`
 
-	// The ID of the Capacity Reservation.
+	// The ID of the targeted Capacity Reservation.
 	CapacityReservationId *string `locationName:"capacityReservationId" type:"string"`
+
+	// The ARN of the targeted Capacity Reservation group.
+	CapacityReservationResourceGroupArn *string `locationName:"capacityReservationResourceGroupArn" type:"string"`
 }
 
 // String returns the string representation
@@ -43144,6 +44172,72 @@ func (s CapacityReservationTargetResponse) GoString() string {
 // SetCapacityReservationId sets the CapacityReservationId field's value.
 func (s *CapacityReservationTargetResponse) SetCapacityReservationId(v string) *CapacityReservationTargetResponse {
 	s.CapacityReservationId = &v
+	return s
+}
+
+// SetCapacityReservationResourceGroupArn sets the CapacityReservationResourceGroupArn field's value.
+func (s *CapacityReservationTargetResponse) SetCapacityReservationResourceGroupArn(v string) *CapacityReservationTargetResponse {
+	s.CapacityReservationResourceGroupArn = &v
+	return s
+}
+
+// Describes a carrier gateway.
+type CarrierGateway struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the carrier gateway.
+	CarrierGatewayId *string `locationName:"carrierGatewayId" type:"string"`
+
+	// The AWS account ID of the owner of the carrier gateway.
+	OwnerId *string `locationName:"ownerId" type:"string"`
+
+	// The state of the carrier gateway.
+	State *string `locationName:"state" type:"string" enum:"CarrierGatewayState"`
+
+	// The tags assigned to the carrier gateway.
+	Tags []*Tag `locationName:"tagSet" locationNameList:"item" type:"list"`
+
+	// The ID of the VPC associated with the carrier gateway.
+	VpcId *string `locationName:"vpcId" type:"string"`
+}
+
+// String returns the string representation
+func (s CarrierGateway) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CarrierGateway) GoString() string {
+	return s.String()
+}
+
+// SetCarrierGatewayId sets the CarrierGatewayId field's value.
+func (s *CarrierGateway) SetCarrierGatewayId(v string) *CarrierGateway {
+	s.CarrierGatewayId = &v
+	return s
+}
+
+// SetOwnerId sets the OwnerId field's value.
+func (s *CarrierGateway) SetOwnerId(v string) *CarrierGateway {
+	s.OwnerId = &v
+	return s
+}
+
+// SetState sets the State field's value.
+func (s *CarrierGateway) SetState(v string) *CarrierGateway {
+	s.State = &v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *CarrierGateway) SetTags(v []*Tag) *CarrierGateway {
+	s.Tags = v
+	return s
+}
+
+// SetVpcId sets the VpcId field's value.
+func (s *CarrierGateway) SetVpcId(v string) *CarrierGateway {
+	s.VpcId = &v
 	return s
 }
 
@@ -44230,6 +45324,9 @@ type CoipPool struct {
 	// The ID of the local gateway route table.
 	LocalGatewayRouteTableId *string `locationName:"localGatewayRouteTableId" type:"string"`
 
+	// The ARN of the address pool.
+	PoolArn *string `locationName:"poolArn" min:"1" type:"string"`
+
 	// The address ranges of the address pool.
 	PoolCidrs []*string `locationName:"poolCidrSet" locationNameList:"item" type:"list"`
 
@@ -44253,6 +45350,12 @@ func (s CoipPool) GoString() string {
 // SetLocalGatewayRouteTableId sets the LocalGatewayRouteTableId field's value.
 func (s *CoipPool) SetLocalGatewayRouteTableId(v string) *CoipPool {
 	s.LocalGatewayRouteTableId = &v
+	return s
+}
+
+// SetPoolArn sets the PoolArn field's value.
+func (s *CoipPool) SetPoolArn(v string) *CoipPool {
+	s.PoolArn = &v
 	return s
 }
 
@@ -44376,7 +45479,8 @@ func (s *ConfirmProductInstanceOutput) SetReturn(v bool) *ConfirmProductInstance
 type ConnectionLogOptions struct {
 	_ struct{} `type:"structure"`
 
-	// The name of the CloudWatch Logs log group.
+	// The name of the CloudWatch Logs log group. Required if connection logging
+	// is enabled.
 	CloudwatchLogGroup *string `type:"string"`
 
 	// The name of the CloudWatch Logs log stream to which the connection data is
@@ -45177,8 +46281,6 @@ type CreateCapacityReservationInput struct {
 
 	// Unique, case-sensitive identifier that you provide to ensure the idempotency
 	// of the request. For more information, see How to Ensure Idempotency (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
-	//
-	// Constraint: Maximum 64 ASCII characters.
 	ClientToken *string `type:"string"`
 
 	// Checks whether you have the required permissions for the action, without
@@ -45403,6 +46505,98 @@ func (s CreateCapacityReservationOutput) GoString() string {
 // SetCapacityReservation sets the CapacityReservation field's value.
 func (s *CreateCapacityReservationOutput) SetCapacityReservation(v *CapacityReservation) *CreateCapacityReservationOutput {
 	s.CapacityReservation = v
+	return s
+}
+
+type CreateCarrierGatewayInput struct {
+	_ struct{} `type:"structure"`
+
+	// Unique, case-sensitive identifier that you provide to ensure the idempotency
+	// of the request. For more information, see How to Ensure Idempotency (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Run_Instance_Idempotency.html).
+	ClientToken *string `type:"string" idempotencyToken:"true"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The tags to associate with the carrier gateway.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
+
+	// The ID of the VPC to associate with the carrier gateway.
+	//
+	// VpcId is a required field
+	VpcId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s CreateCarrierGatewayInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CreateCarrierGatewayInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *CreateCarrierGatewayInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "CreateCarrierGatewayInput"}
+	if s.VpcId == nil {
+		invalidParams.Add(request.NewErrParamRequired("VpcId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetClientToken sets the ClientToken field's value.
+func (s *CreateCarrierGatewayInput) SetClientToken(v string) *CreateCarrierGatewayInput {
+	s.ClientToken = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *CreateCarrierGatewayInput) SetDryRun(v bool) *CreateCarrierGatewayInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateCarrierGatewayInput) SetTagSpecifications(v []*TagSpecification) *CreateCarrierGatewayInput {
+	s.TagSpecifications = v
+	return s
+}
+
+// SetVpcId sets the VpcId field's value.
+func (s *CreateCarrierGatewayInput) SetVpcId(v string) *CreateCarrierGatewayInput {
+	s.VpcId = &v
+	return s
+}
+
+type CreateCarrierGatewayOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the carrier gateway.
+	CarrierGateway *CarrierGateway `locationName:"carrierGateway" type:"structure"`
+}
+
+// String returns the string representation
+func (s CreateCarrierGatewayOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CreateCarrierGatewayOutput) GoString() string {
+	return s.String()
+}
+
+// SetCarrierGateway sets the CarrierGateway field's value.
+func (s *CreateCarrierGatewayOutput) SetCarrierGateway(v *CarrierGateway) *CreateCarrierGatewayOutput {
+	s.CarrierGateway = v
 	return s
 }
 
@@ -45814,6 +47008,9 @@ type CreateCustomerGatewayInput struct {
 	// The address must be static.
 	PublicIp *string `locationName:"IpAddress" type:"string"`
 
+	// The tags to apply to the customer gateway.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
+
 	// The type of VPN connection that this customer gateway supports (ipsec.1).
 	//
 	// Type is a required field
@@ -45873,6 +47070,12 @@ func (s *CreateCustomerGatewayInput) SetDryRun(v bool) *CreateCustomerGatewayInp
 // SetPublicIp sets the PublicIp field's value.
 func (s *CreateCustomerGatewayInput) SetPublicIp(v string) *CreateCustomerGatewayInput {
 	s.PublicIp = &v
+	return s
+}
+
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateCustomerGatewayInput) SetTagSpecifications(v []*TagSpecification) *CreateCustomerGatewayInput {
+	s.TagSpecifications = v
 	return s
 }
 
@@ -48814,6 +50017,12 @@ func (s *CreateReservedInstancesListingOutput) SetReservedInstancesListings(v []
 type CreateRouteInput struct {
 	_ struct{} `type:"structure"`
 
+	// The ID of the carrier gateway.
+	//
+	// You can only use this option when the VPC contains a subnet which is associated
+	// with a Wavelength Zone.
+	CarrierGatewayId *string `type:"string"`
+
 	// The IPv4 CIDR address block used for the destination match. Routing decisions
 	// are based on the most specific match. We modify the specified CIDR block
 	// to its canonical form; for example, if you specify 100.68.0.18/18, we modify
@@ -48886,6 +50095,12 @@ func (s *CreateRouteInput) Validate() error {
 		return invalidParams
 	}
 	return nil
+}
+
+// SetCarrierGatewayId sets the CarrierGatewayId field's value.
+func (s *CreateRouteInput) SetCarrierGatewayId(v string) *CreateRouteInput {
+	s.CarrierGatewayId = &v
+	return s
 }
 
 // SetDestinationCidrBlock sets the DestinationCidrBlock field's value.
@@ -48998,6 +50213,9 @@ type CreateRouteTableInput struct {
 	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// The tags to assign to the route table.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
+
 	// The ID of the VPC.
 	//
 	// VpcId is a required field
@@ -49030,6 +50248,12 @@ func (s *CreateRouteTableInput) Validate() error {
 // SetDryRun sets the DryRun field's value.
 func (s *CreateRouteTableInput) SetDryRun(v bool) *CreateRouteTableInput {
 	s.DryRun = &v
+	return s
+}
+
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateRouteTableInput) SetTagSpecifications(v []*TagSpecification) *CreateRouteTableInput {
+	s.TagSpecifications = v
 	return s
 }
 
@@ -50534,6 +51758,111 @@ func (s *CreateTransitGatewayPeeringAttachmentOutput) SetTransitGatewayPeeringAt
 	return s
 }
 
+type CreateTransitGatewayPrefixListReferenceInput struct {
+	_ struct{} `type:"structure"`
+
+	// Indicates whether to drop traffic that matches this route.
+	Blackhole *bool `type:"boolean"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The ID of the prefix list that is used for destination matches.
+	//
+	// PrefixListId is a required field
+	PrefixListId *string `type:"string" required:"true"`
+
+	// The ID of the attachment to which traffic is routed.
+	TransitGatewayAttachmentId *string `type:"string"`
+
+	// The ID of the transit gateway route table.
+	//
+	// TransitGatewayRouteTableId is a required field
+	TransitGatewayRouteTableId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s CreateTransitGatewayPrefixListReferenceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CreateTransitGatewayPrefixListReferenceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *CreateTransitGatewayPrefixListReferenceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "CreateTransitGatewayPrefixListReferenceInput"}
+	if s.PrefixListId == nil {
+		invalidParams.Add(request.NewErrParamRequired("PrefixListId"))
+	}
+	if s.TransitGatewayRouteTableId == nil {
+		invalidParams.Add(request.NewErrParamRequired("TransitGatewayRouteTableId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetBlackhole sets the Blackhole field's value.
+func (s *CreateTransitGatewayPrefixListReferenceInput) SetBlackhole(v bool) *CreateTransitGatewayPrefixListReferenceInput {
+	s.Blackhole = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *CreateTransitGatewayPrefixListReferenceInput) SetDryRun(v bool) *CreateTransitGatewayPrefixListReferenceInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetPrefixListId sets the PrefixListId field's value.
+func (s *CreateTransitGatewayPrefixListReferenceInput) SetPrefixListId(v string) *CreateTransitGatewayPrefixListReferenceInput {
+	s.PrefixListId = &v
+	return s
+}
+
+// SetTransitGatewayAttachmentId sets the TransitGatewayAttachmentId field's value.
+func (s *CreateTransitGatewayPrefixListReferenceInput) SetTransitGatewayAttachmentId(v string) *CreateTransitGatewayPrefixListReferenceInput {
+	s.TransitGatewayAttachmentId = &v
+	return s
+}
+
+// SetTransitGatewayRouteTableId sets the TransitGatewayRouteTableId field's value.
+func (s *CreateTransitGatewayPrefixListReferenceInput) SetTransitGatewayRouteTableId(v string) *CreateTransitGatewayPrefixListReferenceInput {
+	s.TransitGatewayRouteTableId = &v
+	return s
+}
+
+type CreateTransitGatewayPrefixListReferenceOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the prefix list reference.
+	TransitGatewayPrefixListReference *TransitGatewayPrefixListReference `locationName:"transitGatewayPrefixListReference" type:"structure"`
+}
+
+// String returns the string representation
+func (s CreateTransitGatewayPrefixListReferenceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CreateTransitGatewayPrefixListReferenceOutput) GoString() string {
+	return s.String()
+}
+
+// SetTransitGatewayPrefixListReference sets the TransitGatewayPrefixListReference field's value.
+func (s *CreateTransitGatewayPrefixListReferenceOutput) SetTransitGatewayPrefixListReference(v *TransitGatewayPrefixListReference) *CreateTransitGatewayPrefixListReferenceOutput {
+	s.TransitGatewayPrefixListReference = v
+	return s
+}
+
 type CreateTransitGatewayRouteInput struct {
 	_ struct{} `type:"structure"`
 
@@ -50894,22 +52223,22 @@ type CreateVolumeInput struct {
 	// Specifies whether the volume should be encrypted. The effect of setting the
 	// encryption state to true depends on the volume origin (new or from a snapshot),
 	// starting encryption state, ownership, and whether encryption by default is
-	// enabled. For more information, see Encryption by Default (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default)
+	// enabled. For more information, see Encryption by default (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
 	// Encrypted Amazon EBS volumes must be attached to instances that support Amazon
-	// EBS encryption. For more information, see Supported Instance Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances).
+	// EBS encryption. For more information, see Supported instance types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances).
 	Encrypted *bool `locationName:"encrypted" type:"boolean"`
 
-	// The number of I/O operations per second (IOPS) to provision for the volume,
-	// with a maximum ratio of 50 IOPS/GiB. Range is 100 to 64,000 IOPS for volumes
-	// in most Regions. Maximum IOPS of 64,000 is guaranteed only on Nitro-based
-	// instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
+	// The number of I/O operations per second (IOPS) to provision for an io1 or
+	// io2 volume, with a maximum ratio of 50 IOPS/GiB for io1, and 500 IOPS/GiB
+	// for io2. Range is 100 to 64,000 IOPS for volumes in most Regions. Maximum
+	// IOPS of 64,000 is guaranteed only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
 	// Other instance families guarantee performance up to 32,000 IOPS. For more
-	// information, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
+	// information, see Amazon EBS volume types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// This parameter is valid only for Provisioned IOPS SSD (io1) volumes.
+	// This parameter is valid only for Provisioned IOPS SSD (io1 and io2) volumes.
 	Iops *int64 `type:"integer"`
 
 	// The identifier of the AWS Key Management Service (AWS KMS) customer master
@@ -50945,9 +52274,9 @@ type CreateVolumeInput struct {
 	// The size of the volume, in GiBs. You must specify either a snapshot ID or
 	// a volume size.
 	//
-	// Constraints: 1-16,384 for gp2, 4-16,384 for io1, 500-16,384 for st1, 500-16,384
-	// for sc1, and 1-1,024 for standard. If you specify a snapshot, the volume
-	// size must be equal to or larger than the snapshot size.
+	// Constraints: 1-16,384 for gp2, 4-16,384 for io1 and io2, 500-16,384 for st1,
+	// 500-16,384 for sc1, and 1-1,024 for standard. If you specify a snapshot,
+	// the volume size must be equal to or larger than the snapshot size.
 	//
 	// Default: If you're creating the volume from a snapshot and don't specify
 	// a volume size, the default is the snapshot size.
@@ -50960,9 +52289,9 @@ type CreateVolumeInput struct {
 	// The tags to apply to the volume during creation.
 	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
 
-	// The volume type. This can be gp2 for General Purpose SSD, io1 for Provisioned
-	// IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD, or standard
-	// for Magnetic volumes.
+	// The volume type. This can be gp2 for General Purpose SSD, io1 or io2 for
+	// Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD,
+	// or standard for Magnetic volumes.
 	//
 	// Default: gp2
 	VolumeType *string `type:"string" enum:"VolumeType"`
@@ -51733,6 +53062,9 @@ type CreateVpcPeeringConnectionInput struct {
 	// You must specify this parameter in the request.
 	PeerVpcId *string `locationName:"peerVpcId" type:"string"`
 
+	// The tags to assign to the peering connection.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
+
 	// The ID of the requester VPC. You must specify this parameter in the request.
 	VpcId *string `locationName:"vpcId" type:"string"`
 }
@@ -51768,6 +53100,12 @@ func (s *CreateVpcPeeringConnectionInput) SetPeerRegion(v string) *CreateVpcPeer
 // SetPeerVpcId sets the PeerVpcId field's value.
 func (s *CreateVpcPeeringConnectionInput) SetPeerVpcId(v string) *CreateVpcPeeringConnectionInput {
 	s.PeerVpcId = &v
+	return s
+}
+
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateVpcPeeringConnectionInput) SetTagSpecifications(v []*TagSpecification) *CreateVpcPeeringConnectionInput {
+	s.TagSpecifications = v
 	return s
 }
 
@@ -51817,6 +53155,9 @@ type CreateVpnConnectionInput struct {
 
 	// The options for the VPN connection.
 	Options *VpnConnectionOptionsSpecification `locationName:"options" type:"structure"`
+
+	// The tags to apply to the VPN connection.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
 
 	// The ID of the transit gateway. If you specify a transit gateway, you cannot
 	// specify a virtual private gateway.
@@ -51873,6 +53214,12 @@ func (s *CreateVpnConnectionInput) SetDryRun(v bool) *CreateVpnConnectionInput {
 // SetOptions sets the Options field's value.
 func (s *CreateVpnConnectionInput) SetOptions(v *VpnConnectionOptionsSpecification) *CreateVpnConnectionInput {
 	s.Options = v
+	return s
+}
+
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateVpnConnectionInput) SetTagSpecifications(v []*TagSpecification) *CreateVpnConnectionInput {
+	s.TagSpecifications = v
 	return s
 }
 
@@ -52005,6 +53352,9 @@ type CreateVpnGatewayInput struct {
 	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// The tags to apply to the virtual private gateway.
+	TagSpecifications []*TagSpecification `locationName:"TagSpecification" locationNameList:"item" type:"list"`
+
 	// The type of VPN connection this virtual private gateway supports.
 	//
 	// Type is a required field
@@ -52052,6 +53402,12 @@ func (s *CreateVpnGatewayInput) SetDryRun(v bool) *CreateVpnGatewayInput {
 	return s
 }
 
+// SetTagSpecifications sets the TagSpecifications field's value.
+func (s *CreateVpnGatewayInput) SetTagSpecifications(v []*TagSpecification) *CreateVpnGatewayInput {
+	s.TagSpecifications = v
+	return s
+}
+
 // SetType sets the Type field's value.
 func (s *CreateVpnGatewayInput) SetType(v string) *CreateVpnGatewayInput {
 	s.Type = &v
@@ -52082,12 +53438,12 @@ func (s *CreateVpnGatewayOutput) SetVpnGateway(v *VpnGateway) *CreateVpnGatewayO
 	return s
 }
 
-// Describes the credit option for CPU usage of a T2 or T3 instance.
+// Describes the credit option for CPU usage of a T2, T3, or T3a instance.
 type CreditSpecification struct {
 	_ struct{} `type:"structure"`
 
-	// The credit option for CPU usage of a T2 or T3 instance. Valid values are
-	// standard and unlimited.
+	// The credit option for CPU usage of a T2, T3, or T3a instance. Valid values
+	// are standard and unlimited.
 	CpuCredits *string `locationName:"cpuCredits" type:"string"`
 }
 
@@ -52107,12 +53463,12 @@ func (s *CreditSpecification) SetCpuCredits(v string) *CreditSpecification {
 	return s
 }
 
-// The credit option for CPU usage of a T2 or T3 instance.
+// The credit option for CPU usage of a T2, T3, or T3a instance.
 type CreditSpecificationRequest struct {
 	_ struct{} `type:"structure"`
 
-	// The credit option for CPU usage of a T2 or T3 instance. Valid values are
-	// standard and unlimited.
+	// The credit option for CPU usage of a T2, T3, or T3a instance. Valid values
+	// are standard and unlimited.
 	//
 	// CpuCredits is a required field
 	CpuCredits *string `type:"string" required:"true"`
@@ -52233,6 +53589,79 @@ func (s *CustomerGateway) SetTags(v []*Tag) *CustomerGateway {
 // SetType sets the Type field's value.
 func (s *CustomerGateway) SetType(v string) *CustomerGateway {
 	s.Type = &v
+	return s
+}
+
+type DeleteCarrierGatewayInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the carrier gateway.
+	//
+	// CarrierGatewayId is a required field
+	CarrierGatewayId *string `type:"string" required:"true"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+}
+
+// String returns the string representation
+func (s DeleteCarrierGatewayInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteCarrierGatewayInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DeleteCarrierGatewayInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DeleteCarrierGatewayInput"}
+	if s.CarrierGatewayId == nil {
+		invalidParams.Add(request.NewErrParamRequired("CarrierGatewayId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetCarrierGatewayId sets the CarrierGatewayId field's value.
+func (s *DeleteCarrierGatewayInput) SetCarrierGatewayId(v string) *DeleteCarrierGatewayInput {
+	s.CarrierGatewayId = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *DeleteCarrierGatewayInput) SetDryRun(v bool) *DeleteCarrierGatewayInput {
+	s.DryRun = &v
+	return s
+}
+
+type DeleteCarrierGatewayOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the carrier gateway.
+	CarrierGateway *CarrierGateway `locationName:"carrierGateway" type:"structure"`
+}
+
+// String returns the string representation
+func (s DeleteCarrierGatewayOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteCarrierGatewayOutput) GoString() string {
+	return s.String()
+}
+
+// SetCarrierGateway sets the CarrierGateway field's value.
+func (s *DeleteCarrierGatewayOutput) SetCarrierGateway(v *CarrierGateway) *DeleteCarrierGatewayOutput {
+	s.CarrierGateway = v
 	return s
 }
 
@@ -55136,6 +56565,93 @@ func (s *DeleteTransitGatewayPeeringAttachmentOutput) SetTransitGatewayPeeringAt
 	return s
 }
 
+type DeleteTransitGatewayPrefixListReferenceInput struct {
+	_ struct{} `type:"structure"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The ID of the prefix list.
+	//
+	// PrefixListId is a required field
+	PrefixListId *string `type:"string" required:"true"`
+
+	// The ID of the route table.
+	//
+	// TransitGatewayRouteTableId is a required field
+	TransitGatewayRouteTableId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s DeleteTransitGatewayPrefixListReferenceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteTransitGatewayPrefixListReferenceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DeleteTransitGatewayPrefixListReferenceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DeleteTransitGatewayPrefixListReferenceInput"}
+	if s.PrefixListId == nil {
+		invalidParams.Add(request.NewErrParamRequired("PrefixListId"))
+	}
+	if s.TransitGatewayRouteTableId == nil {
+		invalidParams.Add(request.NewErrParamRequired("TransitGatewayRouteTableId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *DeleteTransitGatewayPrefixListReferenceInput) SetDryRun(v bool) *DeleteTransitGatewayPrefixListReferenceInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetPrefixListId sets the PrefixListId field's value.
+func (s *DeleteTransitGatewayPrefixListReferenceInput) SetPrefixListId(v string) *DeleteTransitGatewayPrefixListReferenceInput {
+	s.PrefixListId = &v
+	return s
+}
+
+// SetTransitGatewayRouteTableId sets the TransitGatewayRouteTableId field's value.
+func (s *DeleteTransitGatewayPrefixListReferenceInput) SetTransitGatewayRouteTableId(v string) *DeleteTransitGatewayPrefixListReferenceInput {
+	s.TransitGatewayRouteTableId = &v
+	return s
+}
+
+type DeleteTransitGatewayPrefixListReferenceOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the deleted prefix list reference.
+	TransitGatewayPrefixListReference *TransitGatewayPrefixListReference `locationName:"transitGatewayPrefixListReference" type:"structure"`
+}
+
+// String returns the string representation
+func (s DeleteTransitGatewayPrefixListReferenceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteTransitGatewayPrefixListReferenceOutput) GoString() string {
+	return s.String()
+}
+
+// SetTransitGatewayPrefixListReference sets the TransitGatewayPrefixListReference field's value.
+func (s *DeleteTransitGatewayPrefixListReferenceOutput) SetTransitGatewayPrefixListReference(v *TransitGatewayPrefixListReference) *DeleteTransitGatewayPrefixListReferenceOutput {
+	s.TransitGatewayPrefixListReference = v
+	return s
+}
+
 type DeleteTransitGatewayRouteInput struct {
 	_ struct{} `type:"structure"`
 
@@ -56456,7 +57972,8 @@ type DescribeAddressesInput struct {
 	//    * instance-id - The ID of the instance the address is associated with,
 	//    if any.
 	//
-	//    * network-border-group - The location from where the IP address is advertised.
+	//    * network-border-group - A unique set of Availability Zones, Local Zones,
+	//    or Wavelength Zones from where AWS advertises IP addresses.
 	//
 	//    * network-interface-id - [EC2-VPC] The ID of the network interface that
 	//    the address is associated with, if any.
@@ -56466,7 +57983,7 @@ type DescribeAddressesInput struct {
 	//    * private-ip-address - [EC2-VPC] The private IP address associated with
 	//    the Elastic IP address.
 	//
-	//    * public-ip - The Elastic IP address.
+	//    * public-ip - The Elastic IP address, or the carrier IP address.
 	//
 	//    * tag:<key> - The key/value combination of a tag assigned to the resource.
 	//    Use the tag key in the filter name and the tag value as the filter value.
@@ -56605,8 +58122,8 @@ func (s *DescribeAggregateIdFormatOutput) SetUseLongIdsAggregated(v bool) *Descr
 type DescribeAvailabilityZonesInput struct {
 	_ struct{} `type:"structure"`
 
-	// Include all Availability Zones and Local Zones regardless of your opt in
-	// status.
+	// Include all Availability Zones, Local Zones, and Wavelength Zones regardless
+	// of your opt-in status.
 	//
 	// If you do not use this parameter, the results include only the zones for
 	// the Regions where you have chosen the option to opt in.
@@ -56622,28 +58139,41 @@ type DescribeAvailabilityZonesInput struct {
 	//
 	//    * group-name - For Availability Zones, use the Region name. For Local
 	//    Zones, use the name of the group associated with the Local Zone (for example,
-	//    us-west-2-lax-1).
+	//    us-west-2-lax-1) For Wavelength Zones, use the name of the group associated
+	//    with the Wavelength Zone (for example, us-east-1-wl1-bos-wlz-1).
 	//
 	//    * message - The Zone message.
 	//
-	//    * opt-in-status - The opt in status (opted-in, and not-opted-in | opt-in-not-required).
+	//    * opt-in-status - The opt-in status (opted-in, and not-opted-in | opt-in-not-required).
+	//
+	//    * parent-zoneID - The ID of the zone that handles some of the Local Zone
+	//    and Wavelength Zone control plane operations, such as API calls.
+	//
+	//    * parent-zoneName - The ID of the zone that handles some of the Local
+	//    Zone and Wavelength Zone control plane operations, such as API calls.
 	//
 	//    * region-name - The name of the Region for the Zone (for example, us-east-1).
 	//
-	//    * state - The state of the Availability Zone or Local Zone (available
-	//    | information | impaired | unavailable).
+	//    * state - The state of the Availability Zone, the Local Zone, or the Wavelength
+	//    Zone (available | information | impaired | unavailable).
 	//
-	//    * zone-id - The ID of the Availability Zone (for example, use1-az1) or
-	//    the Local Zone (for example, use usw2-lax1-az1).
+	//    * zone-id - The ID of the Availability Zone (for example, use1-az1), the
+	//    Local Zone (for example, usw2-lax1-az1), or the Wavelength Zone (for example,
+	//    us-east-1-wl1-bos-wlz-1).
 	//
-	//    * zone-name - The name of the Availability Zone (for example, us-east-1a)
-	//    or the Local Zone (for example, use us-west-2-lax-1a).
+	//    * zone-type - The type of zone, for example, local-zone.
+	//
+	//    * zone-name - The name of the Availability Zone (for example, us-east-1a),
+	//    the Local Zone (for example, us-west-2-lax-1a), or the Wavelength Zone
+	//    (for example, us-east-1-wl1-bos-wlz-1).
+	//
+	//    * zone-type - The type of zone, for example, local-zone.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	// The IDs of the Zones.
+	// The IDs of the Availability Zones, Local Zones, and Wavelength Zones.
 	ZoneIds []*string `locationName:"ZoneId" locationNameList:"ZoneId" type:"list"`
 
-	// The names of the Zones.
+	// The names of the Availability Zones, Local Zones, and Wavelength Zones.
 	ZoneNames []*string `locationName:"ZoneName" locationNameList:"ZoneName" type:"list"`
 }
 
@@ -56690,7 +58220,7 @@ func (s *DescribeAvailabilityZonesInput) SetZoneNames(v []*string) *DescribeAvai
 type DescribeAvailabilityZonesOutput struct {
 	_ struct{} `type:"structure"`
 
-	// Information about the Zones.
+	// Information about the Availability Zones, Local Zones, and Wavelength Zones.
 	AvailabilityZones []*AvailabilityZone `locationName:"availabilityZoneInfo" locationNameList:"item" type:"list"`
 }
 
@@ -56965,10 +58495,11 @@ type DescribeCapacityReservationsInput struct {
 
 	// The maximum number of results to return for the request in a single page.
 	// The remaining results can be seen by sending another request with the returned
-	// nextToken value.
+	// nextToken value. This value can be between 5 and 500. If maxResults is given
+	// a larger value than 500, you receive an error.
 	MaxResults *int64 `min:"1" type:"integer"`
 
-	// The token to retrieve the next page of results.
+	// The token to use to retrieve the next page of results.
 	NextToken *string `type:"string"`
 }
 
@@ -57054,6 +58585,134 @@ func (s *DescribeCapacityReservationsOutput) SetCapacityReservations(v []*Capaci
 
 // SetNextToken sets the NextToken field's value.
 func (s *DescribeCapacityReservationsOutput) SetNextToken(v string) *DescribeCapacityReservationsOutput {
+	s.NextToken = &v
+	return s
+}
+
+type DescribeCarrierGatewaysInput struct {
+	_ struct{} `type:"structure"`
+
+	// One or more carrier gateway IDs.
+	CarrierGatewayIds []*string `locationName:"CarrierGatewayId" type:"list"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// One or more filters.
+	//
+	//    * carrier-gateway-id - The ID of the carrier gateway.
+	//
+	//    * state - The state of the carrier gateway (pending | failed | available
+	//    | deleting | deleted).
+	//
+	//    * owner-id - The AWS account ID of the owner of the carrier gateway.
+	//
+	//    * tag:<key> - The key/value combination of a tag assigned to the resource.
+	//    Use the tag key in the filter name and the tag value as the filter value.
+	//    For example, to find all resources that have a tag with the key Owner
+	//    and the value TeamA, specify tag:Owner for the filter name and TeamA for
+	//    the filter value.
+	//
+	//    * tag-key - The key of a tag assigned to the resource. Use this filter
+	//    to find all resources assigned a tag with a specific key, regardless of
+	//    the tag value.
+	//
+	//    * vpc-id - The ID of the VPC associated with the carrier gateway.
+	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
+
+	// The maximum number of results to return with a single call. To retrieve the
+	// remaining results, make another call with the returned nextToken value.
+	MaxResults *int64 `min:"5" type:"integer"`
+
+	// The token for the next page of results.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeCarrierGatewaysInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeCarrierGatewaysInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeCarrierGatewaysInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeCarrierGatewaysInput"}
+	if s.MaxResults != nil && *s.MaxResults < 5 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 5))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetCarrierGatewayIds sets the CarrierGatewayIds field's value.
+func (s *DescribeCarrierGatewaysInput) SetCarrierGatewayIds(v []*string) *DescribeCarrierGatewaysInput {
+	s.CarrierGatewayIds = v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *DescribeCarrierGatewaysInput) SetDryRun(v bool) *DescribeCarrierGatewaysInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetFilters sets the Filters field's value.
+func (s *DescribeCarrierGatewaysInput) SetFilters(v []*Filter) *DescribeCarrierGatewaysInput {
+	s.Filters = v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *DescribeCarrierGatewaysInput) SetMaxResults(v int64) *DescribeCarrierGatewaysInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeCarrierGatewaysInput) SetNextToken(v string) *DescribeCarrierGatewaysInput {
+	s.NextToken = &v
+	return s
+}
+
+type DescribeCarrierGatewaysOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the carrier gateway.
+	CarrierGateways []*CarrierGateway `locationName:"carrierGatewaySet" locationNameList:"item" type:"list"`
+
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeCarrierGatewaysOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeCarrierGatewaysOutput) GoString() string {
+	return s.String()
+}
+
+// SetCarrierGateways sets the CarrierGateways field's value.
+func (s *DescribeCarrierGatewaysOutput) SetCarrierGateways(v []*CarrierGateway) *DescribeCarrierGatewaysOutput {
+	s.CarrierGateways = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeCarrierGatewaysOutput) SetNextToken(v string) *DescribeCarrierGatewaysOutput {
 	s.NextToken = &v
 	return s
 }
@@ -60450,7 +62109,7 @@ type DescribeImagesInput struct {
 	//    in GiB.
 	//
 	//    * block-device-mapping.volume-type - The volume type of the EBS volume
-	//    (gp2 | io1 | st1 | sc1 | standard).
+	//    (gp2 | io1 | io2 | st1 | sc1 | standard).
 	//
 	//    * block-device-mapping.encrypted - A Boolean that indicates whether the
 	//    EBS volume is encrypted.
@@ -60474,11 +62133,13 @@ type DescribeImagesInput struct {
 	//
 	//    * name - The name of the AMI (provided during image creation).
 	//
-	//    * owner-alias - String value from an Amazon-maintained list (amazon |
-	//    aws-marketplace | microsoft) of snapshot owners. Not to be confused with
-	//    the user-configured AWS account alias, which is set from the IAM console.
+	//    * owner-alias - The owner alias, from an Amazon-maintained list (amazon
+	//    | aws-marketplace). This is not the user-configured AWS account alias
+	//    set using the IAM console. We recommend that you use the related parameter
+	//    instead of this filter.
 	//
-	//    * owner-id - The AWS account ID of the image owner.
+	//    * owner-id - The AWS account ID of the owner. We recommend that you use
+	//    the related parameter instead of this filter.
 	//
 	//    * platform - The platform. To only list Windows-based AMIs, use windows.
 	//
@@ -60520,10 +62181,10 @@ type DescribeImagesInput struct {
 	// Default: Describes all images available to you.
 	ImageIds []*string `locationName:"ImageId" locationNameList:"ImageId" type:"list"`
 
-	// Filters the images by the owner. Specify an AWS account ID, self (owner is
-	// the sender of the request), or an AWS owner alias (valid values are amazon
-	// | aws-marketplace | microsoft). Omitting this option returns all images for
-	// which you have launch permissions, regardless of ownership.
+	// Scopes the results to images with the specified owners. You can specify a
+	// combination of AWS account IDs, self, amazon, and aws-marketplace. If you
+	// omit this parameter, the results include all images for which you have launch
+	// permissions, regardless of ownership.
 	Owners []*string `locationName:"Owner" locationNameList:"Owner" type:"list"`
 }
 
@@ -62367,12 +64028,16 @@ type DescribeLaunchTemplateVersionsInput struct {
 	//    * ram-disk-id - The RAM disk ID.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	// The ID of the launch template. You must specify either the launch template
-	// ID or launch template name in the request.
+	// The ID of the launch template. To describe one or more versions of a specified
+	// launch template, you must specify either the launch template ID or the launch
+	// template name in the request. To describe all the latest or default launch
+	// template versions in your account, you must omit this parameter.
 	LaunchTemplateId *string `type:"string"`
 
-	// The name of the launch template. You must specify either the launch template
-	// ID or launch template name in the request.
+	// The name of the launch template. To describe one or more versions of a specified
+	// launch template, you must specify either the launch template ID or the launch
+	// template name in the request. To describe all the latest or default launch
+	// template versions in your account, you must omit this parameter.
 	LaunchTemplateName *string `min:"3" type:"string"`
 
 	// The maximum number of results to return in a single call. To retrieve the
@@ -62389,7 +64054,18 @@ type DescribeLaunchTemplateVersionsInput struct {
 	// The token to request the next page of results.
 	NextToken *string `type:"string"`
 
-	// One or more versions of the launch template.
+	// One or more versions of the launch template. Valid values depend on whether
+	// you are describing a specified launch template (by ID or name) or all launch
+	// templates in your account.
+	//
+	// To describe one or more versions of a specified launch template, valid values
+	// are $Latest, $Default, and numbers.
+	//
+	// To describe all launch templates in your account that are defined as the
+	// latest version, the valid value is $Latest. To describe all launch templates
+	// in your account that are defined as the default version, the valid value
+	// is $Default. You can specify $Latest and $Default in the same call. You cannot
+	// specify numbers.
 	Versions []*string `locationName:"LaunchTemplateVersion" locationNameList:"item" type:"list"`
 }
 
@@ -65435,8 +67111,6 @@ type DescribeRouteTablesInput struct {
 	//    to find all resources assigned a tag with a specific key, regardless of
 	//    the tag value.
 	//
-	//    * transit-gateway-id - The ID of a transit gateway.
-	//
 	//    * vpc-id - The ID of the VPC for the route table.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
@@ -66826,8 +68500,8 @@ type DescribeSpotInstanceRequestsInput struct {
 	//    in GiB.
 	//
 	//    * launch.block-device-mapping.volume-type - The type of EBS volume: gp2
-	//    for General Purpose SSD, io1 for Provisioned IOPS SSD, st1 for Throughput
-	//    Optimized HDD, sc1for Cold HDD, or standard for Magnetic.
+	//    for General Purpose SSD, io1 or io2 for Provisioned IOPS SSD, st1 for
+	//    Throughput Optimized HDD, sc1for Cold HDD, or standard for Magnetic.
 	//
 	//    * launch.group-id - The ID of the security group for the instance.
 	//
@@ -67901,11 +69575,12 @@ type DescribeTransitGatewayAttachmentsInput struct {
 	//
 	//    * resource-owner-id - The ID of the AWS account that owns the resource.
 	//
-	//    * resource-type - The resource type (vpc | vpn).
+	//    * resource-type - The resource type. Valid values are vpc | vpn | direct-connect-gateway
+	//    | peering.
 	//
-	//    * state - The state of the attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the attachment. Valid values are available | deleted
+	//    | deleting | failed | failing | initiatingRequest | modifying | pendingAcceptance
+	//    | pending | rollingBack | rejected | rejecting.
 	//
 	//    * transit-gateway-attachment-id - The ID of the attachment.
 	//
@@ -68147,9 +69822,9 @@ type DescribeTransitGatewayPeeringAttachmentsInput struct {
 	//    * remote-owner-id - The ID of the AWS account in the remote Region that
 	//    owns the transit gateway.
 	//
-	//    * state - The state of the peering attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the peering attachment. Valid values are available
+	//    | deleted | deleting | failed | failing | initiatingRequest | modifying
+	//    | pendingAcceptance | pending | rollingBack | rejected | rejecting).
 	//
 	//    * transit-gateway-id - The ID of the transit gateway.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
@@ -68268,9 +69943,8 @@ type DescribeTransitGatewayRouteTablesInput struct {
 	//    * default-propagation-route-table - Indicates whether this is the default
 	//    propagation route table for the transit gateway (true | false).
 	//
-	//    * state - The state of the attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the route table (available | deleting | deleted
+	//    | pending).
 	//
 	//    * transit-gateway-id - The ID of the transit gateway.
 	//
@@ -68386,9 +70060,9 @@ type DescribeTransitGatewayVpcAttachmentsInput struct {
 
 	// One or more filters. The possible values are:
 	//
-	//    * state - The state of the attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the attachment. Valid values are available | deleted
+	//    | deleting | failed | failing | initiatingRequest | modifying | pendingAcceptance
+	//    | pending | rollingBack | rejected | rejecting.
 	//
 	//    * transit-gateway-attachment-id - The ID of the attachment.
 	//
@@ -68533,9 +70207,8 @@ type DescribeTransitGatewaysInput struct {
 	//
 	//    * owner-id - The ID of the AWS account that owns the transit gateway.
 	//
-	//    * state - The state of the attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the transit gateway (available | deleted | deleting
+	//    | modifying | pending).
 	//
 	//    * transit-gateway-id - The ID of the transit gateway.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
@@ -68919,7 +70592,7 @@ type DescribeVolumesInput struct {
 	//
 	//    * snapshot-id - The snapshot from which the volume was created.
 	//
-	//    * status - The status of the volume (creating | available | in-use | deleting
+	//    * status - The state of the volume (creating | available | in-use | deleting
 	//    | deleted | error).
 	//
 	//    * tag:<key> - The key/value combination of a tag assigned to the resource.
@@ -68935,7 +70608,7 @@ type DescribeVolumesInput struct {
 	//    * volume-id - The volume ID.
 	//
 	//    * volume-type - The Amazon EBS volume type. This can be gp2 for General
-	//    Purpose SSD, io1 for Provisioned IOPS SSD, st1 for Throughput Optimized
+	//    Purpose SSD, io1 or io2 for Provisioned IOPS SSD, st1 for Throughput Optimized
 	//    HDD, sc1 for Cold HDD, or standard for Magnetic volumes.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
@@ -69019,7 +70692,7 @@ type DescribeVolumesModificationsInput struct {
 	//    * original-size - The original size of the volume, in GiB.
 	//
 	//    * original-volume-type - The original volume type of the volume (standard
-	//    | io1 | gp2 | sc1 | st1).
+	//    | io1 | io2 | gp2 | sc1 | st1).
 	//
 	//    * originalMultiAttachEnabled - Indicates whether Multi-Attach support
 	//    was enabled (true | false).
@@ -69031,7 +70704,7 @@ type DescribeVolumesModificationsInput struct {
 	//    * target-size - The target size of the volume, in GiB.
 	//
 	//    * target-volume-type - The target volume type of the volume (standard
-	//    | io1 | gp2 | sc1 | st1).
+	//    | io1 | io2 | gp2 | sc1 | st1).
 	//
 	//    * targetMultiAttachEnabled - Indicates whether Multi-Attach support is
 	//    to be enabled (true | false).
@@ -72795,21 +74468,22 @@ type EbsBlockDevice struct {
 	Encrypted *bool `locationName:"encrypted" type:"boolean"`
 
 	// The number of I/O operations per second (IOPS) that the volume supports.
-	// For io1 volumes, this represents the number of IOPS that are provisioned
+	// For io1 and io2 volumes, this represents the number of IOPS that are provisioned
 	// for the volume. For gp2 volumes, this represents the baseline performance
 	// of the volume and the rate at which the volume accumulates I/O credits for
 	// bursting. For more information, see Amazon EBS volume types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Constraints: Range is 100-16,000 IOPS for gp2 volumes and 100 to 64,000IOPS
-	// for io1 volumes in most Regions. Maximum io1 IOPS of 64,000 is guaranteed
-	// only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
+	// Constraints: Range is 100-16,000 IOPS for gp2 volumes and 100 to 64,000 IOPS
+	// for io1 and io2 volumes in most Regions. Maximum io1 and io2 IOPS of 64,000
+	// is guaranteed only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
 	// Other instance families guarantee performance up to 32,000 IOPS. For more
 	// information, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Condition: This parameter is required for requests to create io1 volumes;
-	// it is not used in requests to create gp2, st1, sc1, or standard volumes.
+	// Condition: This parameter is required for requests to create io1 and io2
+	// volumes; it is not used in requests to create gp2, st1, sc1, or standard
+	// volumes.
 	Iops *int64 `locationName:"iops" type:"integer"`
 
 	// Identifier (key ID, key alias, ID ARN, or alias ARN) for a customer managed
@@ -72830,15 +74504,15 @@ type EbsBlockDevice struct {
 	// a volume size, the default is the snapshot size.
 	//
 	// Constraints: 1-16384 for General Purpose SSD (gp2), 4-16384 for Provisioned
-	// IOPS SSD (io1), 500-16384 for Throughput Optimized HDD (st1), 500-16384 for
-	// Cold HDD (sc1), and 1-1024 for Magnetic (standard) volumes. If you specify
+	// IOPS SSD (io1 and io2), 500-16384 for Throughput Optimized HDD (st1), 500-16384
+	// for Cold HDD (sc1), and 1-1024 for Magnetic (standard) volumes. If you specify
 	// a snapshot, the volume size must be equal to or larger than the snapshot
 	// size.
 	VolumeSize *int64 `locationName:"volumeSize" type:"integer"`
 
-	// The volume type. If you set the type to io1, you must also specify the Iops
-	// parameter. If you set the type to gp2, st1, sc1, or standard, you must omit
-	// the Iops parameter.
+	// The volume type. If you set the type to io1 or io2, you must also specify
+	// the Iops parameter. If you set the type to gp2, st1, sc1, or standard, you
+	// must omit the Iops parameter.
 	//
 	// Default: gp2
 	VolumeType *string `locationName:"volumeType" type:"string" enum:"VolumeType"`
@@ -75070,13 +76744,11 @@ type ExportTransitGatewayRoutesInput struct {
 	//    routes in your route table and you specify supernet-of-match as 10.0.1.0/30,
 	//    then the result returns 10.0.1.0/29.
 	//
-	//    * state - The state of the attachment (available | deleted | deleting
-	//    | failed | modifying | pendingAcceptance | pending | rollingBack | rejected
-	//    | rejecting).
+	//    * state - The state of the route (active | blackhole).
 	//
 	//    * transit-gateway-route-destination-cidr-block - The CIDR range.
 	//
-	//    * type - The type of route (active | blackhole).
+	//    * type - The type of route (propagated | static).
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
 	// The name of the S3 bucket.
@@ -76551,12 +78223,13 @@ type GetCapacityReservationUsageInput struct {
 
 	// The maximum number of results to return for the request in a single page.
 	// The remaining results can be seen by sending another request with the returned
-	// nextToken value.
+	// nextToken value. This value can be between 5 and 500. If maxResults is given
+	// a larger value than 500, you receive an error.
 	//
 	// Valid range: Minimum value of 1. Maximum value of 1000.
 	MaxResults *int64 `min:"1" type:"integer"`
 
-	// The token to retrieve the next page of results.
+	// The token to use to retrieve the next page of results.
 	NextToken *string `type:"string"`
 }
 
@@ -77200,6 +78873,114 @@ func (s GetEbsEncryptionByDefaultOutput) GoString() string {
 // SetEbsEncryptionByDefault sets the EbsEncryptionByDefault field's value.
 func (s *GetEbsEncryptionByDefaultOutput) SetEbsEncryptionByDefault(v bool) *GetEbsEncryptionByDefaultOutput {
 	s.EbsEncryptionByDefault = &v
+	return s
+}
+
+type GetGroupsForCapacityReservationInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the Capacity Reservation.
+	//
+	// CapacityReservationId is a required field
+	CapacityReservationId *string `type:"string" required:"true"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results can be seen by sending another request with the returned
+	// nextToken value. This value can be between 5 and 500. If maxResults is given
+	// a larger value than 500, you receive an error.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The token to use to retrieve the next page of results.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s GetGroupsForCapacityReservationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetGroupsForCapacityReservationInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetGroupsForCapacityReservationInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetGroupsForCapacityReservationInput"}
+	if s.CapacityReservationId == nil {
+		invalidParams.Add(request.NewErrParamRequired("CapacityReservationId"))
+	}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetCapacityReservationId sets the CapacityReservationId field's value.
+func (s *GetGroupsForCapacityReservationInput) SetCapacityReservationId(v string) *GetGroupsForCapacityReservationInput {
+	s.CapacityReservationId = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *GetGroupsForCapacityReservationInput) SetDryRun(v bool) *GetGroupsForCapacityReservationInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *GetGroupsForCapacityReservationInput) SetMaxResults(v int64) *GetGroupsForCapacityReservationInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *GetGroupsForCapacityReservationInput) SetNextToken(v string) *GetGroupsForCapacityReservationInput {
+	s.NextToken = &v
+	return s
+}
+
+type GetGroupsForCapacityReservationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the resource groups to which the Capacity Reservation has
+	// been added.
+	CapacityReservationGroups []*CapacityReservationGroup `locationName:"capacityReservationGroupSet" locationNameList:"item" type:"list"`
+
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+}
+
+// String returns the string representation
+func (s GetGroupsForCapacityReservationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetGroupsForCapacityReservationOutput) GoString() string {
+	return s.String()
+}
+
+// SetCapacityReservationGroups sets the CapacityReservationGroups field's value.
+func (s *GetGroupsForCapacityReservationOutput) SetCapacityReservationGroups(v []*CapacityReservationGroup) *GetGroupsForCapacityReservationOutput {
+	s.CapacityReservationGroups = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *GetGroupsForCapacityReservationOutput) SetNextToken(v string) *GetGroupsForCapacityReservationOutput {
+	s.NextToken = &v
 	return s
 }
 
@@ -78096,6 +79877,137 @@ func (s *GetTransitGatewayMulticastDomainAssociationsOutput) SetNextToken(v stri
 	return s
 }
 
+type GetTransitGatewayPrefixListReferencesInput struct {
+	_ struct{} `type:"structure"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// One or more filters. The possible values are:
+	//
+	//    * attachment.resource-id - The ID of the resource for the attachment.
+	//
+	//    * attachment.resource-type - The type of resource for the attachment.
+	//    Valid values are vpc | vpn | direct-connect-gateway | peering.
+	//
+	//    * attachment.transit-gateway-attachment-id - The ID of the attachment.
+	//
+	//    * is-blackhole - Whether traffic matching the route is blocked (true |
+	//    false).
+	//
+	//    * prefix-list-id - The ID of the prefix list.
+	//
+	//    * prefix-list-owner-id - The ID of the owner of the prefix list.
+	//
+	//    * state - The state of the prefix list reference (pending | available
+	//    | modifying | deleting).
+	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
+
+	// The maximum number of results to return with a single call. To retrieve the
+	// remaining results, make another call with the returned nextToken value.
+	MaxResults *int64 `min:"5" type:"integer"`
+
+	// The token for the next page of results.
+	NextToken *string `type:"string"`
+
+	// The ID of the transit gateway route table.
+	//
+	// TransitGatewayRouteTableId is a required field
+	TransitGatewayRouteTableId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s GetTransitGatewayPrefixListReferencesInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetTransitGatewayPrefixListReferencesInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetTransitGatewayPrefixListReferencesInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetTransitGatewayPrefixListReferencesInput"}
+	if s.MaxResults != nil && *s.MaxResults < 5 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 5))
+	}
+	if s.TransitGatewayRouteTableId == nil {
+		invalidParams.Add(request.NewErrParamRequired("TransitGatewayRouteTableId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *GetTransitGatewayPrefixListReferencesInput) SetDryRun(v bool) *GetTransitGatewayPrefixListReferencesInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetFilters sets the Filters field's value.
+func (s *GetTransitGatewayPrefixListReferencesInput) SetFilters(v []*Filter) *GetTransitGatewayPrefixListReferencesInput {
+	s.Filters = v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *GetTransitGatewayPrefixListReferencesInput) SetMaxResults(v int64) *GetTransitGatewayPrefixListReferencesInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *GetTransitGatewayPrefixListReferencesInput) SetNextToken(v string) *GetTransitGatewayPrefixListReferencesInput {
+	s.NextToken = &v
+	return s
+}
+
+// SetTransitGatewayRouteTableId sets the TransitGatewayRouteTableId field's value.
+func (s *GetTransitGatewayPrefixListReferencesInput) SetTransitGatewayRouteTableId(v string) *GetTransitGatewayPrefixListReferencesInput {
+	s.TransitGatewayRouteTableId = &v
+	return s
+}
+
+type GetTransitGatewayPrefixListReferencesOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// Information about the prefix list references.
+	TransitGatewayPrefixListReferences []*TransitGatewayPrefixListReference `locationName:"transitGatewayPrefixListReferenceSet" locationNameList:"item" type:"list"`
+}
+
+// String returns the string representation
+func (s GetTransitGatewayPrefixListReferencesOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetTransitGatewayPrefixListReferencesOutput) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *GetTransitGatewayPrefixListReferencesOutput) SetNextToken(v string) *GetTransitGatewayPrefixListReferencesOutput {
+	s.NextToken = &v
+	return s
+}
+
+// SetTransitGatewayPrefixListReferences sets the TransitGatewayPrefixListReferences field's value.
+func (s *GetTransitGatewayPrefixListReferencesOutput) SetTransitGatewayPrefixListReferences(v []*TransitGatewayPrefixListReference) *GetTransitGatewayPrefixListReferencesOutput {
+	s.TransitGatewayPrefixListReferences = v
+	return s
+}
+
 type GetTransitGatewayRouteTableAssociationsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -78109,7 +80021,8 @@ type GetTransitGatewayRouteTableAssociationsInput struct {
 	//
 	//    * resource-id - The ID of the resource.
 	//
-	//    * resource-type - The resource type (vpc | vpn).
+	//    * resource-type - The resource type. Valid values are vpc | vpn | direct-connect-gateway
+	//    | peering.
 	//
 	//    * transit-gateway-attachment-id - The ID of the attachment.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
@@ -78229,7 +80142,8 @@ type GetTransitGatewayRouteTablePropagationsInput struct {
 	//
 	//    * resource-id - The ID of the resource.
 	//
-	//    * resource-type - The resource type (vpc | vpn).
+	//    * resource-type - The resource type. Valid values are vpc | vpn | direct-connect-gateway
+	//    | peering.
 	//
 	//    * transit-gateway-attachment-id - The ID of the attachment.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
@@ -81428,7 +83342,11 @@ type Instance struct {
 	// name is only available if you've enabled DNS hostnames for your VPC.
 	PublicDnsName *string `locationName:"dnsName" type:"string"`
 
-	// The public IPv4 address assigned to the instance, if applicable.
+	// The public IPv4 address, or the Carrier IP address assigned to the instance,
+	// if applicable.
+	//
+	// A Carrier IP address only applies to an instance launched in a subnet associated
+	// with a Wavelength Zone.
 	PublicIpAddress *string `locationName:"ipAddress" type:"string"`
 
 	// The RAM disk associated with this instance, if applicable.
@@ -82493,6 +84411,9 @@ func (s *InstanceNetworkInterface) SetVpcId(v string) *InstanceNetworkInterface 
 type InstanceNetworkInterfaceAssociation struct {
 	_ struct{} `type:"structure"`
 
+	// The carrier IP address associated with the network interface.
+	CarrierIp *string `locationName:"carrierIp" type:"string"`
+
 	// The ID of the owner of the Elastic IP address.
 	IpOwnerId *string `locationName:"ipOwnerId" type:"string"`
 
@@ -82511,6 +84432,12 @@ func (s InstanceNetworkInterfaceAssociation) String() string {
 // GoString returns the string representation
 func (s InstanceNetworkInterfaceAssociation) GoString() string {
 	return s.String()
+}
+
+// SetCarrierIp sets the CarrierIp field's value.
+func (s *InstanceNetworkInterfaceAssociation) SetCarrierIp(v string) *InstanceNetworkInterfaceAssociation {
+	s.CarrierIp = &v
+	return s
 }
 
 // SetIpOwnerId sets the IpOwnerId field's value.
@@ -82594,6 +84521,13 @@ func (s *InstanceNetworkInterfaceAttachment) SetStatus(v string) *InstanceNetwor
 // Describes a network interface.
 type InstanceNetworkInterfaceSpecification struct {
 	_ struct{} `type:"structure"`
+
+	// Indicates whether to assign a carrier IP address to the network interface.
+	//
+	// You can only assign a carrier IP address to a network interface that is in
+	// a subnet in a Wavelength Zone. For more information about carrier IP addresses,
+	// see Carrier IP addresses in the AWS Wavelength Developer Guide.
+	AssociateCarrierIpAddress *bool `type:"boolean"`
 
 	// Indicates whether to assign a public IPv4 address to an instance you launch
 	// in a VPC. The public IP address can only be assigned to a network interface
@@ -82683,6 +84617,12 @@ func (s InstanceNetworkInterfaceSpecification) String() string {
 // GoString returns the string representation
 func (s InstanceNetworkInterfaceSpecification) GoString() string {
 	return s.String()
+}
+
+// SetAssociateCarrierIpAddress sets the AssociateCarrierIpAddress field's value.
+func (s *InstanceNetworkInterfaceSpecification) SetAssociateCarrierIpAddress(v bool) *InstanceNetworkInterfaceSpecification {
+	s.AssociateCarrierIpAddress = &v
+	return s
 }
 
 // SetAssociatePublicIpAddress sets the AssociatePublicIpAddress field's value.
@@ -84447,7 +86387,7 @@ func (s *LaunchTemplateBlockDeviceMappingRequest) SetVirtualName(v string) *Laun
 // to configure the instance to run in On-Demand capacity or to run in any open
 // Capacity Reservation that has matching attributes (instance type, platform,
 // Availability Zone). Use the CapacityReservationTarget parameter to explicitly
-// target a specific Capacity Reservation.
+// target a specific Capacity Reservation or a Capacity Reservation group.
 type LaunchTemplateCapacityReservationSpecificationRequest struct {
 	_ struct{} `type:"structure"`
 
@@ -84461,7 +86401,8 @@ type LaunchTemplateCapacityReservationSpecificationRequest struct {
 	//    one is available. The instance runs in On-Demand capacity.
 	CapacityReservationPreference *string `type:"string" enum:"CapacityReservationPreference"`
 
-	// Information about the target Capacity Reservation.
+	// Information about the target Capacity Reservation or Capacity Reservation
+	// group.
 	CapacityReservationTarget *CapacityReservationTarget `type:"structure"`
 }
 
@@ -84501,7 +86442,8 @@ type LaunchTemplateCapacityReservationSpecificationResponse struct {
 	//    one is available. The instance runs in On-Demand capacity.
 	CapacityReservationPreference *string `locationName:"capacityReservationPreference" type:"string" enum:"CapacityReservationPreference"`
 
-	// Information about the target Capacity Reservation.
+	// Information about the target Capacity Reservation or Capacity Reservation
+	// group.
 	CapacityReservationTarget *CapacityReservationTargetResponse `locationName:"capacityReservationTarget" type:"structure"`
 }
 
@@ -84734,16 +86676,15 @@ type LaunchTemplateEbsBlockDeviceRequest struct {
 	// a volume from a snapshot, you can't specify an encryption value.
 	Encrypted *bool `type:"boolean"`
 
-	// The number of I/O operations per second (IOPS) that the volume supports.
-	// For io1, this represents the number of IOPS that are provisioned for the
-	// volume. For gp2, this represents the baseline performance of the volume and
-	// the rate at which the volume accumulates I/O credits for bursting. For more
-	// information about General Purpose SSD baseline performance, I/O credits,
-	// and bursting, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
+	// The number of I/O operations per second (IOPS) to provision for an io1 or
+	// io2 volume, with a maximum ratio of 50 IOPS/GiB for io1, and 500 IOPS/GiB
+	// for io2. Range is 100 to 64,000 IOPS for volumes in most Regions. Maximum
+	// IOPS of 64,000 is guaranteed only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
+	// Other instance families guarantee performance up to 32,000 IOPS. For more
+	// information, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Condition: This parameter is required for requests to create io1 volumes;
-	// it is not used in requests to create gp2, st1, sc1, or standard volumes.
+	// This parameter is valid only for Provisioned IOPS SSD (io1 and io2) volumes.
 	Iops *int64 `type:"integer"`
 
 	// The ARN of the symmetric AWS Key Management Service (AWS KMS) CMK used for
@@ -85237,6 +87178,15 @@ func (s *LaunchTemplateInstanceMetadataOptionsRequest) SetHttpTokens(v string) *
 type LaunchTemplateInstanceNetworkInterfaceSpecification struct {
 	_ struct{} `type:"structure"`
 
+	// Indicates whether to associate a Carrier IP address with eth0 for a new network
+	// interface.
+	//
+	// Use this option when you launch an instance in a Wavelength Zone and want
+	// to associate a Carrier IP address with the network interface. For more information
+	// about Carrier IP addresses, see Carrier IP addresses (https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html#provider-owned-ip)
+	// in the AWS Wavelength Developer Guide.
+	AssociateCarrierIpAddress *bool `locationName:"associateCarrierIpAddress" type:"boolean"`
+
 	// Indicates whether to associate a public IPv4 address with eth0 for a new
 	// network interface.
 	AssociatePublicIpAddress *bool `locationName:"associatePublicIpAddress" type:"boolean"`
@@ -85286,6 +87236,12 @@ func (s LaunchTemplateInstanceNetworkInterfaceSpecification) String() string {
 // GoString returns the string representation
 func (s LaunchTemplateInstanceNetworkInterfaceSpecification) GoString() string {
 	return s.String()
+}
+
+// SetAssociateCarrierIpAddress sets the AssociateCarrierIpAddress field's value.
+func (s *LaunchTemplateInstanceNetworkInterfaceSpecification) SetAssociateCarrierIpAddress(v bool) *LaunchTemplateInstanceNetworkInterfaceSpecification {
+	s.AssociateCarrierIpAddress = &v
+	return s
 }
 
 // SetAssociatePublicIpAddress sets the AssociatePublicIpAddress field's value.
@@ -85370,6 +87326,14 @@ func (s *LaunchTemplateInstanceNetworkInterfaceSpecification) SetSubnetId(v stri
 type LaunchTemplateInstanceNetworkInterfaceSpecificationRequest struct {
 	_ struct{} `type:"structure"`
 
+	// Associates a Carrier IP address with eth0 for a new network interface.
+	//
+	// Use this option when you launch an instance in a Wavelength Zone and want
+	// to associate a Carrier IP address with the network interface. For more information
+	// about Carrier IP addresses, see Carrier IP addresses (https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html#provider-owned-ip)
+	// in the AWS Wavelength Developer Guide.
+	AssociateCarrierIpAddress *bool `type:"boolean"`
+
 	// Associates a public IPv4 address with eth0 for a new network interface.
 	AssociatePublicIpAddress *bool `type:"boolean"`
 
@@ -85427,6 +87391,12 @@ func (s LaunchTemplateInstanceNetworkInterfaceSpecificationRequest) String() str
 // GoString returns the string representation
 func (s LaunchTemplateInstanceNetworkInterfaceSpecificationRequest) GoString() string {
 	return s.String()
+}
+
+// SetAssociateCarrierIpAddress sets the AssociateCarrierIpAddress field's value.
+func (s *LaunchTemplateInstanceNetworkInterfaceSpecificationRequest) SetAssociateCarrierIpAddress(v bool) *LaunchTemplateInstanceNetworkInterfaceSpecificationRequest {
+	s.AssociateCarrierIpAddress = &v
+	return s
 }
 
 // SetAssociatePublicIpAddress sets the AssociatePublicIpAddress field's value.
@@ -86987,14 +88957,16 @@ type ModifyAvailabilityZoneGroupInput struct {
 	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// The name of the Availability Zone Group.
+	// The name of the Availability Zone group, Local Zone group, or Wavelength
+	// Zone group.
 	//
 	// GroupName is a required field
 	GroupName *string `type:"string" required:"true"`
 
-	// Indicates whether to enable or disable membership. The valid values are opted-in.
-	// You must contact AWS Support (https://console.aws.amazon.com/support/home#/case/create%3FissueType=customer-service%26serviceCode=general-info%26getting-started%26categoryCode=using-aws%26services)
-	// to disable an Availability Zone group.
+	// Indicates whether you are opted in to the Local Zone group or Wavelength
+	// Zone group. The only valid value is opted-in. You must contact AWS Support
+	// (https://console.aws.amazon.com/support/home#/case/create%3FissueType=customer-service%26serviceCode=general-info%26getting-started%26categoryCode=using-aws%26services)
+	// to opt out of a Local Zone group, or Wavelength Zone group.
 	//
 	// OptInStatus is a required field
 	OptInStatus *string `type:"string" required:"true" enum:"ModifyAvailabilityZoneOptInStatus"`
@@ -87550,6 +89522,9 @@ type ModifyFleetInput struct {
 	// FleetId is a required field
 	FleetId *string `type:"string" required:"true"`
 
+	// The launch template and overrides.
+	LaunchTemplateConfigs []*FleetLaunchTemplateConfigRequest `locationName:"LaunchTemplateConfig" locationNameList:"item" type:"list"`
+
 	// The size of the EC2 Fleet.
 	//
 	// TargetCapacitySpecification is a required field
@@ -87574,6 +89549,16 @@ func (s *ModifyFleetInput) Validate() error {
 	}
 	if s.TargetCapacitySpecification == nil {
 		invalidParams.Add(request.NewErrParamRequired("TargetCapacitySpecification"))
+	}
+	if s.LaunchTemplateConfigs != nil {
+		for i, v := range s.LaunchTemplateConfigs {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "LaunchTemplateConfigs", i), err.(request.ErrInvalidParams))
+			}
+		}
 	}
 	if s.TargetCapacitySpecification != nil {
 		if err := s.TargetCapacitySpecification.Validate(); err != nil {
@@ -87602,6 +89587,12 @@ func (s *ModifyFleetInput) SetExcessCapacityTerminationPolicy(v string) *ModifyF
 // SetFleetId sets the FleetId field's value.
 func (s *ModifyFleetInput) SetFleetId(v string) *ModifyFleetInput {
 	s.FleetId = &v
+	return s
+}
+
+// SetLaunchTemplateConfigs sets the LaunchTemplateConfigs field's value.
+func (s *ModifyFleetInput) SetLaunchTemplateConfigs(v []*FleetLaunchTemplateConfigRequest) *ModifyFleetInput {
+	s.LaunchTemplateConfigs = v
 	return s
 }
 
@@ -89520,6 +91511,12 @@ type ModifySpotFleetRequestInput struct {
 	// the Spot Fleet.
 	ExcessCapacityTerminationPolicy *string `locationName:"excessCapacityTerminationPolicy" type:"string" enum:"ExcessCapacityTerminationPolicy"`
 
+	// The launch template and overrides. You can only use this parameter if you
+	// specified a launch template (LaunchTemplateConfigs) in your Spot Fleet request.
+	// If you specified LaunchSpecifications in your Spot Fleet request, then omit
+	// this parameter.
+	LaunchTemplateConfigs []*LaunchTemplateConfig `locationName:"LaunchTemplateConfig" locationNameList:"item" type:"list"`
+
 	// The number of On-Demand Instances in the fleet.
 	OnDemandTargetCapacity *int64 `type:"integer"`
 
@@ -89548,6 +91545,16 @@ func (s *ModifySpotFleetRequestInput) Validate() error {
 	if s.SpotFleetRequestId == nil {
 		invalidParams.Add(request.NewErrParamRequired("SpotFleetRequestId"))
 	}
+	if s.LaunchTemplateConfigs != nil {
+		for i, v := range s.LaunchTemplateConfigs {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "LaunchTemplateConfigs", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
@@ -89558,6 +91565,12 @@ func (s *ModifySpotFleetRequestInput) Validate() error {
 // SetExcessCapacityTerminationPolicy sets the ExcessCapacityTerminationPolicy field's value.
 func (s *ModifySpotFleetRequestInput) SetExcessCapacityTerminationPolicy(v string) *ModifySpotFleetRequestInput {
 	s.ExcessCapacityTerminationPolicy = &v
+	return s
+}
+
+// SetLaunchTemplateConfigs sets the LaunchTemplateConfigs field's value.
+func (s *ModifySpotFleetRequestInput) SetLaunchTemplateConfigs(v []*LaunchTemplateConfig) *ModifySpotFleetRequestInput {
+	s.LaunchTemplateConfigs = v
 	return s
 }
 
@@ -90112,6 +92125,282 @@ func (s *ModifyTrafficMirrorSessionOutput) SetTrafficMirrorSession(v *TrafficMir
 	return s
 }
 
+type ModifyTransitGatewayInput struct {
+	_ struct{} `type:"structure"`
+
+	// The description for the transit gateway.
+	Description *string `type:"string"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The options to modify.
+	Options *ModifyTransitGatewayOptions `type:"structure"`
+
+	// The ID of the transit gateway.
+	//
+	// TransitGatewayId is a required field
+	TransitGatewayId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s ModifyTransitGatewayInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyTransitGatewayInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ModifyTransitGatewayInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ModifyTransitGatewayInput"}
+	if s.TransitGatewayId == nil {
+		invalidParams.Add(request.NewErrParamRequired("TransitGatewayId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDescription sets the Description field's value.
+func (s *ModifyTransitGatewayInput) SetDescription(v string) *ModifyTransitGatewayInput {
+	s.Description = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *ModifyTransitGatewayInput) SetDryRun(v bool) *ModifyTransitGatewayInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetOptions sets the Options field's value.
+func (s *ModifyTransitGatewayInput) SetOptions(v *ModifyTransitGatewayOptions) *ModifyTransitGatewayInput {
+	s.Options = v
+	return s
+}
+
+// SetTransitGatewayId sets the TransitGatewayId field's value.
+func (s *ModifyTransitGatewayInput) SetTransitGatewayId(v string) *ModifyTransitGatewayInput {
+	s.TransitGatewayId = &v
+	return s
+}
+
+// The transit gateway options.
+type ModifyTransitGatewayOptions struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the default association route table.
+	AssociationDefaultRouteTableId *string `type:"string"`
+
+	// Enable or disable automatic acceptance of attachment requests.
+	AutoAcceptSharedAttachments *string `type:"string" enum:"AutoAcceptSharedAttachmentsValue"`
+
+	// Enable or disable automatic association with the default association route
+	// table.
+	DefaultRouteTableAssociation *string `type:"string" enum:"DefaultRouteTableAssociationValue"`
+
+	// Enable or disable automatic propagation of routes to the default propagation
+	// route table.
+	DefaultRouteTablePropagation *string `type:"string" enum:"DefaultRouteTablePropagationValue"`
+
+	// Enable or disable DNS support.
+	DnsSupport *string `type:"string" enum:"DnsSupportValue"`
+
+	// The ID of the default propagation route table.
+	PropagationDefaultRouteTableId *string `type:"string"`
+
+	// Enable or disable Equal Cost Multipath Protocol support.
+	VpnEcmpSupport *string `type:"string" enum:"VpnEcmpSupportValue"`
+}
+
+// String returns the string representation
+func (s ModifyTransitGatewayOptions) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyTransitGatewayOptions) GoString() string {
+	return s.String()
+}
+
+// SetAssociationDefaultRouteTableId sets the AssociationDefaultRouteTableId field's value.
+func (s *ModifyTransitGatewayOptions) SetAssociationDefaultRouteTableId(v string) *ModifyTransitGatewayOptions {
+	s.AssociationDefaultRouteTableId = &v
+	return s
+}
+
+// SetAutoAcceptSharedAttachments sets the AutoAcceptSharedAttachments field's value.
+func (s *ModifyTransitGatewayOptions) SetAutoAcceptSharedAttachments(v string) *ModifyTransitGatewayOptions {
+	s.AutoAcceptSharedAttachments = &v
+	return s
+}
+
+// SetDefaultRouteTableAssociation sets the DefaultRouteTableAssociation field's value.
+func (s *ModifyTransitGatewayOptions) SetDefaultRouteTableAssociation(v string) *ModifyTransitGatewayOptions {
+	s.DefaultRouteTableAssociation = &v
+	return s
+}
+
+// SetDefaultRouteTablePropagation sets the DefaultRouteTablePropagation field's value.
+func (s *ModifyTransitGatewayOptions) SetDefaultRouteTablePropagation(v string) *ModifyTransitGatewayOptions {
+	s.DefaultRouteTablePropagation = &v
+	return s
+}
+
+// SetDnsSupport sets the DnsSupport field's value.
+func (s *ModifyTransitGatewayOptions) SetDnsSupport(v string) *ModifyTransitGatewayOptions {
+	s.DnsSupport = &v
+	return s
+}
+
+// SetPropagationDefaultRouteTableId sets the PropagationDefaultRouteTableId field's value.
+func (s *ModifyTransitGatewayOptions) SetPropagationDefaultRouteTableId(v string) *ModifyTransitGatewayOptions {
+	s.PropagationDefaultRouteTableId = &v
+	return s
+}
+
+// SetVpnEcmpSupport sets the VpnEcmpSupport field's value.
+func (s *ModifyTransitGatewayOptions) SetVpnEcmpSupport(v string) *ModifyTransitGatewayOptions {
+	s.VpnEcmpSupport = &v
+	return s
+}
+
+type ModifyTransitGatewayOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Describes a transit gateway.
+	TransitGateway *TransitGateway `locationName:"transitGateway" type:"structure"`
+}
+
+// String returns the string representation
+func (s ModifyTransitGatewayOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyTransitGatewayOutput) GoString() string {
+	return s.String()
+}
+
+// SetTransitGateway sets the TransitGateway field's value.
+func (s *ModifyTransitGatewayOutput) SetTransitGateway(v *TransitGateway) *ModifyTransitGatewayOutput {
+	s.TransitGateway = v
+	return s
+}
+
+type ModifyTransitGatewayPrefixListReferenceInput struct {
+	_ struct{} `type:"structure"`
+
+	// Indicates whether to drop traffic that matches this route.
+	Blackhole *bool `type:"boolean"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The ID of the prefix list.
+	//
+	// PrefixListId is a required field
+	PrefixListId *string `type:"string" required:"true"`
+
+	// The ID of the attachment to which traffic is routed.
+	TransitGatewayAttachmentId *string `type:"string"`
+
+	// The ID of the transit gateway route table.
+	//
+	// TransitGatewayRouteTableId is a required field
+	TransitGatewayRouteTableId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s ModifyTransitGatewayPrefixListReferenceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyTransitGatewayPrefixListReferenceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ModifyTransitGatewayPrefixListReferenceInput"}
+	if s.PrefixListId == nil {
+		invalidParams.Add(request.NewErrParamRequired("PrefixListId"))
+	}
+	if s.TransitGatewayRouteTableId == nil {
+		invalidParams.Add(request.NewErrParamRequired("TransitGatewayRouteTableId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetBlackhole sets the Blackhole field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) SetBlackhole(v bool) *ModifyTransitGatewayPrefixListReferenceInput {
+	s.Blackhole = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) SetDryRun(v bool) *ModifyTransitGatewayPrefixListReferenceInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetPrefixListId sets the PrefixListId field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) SetPrefixListId(v string) *ModifyTransitGatewayPrefixListReferenceInput {
+	s.PrefixListId = &v
+	return s
+}
+
+// SetTransitGatewayAttachmentId sets the TransitGatewayAttachmentId field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) SetTransitGatewayAttachmentId(v string) *ModifyTransitGatewayPrefixListReferenceInput {
+	s.TransitGatewayAttachmentId = &v
+	return s
+}
+
+// SetTransitGatewayRouteTableId sets the TransitGatewayRouteTableId field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceInput) SetTransitGatewayRouteTableId(v string) *ModifyTransitGatewayPrefixListReferenceInput {
+	s.TransitGatewayRouteTableId = &v
+	return s
+}
+
+type ModifyTransitGatewayPrefixListReferenceOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the prefix list reference.
+	TransitGatewayPrefixListReference *TransitGatewayPrefixListReference `locationName:"transitGatewayPrefixListReference" type:"structure"`
+}
+
+// String returns the string representation
+func (s ModifyTransitGatewayPrefixListReferenceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyTransitGatewayPrefixListReferenceOutput) GoString() string {
+	return s.String()
+}
+
+// SetTransitGatewayPrefixListReference sets the TransitGatewayPrefixListReference field's value.
+func (s *ModifyTransitGatewayPrefixListReferenceOutput) SetTransitGatewayPrefixListReference(v *TransitGatewayPrefixListReference) *ModifyTransitGatewayPrefixListReferenceOutput {
+	s.TransitGatewayPrefixListReference = v
+	return s
+}
+
 type ModifyTransitGatewayVpcAttachmentInput struct {
 	_ struct{} `type:"structure"`
 
@@ -90332,8 +92621,8 @@ type ModifyVolumeInput struct {
 
 	// The target IOPS rate of the volume.
 	//
-	// This is only valid for Provisioned IOPS SSD (io1) volumes. For more information,
-	// see Provisioned IOPS SSD (io1) Volumes (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html#EBSVolumeTypes_piops).
+	// This is only valid for Provisioned IOPS SSD (io1 and io2) volumes. For moreinformation,
+	// see Provisioned IOPS SSD (io1 and io2) volumes (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html#EBSVolumeTypes_piops).
 	//
 	// Default: If no IOPS value is specified, the existing value is retained.
 	Iops *int64 `type:"integer"`
@@ -91245,6 +93534,123 @@ func (s *ModifyVpnConnectionInput) SetVpnGatewayId(v string) *ModifyVpnConnectio
 	return s
 }
 
+type ModifyVpnConnectionOptionsInput struct {
+	_ struct{} `type:"structure"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The IPv4 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	//
+	// Default: 0.0.0.0/0
+	LocalIpv4NetworkCidr *string `type:"string"`
+
+	// The IPv6 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	//
+	// Default: ::/0
+	LocalIpv6NetworkCidr *string `type:"string"`
+
+	// The IPv4 CIDR on the AWS side of the VPN connection.
+	//
+	// Default: 0.0.0.0/0
+	RemoteIpv4NetworkCidr *string `type:"string"`
+
+	// The IPv6 CIDR on the AWS side of the VPN connection.
+	//
+	// Default: ::/0
+	RemoteIpv6NetworkCidr *string `type:"string"`
+
+	// The ID of the Site-to-Site VPN VPN connection.
+	//
+	// VpnConnectionId is a required field
+	VpnConnectionId *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s ModifyVpnConnectionOptionsInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyVpnConnectionOptionsInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ModifyVpnConnectionOptionsInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ModifyVpnConnectionOptionsInput"}
+	if s.VpnConnectionId == nil {
+		invalidParams.Add(request.NewErrParamRequired("VpnConnectionId"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetDryRun(v bool) *ModifyVpnConnectionOptionsInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetLocalIpv4NetworkCidr sets the LocalIpv4NetworkCidr field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetLocalIpv4NetworkCidr(v string) *ModifyVpnConnectionOptionsInput {
+	s.LocalIpv4NetworkCidr = &v
+	return s
+}
+
+// SetLocalIpv6NetworkCidr sets the LocalIpv6NetworkCidr field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetLocalIpv6NetworkCidr(v string) *ModifyVpnConnectionOptionsInput {
+	s.LocalIpv6NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv4NetworkCidr sets the RemoteIpv4NetworkCidr field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetRemoteIpv4NetworkCidr(v string) *ModifyVpnConnectionOptionsInput {
+	s.RemoteIpv4NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv6NetworkCidr sets the RemoteIpv6NetworkCidr field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetRemoteIpv6NetworkCidr(v string) *ModifyVpnConnectionOptionsInput {
+	s.RemoteIpv6NetworkCidr = &v
+	return s
+}
+
+// SetVpnConnectionId sets the VpnConnectionId field's value.
+func (s *ModifyVpnConnectionOptionsInput) SetVpnConnectionId(v string) *ModifyVpnConnectionOptionsInput {
+	s.VpnConnectionId = &v
+	return s
+}
+
+type ModifyVpnConnectionOptionsOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Describes a VPN connection.
+	VpnConnection *VpnConnection `locationName:"vpnConnection" type:"structure"`
+}
+
+// String returns the string representation
+func (s ModifyVpnConnectionOptionsOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ModifyVpnConnectionOptionsOutput) GoString() string {
+	return s.String()
+}
+
+// SetVpnConnection sets the VpnConnection field's value.
+func (s *ModifyVpnConnectionOptionsOutput) SetVpnConnection(v *VpnConnection) *ModifyVpnConnectionOptionsOutput {
+	s.VpnConnection = v
+	return s
+}
+
 type ModifyVpnConnectionOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -91460,6 +93866,14 @@ func (s *ModifyVpnTunnelOptionsOutput) SetVpnConnection(v *VpnConnection) *Modif
 type ModifyVpnTunnelOptionsSpecification struct {
 	_ struct{} `type:"structure"`
 
+	// The action to take after DPD timeout occurs. Specify restart to restart the
+	// IKE initiation. Specify clear to end the IKE session.
+	//
+	// Valid Values: clear | none | restart
+	//
+	// Default: clear
+	DPDTimeoutAction *string `type:"string"`
+
 	// The number of seconds after which a DPD timeout occurs.
 	//
 	// Constraints: A value between 0 and 30.
@@ -91475,19 +93889,19 @@ type ModifyVpnTunnelOptionsSpecification struct {
 	// One or more Diffie-Hellman group numbers that are permitted for the VPN tunnel
 	// for phase 1 IKE negotiations.
 	//
-	// Valid values: 2 | 14 | 15 | 16 | 17 | 18 | 22 | 23 | 24
+	// Valid values: 2 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 	Phase1DHGroupNumbers []*Phase1DHGroupNumbersRequestListValue `locationName:"Phase1DHGroupNumber" locationNameList:"item" type:"list"`
 
 	// One or more encryption algorithms that are permitted for the VPN tunnel for
 	// phase 1 IKE negotiations.
 	//
-	// Valid values: AES128 | AES256
+	// Valid values: AES128 | AES256 | AES128-GCM-16 | AES256-GCM-16
 	Phase1EncryptionAlgorithms []*Phase1EncryptionAlgorithmsRequestListValue `locationName:"Phase1EncryptionAlgorithm" locationNameList:"item" type:"list"`
 
 	// One or more integrity algorithms that are permitted for the VPN tunnel for
 	// phase 1 IKE negotiations.
 	//
-	// Valid values: SHA1 | SHA2-256
+	// Valid values: SHA1 | SHA2-256 | SHA2-384 | SHA2-512
 	Phase1IntegrityAlgorithms []*Phase1IntegrityAlgorithmsRequestListValue `locationName:"Phase1IntegrityAlgorithm" locationNameList:"item" type:"list"`
 
 	// The lifetime for phase 1 of the IKE negotiation, in seconds.
@@ -91500,19 +93914,19 @@ type ModifyVpnTunnelOptionsSpecification struct {
 	// One or more Diffie-Hellman group numbers that are permitted for the VPN tunnel
 	// for phase 2 IKE negotiations.
 	//
-	// Valid values: 2 | 5 | 14 | 15 | 16 | 17 | 18 | 22 | 23 | 24
+	// Valid values: 2 | 5 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 	Phase2DHGroupNumbers []*Phase2DHGroupNumbersRequestListValue `locationName:"Phase2DHGroupNumber" locationNameList:"item" type:"list"`
 
 	// One or more encryption algorithms that are permitted for the VPN tunnel for
 	// phase 2 IKE negotiations.
 	//
-	// Valid values: AES128 | AES256
+	// Valid values: AES128 | AES256 | AES128-GCM-16 | AES256-GCM-16
 	Phase2EncryptionAlgorithms []*Phase2EncryptionAlgorithmsRequestListValue `locationName:"Phase2EncryptionAlgorithm" locationNameList:"item" type:"list"`
 
 	// One or more integrity algorithms that are permitted for the VPN tunnel for
 	// phase 2 IKE negotiations.
 	//
-	// Valid values: SHA1 | SHA2-256
+	// Valid values: SHA1 | SHA2-256 | SHA2-384 | SHA2-512
 	Phase2IntegrityAlgorithms []*Phase2IntegrityAlgorithmsRequestListValue `locationName:"Phase2IntegrityAlgorithm" locationNameList:"item" type:"list"`
 
 	// The lifetime for phase 2 of the IKE negotiation, in seconds.
@@ -91555,7 +93969,16 @@ type ModifyVpnTunnelOptionsSpecification struct {
 	// Default: 1024
 	ReplayWindowSize *int64 `type:"integer"`
 
-	// The range of inside IP addresses for the tunnel. Any specified CIDR blocks
+	// The action to take when the establishing the tunnel for the VPN connection.
+	// By default, your customer gateway device must initiate the IKE negotiation
+	// and bring up the tunnel. Specify start for AWS to initiate the IKE negotiation.
+	//
+	// Valid Values: add | start
+	//
+	// Default: add
+	StartupAction *string `type:"string"`
+
+	// The range of inside IPv4 addresses for the tunnel. Any specified CIDR blocks
 	// must be unique across all VPN connections that use the same virtual private
 	// gateway.
 	//
@@ -91576,6 +93999,12 @@ type ModifyVpnTunnelOptionsSpecification struct {
 	//
 	//    * 169.254.169.252/30
 	TunnelInsideCidr *string `type:"string"`
+
+	// The range of inside IPv6 addresses for the tunnel. Any specified CIDR blocks
+	// must be unique across all VPN connections that use the same transit gateway.
+	//
+	// Constraints: A size /126 CIDR block from the local fd00::/8 range.
+	TunnelInsideIpv6Cidr *string `type:"string"`
 }
 
 // String returns the string representation
@@ -91586,6 +94015,12 @@ func (s ModifyVpnTunnelOptionsSpecification) String() string {
 // GoString returns the string representation
 func (s ModifyVpnTunnelOptionsSpecification) GoString() string {
 	return s.String()
+}
+
+// SetDPDTimeoutAction sets the DPDTimeoutAction field's value.
+func (s *ModifyVpnTunnelOptionsSpecification) SetDPDTimeoutAction(v string) *ModifyVpnTunnelOptionsSpecification {
+	s.DPDTimeoutAction = &v
+	return s
 }
 
 // SetDPDTimeoutSeconds sets the DPDTimeoutSeconds field's value.
@@ -91672,9 +94107,21 @@ func (s *ModifyVpnTunnelOptionsSpecification) SetReplayWindowSize(v int64) *Modi
 	return s
 }
 
+// SetStartupAction sets the StartupAction field's value.
+func (s *ModifyVpnTunnelOptionsSpecification) SetStartupAction(v string) *ModifyVpnTunnelOptionsSpecification {
+	s.StartupAction = &v
+	return s
+}
+
 // SetTunnelInsideCidr sets the TunnelInsideCidr field's value.
 func (s *ModifyVpnTunnelOptionsSpecification) SetTunnelInsideCidr(v string) *ModifyVpnTunnelOptionsSpecification {
 	s.TunnelInsideCidr = &v
+	return s
+}
+
+// SetTunnelInsideIpv6Cidr sets the TunnelInsideIpv6Cidr field's value.
+func (s *ModifyVpnTunnelOptionsSpecification) SetTunnelInsideIpv6Cidr(v string) *ModifyVpnTunnelOptionsSpecification {
+	s.TunnelInsideIpv6Cidr = &v
 	return s
 }
 
@@ -92591,7 +95038,9 @@ func (s *NetworkInterface) SetVpcId(v string) *NetworkInterface {
 	return s
 }
 
-// Describes association information for an Elastic IP address (IPv4 only).
+// Describes association information for an Elastic IP address (IPv4 only),
+// or a Carrier IP address (for a network interface which resides in a subnet
+// in a Wavelength Zone).
 type NetworkInterfaceAssociation struct {
 	_ struct{} `type:"structure"`
 
@@ -92601,13 +95050,23 @@ type NetworkInterfaceAssociation struct {
 	// The association ID.
 	AssociationId *string `locationName:"associationId" type:"string"`
 
+	// The carrier IP address associated with the network interface.
+	//
+	// This option is only available when the network interface is in a subnet which
+	// is associated with a Wavelength Zone.
+	CarrierIp *string `locationName:"carrierIp" type:"string"`
+
+	// The customer-owned IP address associated with the network interface.
+	CustomerOwnedIp *string `locationName:"customerOwnedIp" type:"string"`
+
 	// The ID of the Elastic IP address owner.
 	IpOwnerId *string `locationName:"ipOwnerId" type:"string"`
 
 	// The public DNS name.
 	PublicDnsName *string `locationName:"publicDnsName" type:"string"`
 
-	// The address of the Elastic IP address bound to the network interface.
+	// The address of the Elastic IP address or Carrier IP address bound to the
+	// network interface.
 	PublicIp *string `locationName:"publicIp" type:"string"`
 }
 
@@ -92630,6 +95089,18 @@ func (s *NetworkInterfaceAssociation) SetAllocationId(v string) *NetworkInterfac
 // SetAssociationId sets the AssociationId field's value.
 func (s *NetworkInterfaceAssociation) SetAssociationId(v string) *NetworkInterfaceAssociation {
 	s.AssociationId = &v
+	return s
+}
+
+// SetCarrierIp sets the CarrierIp field's value.
+func (s *NetworkInterfaceAssociation) SetCarrierIp(v string) *NetworkInterfaceAssociation {
+	s.CarrierIp = &v
+	return s
+}
+
+// SetCustomerOwnedIp sets the CustomerOwnedIp field's value.
+func (s *NetworkInterfaceAssociation) SetCustomerOwnedIp(v string) *NetworkInterfaceAssociation {
+	s.CustomerOwnedIp = &v
 	return s
 }
 
@@ -96160,7 +98631,8 @@ type ReleaseAddressInput struct {
 	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	// The location that the IP address is released from.
+	// The set of Availability Zones, Local Zones, or Wavelength Zones from which
+	// AWS advertises IP addresses.
 	//
 	// If you provide an incorrect network border group, you will receive an InvalidAddress.NotFound
 	// error. For more information, see Error Codes (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/errors-overview.html).
@@ -96664,6 +99136,9 @@ func (s ReplaceNetworkAclEntryOutput) GoString() string {
 type ReplaceRouteInput struct {
 	_ struct{} `type:"structure"`
 
+	// [IPv4 traffic only] The ID of a carrier gateway.
+	CarrierGatewayId *string `type:"string"`
+
 	// The IPv4 CIDR address block used for the destination match. The value that
 	// you provide must match the CIDR of an existing route in the table.
 	DestinationCidrBlock *string `locationName:"destinationCidrBlock" type:"string"`
@@ -96735,6 +99210,12 @@ func (s *ReplaceRouteInput) Validate() error {
 		return invalidParams
 	}
 	return nil
+}
+
+// SetCarrierGatewayId sets the CarrierGatewayId field's value.
+func (s *ReplaceRouteInput) SetCarrierGatewayId(v string) *ReplaceRouteInput {
+	s.CarrierGatewayId = &v
+	return s
 }
 
 // SetDestinationCidrBlock sets the DestinationCidrBlock field's value.
@@ -97195,8 +99676,8 @@ type RequestLaunchTemplateData struct {
 	// in the Amazon Elastic Compute Cloud User Guide.
 	CpuOptions *LaunchTemplateCpuOptionsRequest `type:"structure"`
 
-	// The credit option for CPU usage of the instance. Valid for T2 or T3 instances
-	// only.
+	// The credit option for CPU usage of the instance. Valid for T2, T3, or T3a
+	// instances only.
 	CreditSpecification *CreditSpecificationRequest `type:"structure"`
 
 	// If you set this parameter to true, you can't terminate the instance using
@@ -100141,6 +102622,9 @@ func (s RevokeSecurityGroupIngressOutput) GoString() string {
 type Route struct {
 	_ struct{} `type:"structure"`
 
+	// The ID of the carrier gateway.
+	CarrierGatewayId *string `locationName:"carrierGatewayId" type:"string"`
+
 	// The IPv4 CIDR block used for the destination match.
 	DestinationCidrBlock *string `locationName:"destinationCidrBlock" type:"string"`
 
@@ -100201,6 +102685,12 @@ func (s Route) String() string {
 // GoString returns the string representation
 func (s Route) GoString() string {
 	return s.String()
+}
+
+// SetCarrierGatewayId sets the CarrierGatewayId field's value.
+func (s *Route) SetCarrierGatewayId(v string) *Route {
+	s.CarrierGatewayId = &v
+	return s
 }
 
 // SetDestinationCidrBlock sets the DestinationCidrBlock field's value.
@@ -101695,19 +104185,15 @@ type ScheduledInstancesEbs struct {
 	// only to instances that support them.
 	Encrypted *bool `type:"boolean"`
 
-	// The number of I/O operations per second (IOPS) that the volume supports.
-	// For io1 volumes, this represents the number of IOPS that are provisioned
-	// for the volume. For gp2 volumes, this represents the baseline performance
-	// of the volume and the rate at which the volume accumulates I/O credits for
-	// bursting. For more information about gp2 baseline performance, I/O credits,
-	// and bursting, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
+	// The number of I/O operations per second (IOPS) to provision for an io1 or
+	// io2 volume, with a maximum ratio of 50 IOPS/GiB for io1, and 500 IOPS/GiB
+	// for io2. Range is 100 to 64,000 IOPS for volumes in most Regions. Maximum
+	// IOPS of 64,000 is guaranteed only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
+	// Other instance families guarantee performance up to 32,000 IOPS. For more
+	// information, see Amazon EBS Volume Types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Constraint: Range is 100-20000 IOPS for io1 volumes and 100-10000 IOPS for
-	// gp2 volumes.
-	//
-	// Condition: This parameter is required for requests to create io1volumes;
-	// it is not used in requests to create gp2, st1, sc1, or standard volumes.
+	// This parameter is valid only for Provisioned IOPS SSD (io1 and io2) volumes.
 	Iops *int64 `type:"integer"`
 
 	// The ID of the snapshot.
@@ -101719,8 +104205,9 @@ type ScheduledInstancesEbs struct {
 	// a volume size, the default is the snapshot size.
 	VolumeSize *int64 `type:"integer"`
 
-	// The volume type. gp2 for General Purpose SSD, io1 for Provisioned IOPS SSD,
-	// Throughput Optimized HDD for st1, Cold HDD for sc1, or standard for Magnetic.
+	// The volume type. gp2 for General Purpose SSD, io1 or io2 for Provisioned
+	// IOPS SSD, Throughput Optimized HDD for st1, Cold HDD for sc1, or standard
+	// for Magnetic.
 	//
 	// Default: gp2
 	VolumeType *string `type:"string"`
@@ -102479,7 +104966,10 @@ type SearchTransitGatewayRoutesInput struct {
 	//
 	//    * attachment.resource-id - The resource id of the transit gateway attachment.
 	//
-	//    * attachment.resource-type - The attachment resource type (vpc | vpn).
+	//    * attachment.resource-type - The attachment resource type. Valid values
+	//    are vpc | vpn | direct-connect-gateway | peering.
+	//
+	//    * prefix-list-id - The ID of the prefix list.
 	//
 	//    * route-search.exact-match - The exact match of the specified filter.
 	//
@@ -106064,15 +108554,17 @@ type TagSpecification struct {
 	_ struct{} `type:"structure"`
 
 	// The type of resource to tag. Currently, the resource types that support tagging
-	// on creation are: capacity-reservation | client-vpn-endpoint | dedicated-host
-	// | dhcp-options | export-image-task | export-instance-task | fleet | fpga-image
-	// | host-reservation | import-image-task | import-snapshot-task | instance
-	// | internet-gateway | ipv4pool-ec2 | ipv6pool-ec2 | key-pair | launch-template
-	// | placement-group | prefix-list | launch-template | natgateway | network-acl
-	// | security-group | spot-fleet-request | snapshot | subnet | traffic-mirror-filter
-	// | traffic-mirror-session | traffic-mirror-target | transit-gateway | transit-gateway-attachment
-	// | transit-gateway-route-table | volume |vpc | vpc-endpoint (for interface
-	// and gateway endpoints) | vpc-endpoint-service (for AWS PrivateLink) | vpc-flow-log.
+	// on creation are: capacity-reservation | client-vpn-endpoint | customer-gateway
+	// | dedicated-host | dhcp-options | export-image-task | export-instance-task
+	// | fleet | fpga-image | host-reservation | import-image-task | import-snapshot-task
+	// | instance | internet-gateway | ipv4pool-ec2 | ipv6pool-ec2 | key-pair |
+	// launch-template | placement-group | prefix-list | natgateway | network-acl
+	// | route-table | security-group | spot-fleet-request | spot-instances-request
+	// | snapshot | subnet | traffic-mirror-filter | traffic-mirror-session | traffic-mirror-target
+	// | transit-gateway | transit-gateway-attachment | transit-gateway-route-table
+	// | volume |vpc | vpc-peering-connection | vpc-endpoint (for interface and
+	// gateway endpoints) | vpc-endpoint-service (for AWS PrivateLink) | vpc-flow-log
+	// | vpn-connection | vpn-gateway.
 	//
 	// To tag a resource after it has been created, see CreateTags (https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateTags.html).
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"ResourceType"`
@@ -107270,7 +109762,7 @@ type TransitGatewayAssociation struct {
 	// The ID of the resource.
 	ResourceId *string `locationName:"resourceId" type:"string"`
 
-	// The resource type.
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
 	// The state of the association.
@@ -107339,10 +109831,10 @@ type TransitGatewayAttachment struct {
 	// The ID of the AWS account that owns the resource.
 	ResourceOwnerId *string `locationName:"resourceOwnerId" type:"string"`
 
-	// The resource type.
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
-	// The attachment state.
+	// The attachment state. Note that the initiating state has been deprecated.
 	State *string `locationName:"state" type:"string" enum:"TransitGatewayAttachmentState"`
 
 	// The tags for the attachment.
@@ -108052,7 +110544,8 @@ type TransitGatewayPeeringAttachment struct {
 	// Information about the requester transit gateway.
 	RequesterTgwInfo *PeeringTgwInfo `locationName:"requesterTgwInfo" type:"structure"`
 
-	// The state of the transit gateway peering attachment.
+	// The state of the transit gateway peering attachment. Note that the initiating
+	// state has been deprecated.
 	State *string `locationName:"state" type:"string" enum:"TransitGatewayAttachmentState"`
 
 	// The status of the transit gateway peering attachment.
@@ -108117,6 +110610,117 @@ func (s *TransitGatewayPeeringAttachment) SetTransitGatewayAttachmentId(v string
 	return s
 }
 
+// Describes a transit gateway prefix list attachment.
+type TransitGatewayPrefixListAttachment struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the resource.
+	ResourceId *string `locationName:"resourceId" type:"string"`
+
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
+	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
+
+	// The ID of the attachment.
+	TransitGatewayAttachmentId *string `locationName:"transitGatewayAttachmentId" type:"string"`
+}
+
+// String returns the string representation
+func (s TransitGatewayPrefixListAttachment) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TransitGatewayPrefixListAttachment) GoString() string {
+	return s.String()
+}
+
+// SetResourceId sets the ResourceId field's value.
+func (s *TransitGatewayPrefixListAttachment) SetResourceId(v string) *TransitGatewayPrefixListAttachment {
+	s.ResourceId = &v
+	return s
+}
+
+// SetResourceType sets the ResourceType field's value.
+func (s *TransitGatewayPrefixListAttachment) SetResourceType(v string) *TransitGatewayPrefixListAttachment {
+	s.ResourceType = &v
+	return s
+}
+
+// SetTransitGatewayAttachmentId sets the TransitGatewayAttachmentId field's value.
+func (s *TransitGatewayPrefixListAttachment) SetTransitGatewayAttachmentId(v string) *TransitGatewayPrefixListAttachment {
+	s.TransitGatewayAttachmentId = &v
+	return s
+}
+
+// Describes a prefix list reference.
+type TransitGatewayPrefixListReference struct {
+	_ struct{} `type:"structure"`
+
+	// Indicates whether traffic that matches this route is dropped.
+	Blackhole *bool `locationName:"blackhole" type:"boolean"`
+
+	// The ID of the prefix list.
+	PrefixListId *string `locationName:"prefixListId" type:"string"`
+
+	// The ID of the prefix list owner.
+	PrefixListOwnerId *string `locationName:"prefixListOwnerId" type:"string"`
+
+	// The state of the prefix list reference.
+	State *string `locationName:"state" type:"string" enum:"TransitGatewayPrefixListReferenceState"`
+
+	// Information about the transit gateway attachment.
+	TransitGatewayAttachment *TransitGatewayPrefixListAttachment `locationName:"transitGatewayAttachment" type:"structure"`
+
+	// The ID of the transit gateway route table.
+	TransitGatewayRouteTableId *string `locationName:"transitGatewayRouteTableId" type:"string"`
+}
+
+// String returns the string representation
+func (s TransitGatewayPrefixListReference) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TransitGatewayPrefixListReference) GoString() string {
+	return s.String()
+}
+
+// SetBlackhole sets the Blackhole field's value.
+func (s *TransitGatewayPrefixListReference) SetBlackhole(v bool) *TransitGatewayPrefixListReference {
+	s.Blackhole = &v
+	return s
+}
+
+// SetPrefixListId sets the PrefixListId field's value.
+func (s *TransitGatewayPrefixListReference) SetPrefixListId(v string) *TransitGatewayPrefixListReference {
+	s.PrefixListId = &v
+	return s
+}
+
+// SetPrefixListOwnerId sets the PrefixListOwnerId field's value.
+func (s *TransitGatewayPrefixListReference) SetPrefixListOwnerId(v string) *TransitGatewayPrefixListReference {
+	s.PrefixListOwnerId = &v
+	return s
+}
+
+// SetState sets the State field's value.
+func (s *TransitGatewayPrefixListReference) SetState(v string) *TransitGatewayPrefixListReference {
+	s.State = &v
+	return s
+}
+
+// SetTransitGatewayAttachment sets the TransitGatewayAttachment field's value.
+func (s *TransitGatewayPrefixListReference) SetTransitGatewayAttachment(v *TransitGatewayPrefixListAttachment) *TransitGatewayPrefixListReference {
+	s.TransitGatewayAttachment = v
+	return s
+}
+
+// SetTransitGatewayRouteTableId sets the TransitGatewayRouteTableId field's value.
+func (s *TransitGatewayPrefixListReference) SetTransitGatewayRouteTableId(v string) *TransitGatewayPrefixListReference {
+	s.TransitGatewayRouteTableId = &v
+	return s
+}
+
 // Describes route propagation.
 type TransitGatewayPropagation struct {
 	_ struct{} `type:"structure"`
@@ -108124,7 +110728,7 @@ type TransitGatewayPropagation struct {
 	// The ID of the resource.
 	ResourceId *string `locationName:"resourceId" type:"string"`
 
-	// The resource type.
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
 	// The state.
@@ -108183,28 +110787,28 @@ type TransitGatewayRequestOptions struct {
 
 	// A private Autonomous System Number (ASN) for the Amazon side of a BGP session.
 	// The range is 64512 to 65534 for 16-bit ASNs and 4200000000 to 4294967294
-	// for 32-bit ASNs.
+	// for 32-bit ASNs. The default is 64512.
 	AmazonSideAsn *int64 `type:"long"`
 
-	// Enable or disable automatic acceptance of attachment requests. The default
-	// is disable.
+	// Enable or disable automatic acceptance of attachment requests. Disabled by
+	// default.
 	AutoAcceptSharedAttachments *string `type:"string" enum:"AutoAcceptSharedAttachmentsValue"`
 
 	// Enable or disable automatic association with the default association route
-	// table. The default is enable.
+	// table. Enabled by default.
 	DefaultRouteTableAssociation *string `type:"string" enum:"DefaultRouteTableAssociationValue"`
 
 	// Enable or disable automatic propagation of routes to the default propagation
-	// route table. The default is enable.
+	// route table. Enabled by default.
 	DefaultRouteTablePropagation *string `type:"string" enum:"DefaultRouteTablePropagationValue"`
 
-	// Enable or disable DNS support.
+	// Enable or disable DNS support. Enabled by default.
 	DnsSupport *string `type:"string" enum:"DnsSupportValue"`
 
 	// Indicates whether multicast is enabled on the transit gateway
 	MulticastSupport *string `type:"string" enum:"MulticastSupportValue"`
 
-	// Enable or disable Equal Cost Multipath Protocol support.
+	// Enable or disable Equal Cost Multipath Protocol support. Enabled by default.
 	VpnEcmpSupport *string `type:"string" enum:"VpnEcmpSupportValue"`
 }
 
@@ -108267,6 +110871,9 @@ type TransitGatewayRoute struct {
 	// The CIDR block used for destination matches.
 	DestinationCidrBlock *string `locationName:"destinationCidrBlock" type:"string"`
 
+	// The ID of the prefix list used for destination matches.
+	PrefixListId *string `locationName:"prefixListId" type:"string"`
+
 	// The state of the route.
 	State *string `locationName:"state" type:"string" enum:"TransitGatewayRouteState"`
 
@@ -108290,6 +110897,12 @@ func (s TransitGatewayRoute) GoString() string {
 // SetDestinationCidrBlock sets the DestinationCidrBlock field's value.
 func (s *TransitGatewayRoute) SetDestinationCidrBlock(v string) *TransitGatewayRoute {
 	s.DestinationCidrBlock = &v
+	return s
+}
+
+// SetPrefixListId sets the PrefixListId field's value.
+func (s *TransitGatewayRoute) SetPrefixListId(v string) *TransitGatewayRoute {
+	s.PrefixListId = &v
 	return s
 }
 
@@ -108318,7 +110931,7 @@ type TransitGatewayRouteAttachment struct {
 	// The ID of the resource.
 	ResourceId *string `locationName:"resourceId" type:"string"`
 
-	// The resource type.
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
 	// The ID of the attachment.
@@ -108440,7 +111053,7 @@ type TransitGatewayRouteTableAssociation struct {
 	// The ID of the resource.
 	ResourceId *string `locationName:"resourceId" type:"string"`
 
-	// The resource type.
+	// The resource type. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
 	// The state of the association.
@@ -108491,7 +111104,7 @@ type TransitGatewayRouteTablePropagation struct {
 	// The ID of the resource.
 	ResourceId *string `locationName:"resourceId" type:"string"`
 
-	// The type of resource.
+	// The type of resource. Note that the tgw-peering resource type has been deprecated.
 	ResourceType *string `locationName:"resourceType" type:"string" enum:"TransitGatewayAttachmentResourceType"`
 
 	// The state of the resource.
@@ -108545,7 +111158,8 @@ type TransitGatewayVpcAttachment struct {
 	// The VPC attachment options.
 	Options *TransitGatewayVpcAttachmentOptions `locationName:"options" type:"structure"`
 
-	// The state of the VPC attachment.
+	// The state of the VPC attachment. Note that the initiating state has been
+	// deprecated.
 	State *string `locationName:"state" type:"string" enum:"TransitGatewayAttachmentState"`
 
 	// The IDs of the subnets.
@@ -108668,6 +111282,9 @@ func (s *TransitGatewayVpcAttachmentOptions) SetIpv6Support(v string) *TransitGa
 type TunnelOption struct {
 	_ struct{} `type:"structure"`
 
+	// The action to take after a DPD timeout occurs.
+	DpdTimeoutAction *string `locationName:"dpdTimeoutAction" type:"string"`
+
 	// The number of seconds after which a DPD timeout occurs.
 	DpdTimeoutSeconds *int64 `locationName:"dpdTimeoutSeconds" type:"integer"`
 
@@ -108718,8 +111335,14 @@ type TunnelOption struct {
 	// The number of packets in an IKE replay window.
 	ReplayWindowSize *int64 `locationName:"replayWindowSize" type:"integer"`
 
-	// The range of inside IP addresses for the tunnel.
+	// The action to take when the establishing the VPN tunnels for a VPN connection.
+	StartupAction *string `locationName:"startupAction" type:"string"`
+
+	// The range of inside IPv4 addresses for the tunnel.
 	TunnelInsideCidr *string `locationName:"tunnelInsideCidr" type:"string"`
+
+	// The range of inside IPv6 addresses for the tunnel.
+	TunnelInsideIpv6Cidr *string `locationName:"tunnelInsideIpv6Cidr" type:"string"`
 }
 
 // String returns the string representation
@@ -108730,6 +111353,12 @@ func (s TunnelOption) String() string {
 // GoString returns the string representation
 func (s TunnelOption) GoString() string {
 	return s.String()
+}
+
+// SetDpdTimeoutAction sets the DpdTimeoutAction field's value.
+func (s *TunnelOption) SetDpdTimeoutAction(v string) *TunnelOption {
+	s.DpdTimeoutAction = &v
+	return s
 }
 
 // SetDpdTimeoutSeconds sets the DpdTimeoutSeconds field's value.
@@ -108822,9 +111451,21 @@ func (s *TunnelOption) SetReplayWindowSize(v int64) *TunnelOption {
 	return s
 }
 
+// SetStartupAction sets the StartupAction field's value.
+func (s *TunnelOption) SetStartupAction(v string) *TunnelOption {
+	s.StartupAction = &v
+	return s
+}
+
 // SetTunnelInsideCidr sets the TunnelInsideCidr field's value.
 func (s *TunnelOption) SetTunnelInsideCidr(v string) *TunnelOption {
 	s.TunnelInsideCidr = &v
+	return s
+}
+
+// SetTunnelInsideIpv6Cidr sets the TunnelInsideIpv6Cidr field's value.
+func (s *TunnelOption) SetTunnelInsideIpv6Cidr(v string) *TunnelOption {
+	s.TunnelInsideIpv6Cidr = &v
 	return s
 }
 
@@ -109782,17 +112423,18 @@ type Volume struct {
 	// For Provisioned IOPS SSD volumes, this represents the number of IOPS that
 	// are provisioned for the volume. For General Purpose SSD volumes, this represents
 	// the baseline performance of the volume and the rate at which the volume accumulates
-	// I/O credits for bursting. For more information, see Amazon EBS Volume Types
+	// I/O credits for bursting. For more information, see Amazon EBS volume types
 	// (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Constraints: Range is 100-16,000 IOPS for gp2 volumes and 100 to 64,000IOPS
-	// for io1 volumes, in most Regions. The maximum IOPS for io1 of 64,000 is guaranteed
-	// only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
+	// Constraints: Range is 100-16,000 IOPS for gp2 volumes and 100 to 64,000 IOPS
+	// for io1 and io2 volumes, in most Regions. The maximum IOPS for io1 and io2
+	// of 64,000 is guaranteed only on Nitro-based instances (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
 	// Other instance families guarantee performance up to 32,000 IOPS.
 	//
-	// Condition: This parameter is required for requests to create io1 volumes;
-	// it is not used in requests to create gp2, st1, sc1, or standard volumes.
+	// Condition: This parameter is required for requests to create io1 and io2
+	// volumes; it is not used in requests to create gp2, st1, sc1, or standard
+	// volumes.
 	Iops *int64 `locationName:"iops" type:"integer"`
 
 	// The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS)
@@ -109821,9 +112463,9 @@ type Volume struct {
 	// The ID of the volume.
 	VolumeId *string `locationName:"volumeId" type:"string"`
 
-	// The volume type. This can be gp2 for General Purpose SSD, io1 for Provisioned
-	// IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD, or standard
-	// for Magnetic volumes.
+	// The volume type. This can be gp2 for General Purpose SSD, io1 or io2 for
+	// Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD,
+	// or standard for Magnetic volumes.
 	VolumeType *string `locationName:"volumeType" type:"string" enum:"VolumeType"`
 }
 
@@ -110468,8 +113110,7 @@ type Vpc struct {
 	// Information about the IPv4 CIDR blocks associated with the VPC.
 	CidrBlockAssociationSet []*VpcCidrBlockAssociation `locationName:"cidrBlockAssociationSet" locationNameList:"item" type:"list"`
 
-	// The ID of the set of DHCP options you've associated with the VPC (or default
-	// if the default options are associated with the VPC).
+	// The ID of the set of DHCP options you've associated with the VPC.
 	DhcpOptionsId *string `locationName:"dhcpOptionsId" type:"string"`
 
 	// The allowed tenancy of instances launched into the VPC.
@@ -110978,7 +113619,8 @@ type VpcIpv6CidrBlockAssociation struct {
 	// The ID of the IPv6 address pool from which the IPv6 CIDR block is allocated.
 	Ipv6Pool *string `locationName:"ipv6Pool" type:"string"`
 
-	// The name of the location from which we advertise the IPV6 CIDR block.
+	// The name of the unique set of Availability Zones, Local Zones, or Wavelength
+	// Zones from which AWS advertises IP addresses, for example, us-east-1-wl1-bos-wlz-1.
 	NetworkBorderGroup *string `locationName:"networkBorderGroup" type:"string"`
 }
 
@@ -111384,9 +114026,24 @@ type VpnConnectionOptions struct {
 	// Indicates whether acceleration is enabled for the VPN connection.
 	EnableAcceleration *bool `locationName:"enableAcceleration" type:"boolean"`
 
+	// The IPv4 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	LocalIpv4NetworkCidr *string `locationName:"localIpv4NetworkCidr" type:"string"`
+
+	// The IPv6 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	LocalIpv6NetworkCidr *string `locationName:"localIpv6NetworkCidr" type:"string"`
+
+	// The IPv4 CIDR on the AWS side of the VPN connection.
+	RemoteIpv4NetworkCidr *string `locationName:"remoteIpv4NetworkCidr" type:"string"`
+
+	// The IPv6 CIDR on the AWS side of the VPN connection.
+	RemoteIpv6NetworkCidr *string `locationName:"remoteIpv6NetworkCidr" type:"string"`
+
 	// Indicates whether the VPN connection uses static routes only. Static routes
 	// must be used for devices that don't support BGP.
 	StaticRoutesOnly *bool `locationName:"staticRoutesOnly" type:"boolean"`
+
+	// Indicates whether the VPN tunnels process IPv4 or IPv6 traffic.
+	TunnelInsideIpVersion *string `locationName:"tunnelInsideIpVersion" type:"string" enum:"TunnelInsideIpVersion"`
 
 	// Indicates the VPN tunnel options.
 	TunnelOptions []*TunnelOption `locationName:"tunnelOptionSet" locationNameList:"item" type:"list"`
@@ -111408,9 +114065,39 @@ func (s *VpnConnectionOptions) SetEnableAcceleration(v bool) *VpnConnectionOptio
 	return s
 }
 
+// SetLocalIpv4NetworkCidr sets the LocalIpv4NetworkCidr field's value.
+func (s *VpnConnectionOptions) SetLocalIpv4NetworkCidr(v string) *VpnConnectionOptions {
+	s.LocalIpv4NetworkCidr = &v
+	return s
+}
+
+// SetLocalIpv6NetworkCidr sets the LocalIpv6NetworkCidr field's value.
+func (s *VpnConnectionOptions) SetLocalIpv6NetworkCidr(v string) *VpnConnectionOptions {
+	s.LocalIpv6NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv4NetworkCidr sets the RemoteIpv4NetworkCidr field's value.
+func (s *VpnConnectionOptions) SetRemoteIpv4NetworkCidr(v string) *VpnConnectionOptions {
+	s.RemoteIpv4NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv6NetworkCidr sets the RemoteIpv6NetworkCidr field's value.
+func (s *VpnConnectionOptions) SetRemoteIpv6NetworkCidr(v string) *VpnConnectionOptions {
+	s.RemoteIpv6NetworkCidr = &v
+	return s
+}
+
 // SetStaticRoutesOnly sets the StaticRoutesOnly field's value.
 func (s *VpnConnectionOptions) SetStaticRoutesOnly(v bool) *VpnConnectionOptions {
 	s.StaticRoutesOnly = &v
+	return s
+}
+
+// SetTunnelInsideIpVersion sets the TunnelInsideIpVersion field's value.
+func (s *VpnConnectionOptions) SetTunnelInsideIpVersion(v string) *VpnConnectionOptions {
+	s.TunnelInsideIpVersion = &v
 	return s
 }
 
@@ -111429,12 +114116,37 @@ type VpnConnectionOptionsSpecification struct {
 	// Default: false
 	EnableAcceleration *bool `type:"boolean"`
 
+	// The IPv4 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	//
+	// Default: 0.0.0.0/0
+	LocalIpv4NetworkCidr *string `type:"string"`
+
+	// The IPv6 CIDR on the customer gateway (on-premises) side of the VPN connection.
+	//
+	// Default: ::/0
+	LocalIpv6NetworkCidr *string `type:"string"`
+
+	// The IPv4 CIDR on the AWS side of the VPN connection.
+	//
+	// Default: 0.0.0.0/0
+	RemoteIpv4NetworkCidr *string `type:"string"`
+
+	// The IPv6 CIDR on the AWS side of the VPN connection.
+	//
+	// Default: ::/0
+	RemoteIpv6NetworkCidr *string `type:"string"`
+
 	// Indicate whether the VPN connection uses static routes only. If you are creating
 	// a VPN connection for a device that does not support BGP, you must specify
 	// true. Use CreateVpnConnectionRoute to create a static route.
 	//
 	// Default: false
 	StaticRoutesOnly *bool `locationName:"staticRoutesOnly" type:"boolean"`
+
+	// Indicate whether the VPN tunnels process IPv4 or IPv6 traffic.
+	//
+	// Default: ipv4
+	TunnelInsideIpVersion *string `type:"string" enum:"TunnelInsideIpVersion"`
 
 	// The tunnel options for the VPN connection.
 	TunnelOptions []*VpnTunnelOptionsSpecification `type:"list"`
@@ -111456,9 +114168,39 @@ func (s *VpnConnectionOptionsSpecification) SetEnableAcceleration(v bool) *VpnCo
 	return s
 }
 
+// SetLocalIpv4NetworkCidr sets the LocalIpv4NetworkCidr field's value.
+func (s *VpnConnectionOptionsSpecification) SetLocalIpv4NetworkCidr(v string) *VpnConnectionOptionsSpecification {
+	s.LocalIpv4NetworkCidr = &v
+	return s
+}
+
+// SetLocalIpv6NetworkCidr sets the LocalIpv6NetworkCidr field's value.
+func (s *VpnConnectionOptionsSpecification) SetLocalIpv6NetworkCidr(v string) *VpnConnectionOptionsSpecification {
+	s.LocalIpv6NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv4NetworkCidr sets the RemoteIpv4NetworkCidr field's value.
+func (s *VpnConnectionOptionsSpecification) SetRemoteIpv4NetworkCidr(v string) *VpnConnectionOptionsSpecification {
+	s.RemoteIpv4NetworkCidr = &v
+	return s
+}
+
+// SetRemoteIpv6NetworkCidr sets the RemoteIpv6NetworkCidr field's value.
+func (s *VpnConnectionOptionsSpecification) SetRemoteIpv6NetworkCidr(v string) *VpnConnectionOptionsSpecification {
+	s.RemoteIpv6NetworkCidr = &v
+	return s
+}
+
 // SetStaticRoutesOnly sets the StaticRoutesOnly field's value.
 func (s *VpnConnectionOptionsSpecification) SetStaticRoutesOnly(v bool) *VpnConnectionOptionsSpecification {
 	s.StaticRoutesOnly = &v
+	return s
+}
+
+// SetTunnelInsideIpVersion sets the TunnelInsideIpVersion field's value.
+func (s *VpnConnectionOptionsSpecification) SetTunnelInsideIpVersion(v string) *VpnConnectionOptionsSpecification {
+	s.TunnelInsideIpVersion = &v
 	return s
 }
 
@@ -111593,6 +114335,14 @@ func (s *VpnStaticRoute) SetState(v string) *VpnStaticRoute {
 type VpnTunnelOptionsSpecification struct {
 	_ struct{} `type:"structure"`
 
+	// The action to take after DPD timeout occurs. Specify restart to restart the
+	// IKE initiation. Specify clear to end the IKE session.
+	//
+	// Valid Values: clear | none | restart
+	//
+	// Default: clear
+	DPDTimeoutAction *string `type:"string"`
+
 	// The number of seconds after which a DPD timeout occurs.
 	//
 	// Constraints: A value between 0 and 30.
@@ -111608,19 +114358,19 @@ type VpnTunnelOptionsSpecification struct {
 	// One or more Diffie-Hellman group numbers that are permitted for the VPN tunnel
 	// for phase 1 IKE negotiations.
 	//
-	// Valid values: 2 | 14 | 15 | 16 | 17 | 18 | 22 | 23 | 24
+	// Valid values: 2 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 	Phase1DHGroupNumbers []*Phase1DHGroupNumbersRequestListValue `locationName:"Phase1DHGroupNumber" locationNameList:"item" type:"list"`
 
 	// One or more encryption algorithms that are permitted for the VPN tunnel for
 	// phase 1 IKE negotiations.
 	//
-	// Valid values: AES128 | AES256
+	// Valid values: AES128 | AES256 | AES128-GCM-16 | AES256-GCM-16
 	Phase1EncryptionAlgorithms []*Phase1EncryptionAlgorithmsRequestListValue `locationName:"Phase1EncryptionAlgorithm" locationNameList:"item" type:"list"`
 
 	// One or more integrity algorithms that are permitted for the VPN tunnel for
 	// phase 1 IKE negotiations.
 	//
-	// Valid values: SHA1 | SHA2-256
+	// Valid values: SHA1 | SHA2-256 | SHA2-384 | SHA2-512
 	Phase1IntegrityAlgorithms []*Phase1IntegrityAlgorithmsRequestListValue `locationName:"Phase1IntegrityAlgorithm" locationNameList:"item" type:"list"`
 
 	// The lifetime for phase 1 of the IKE negotiation, in seconds.
@@ -111633,19 +114383,19 @@ type VpnTunnelOptionsSpecification struct {
 	// One or more Diffie-Hellman group numbers that are permitted for the VPN tunnel
 	// for phase 2 IKE negotiations.
 	//
-	// Valid values: 2 | 5 | 14 | 15 | 16 | 17 | 18 | 22 | 23 | 24
+	// Valid values: 2 | 5 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 	Phase2DHGroupNumbers []*Phase2DHGroupNumbersRequestListValue `locationName:"Phase2DHGroupNumber" locationNameList:"item" type:"list"`
 
 	// One or more encryption algorithms that are permitted for the VPN tunnel for
 	// phase 2 IKE negotiations.
 	//
-	// Valid values: AES128 | AES256
+	// Valid values: AES128 | AES256 | AES128-GCM-16 | AES256-GCM-16
 	Phase2EncryptionAlgorithms []*Phase2EncryptionAlgorithmsRequestListValue `locationName:"Phase2EncryptionAlgorithm" locationNameList:"item" type:"list"`
 
 	// One or more integrity algorithms that are permitted for the VPN tunnel for
 	// phase 2 IKE negotiations.
 	//
-	// Valid values: SHA1 | SHA2-256
+	// Valid values: SHA1 | SHA2-256 | SHA2-384 | SHA2-512
 	Phase2IntegrityAlgorithms []*Phase2IntegrityAlgorithmsRequestListValue `locationName:"Phase2IntegrityAlgorithm" locationNameList:"item" type:"list"`
 
 	// The lifetime for phase 2 of the IKE negotiation, in seconds.
@@ -111688,7 +114438,16 @@ type VpnTunnelOptionsSpecification struct {
 	// Default: 1024
 	ReplayWindowSize *int64 `type:"integer"`
 
-	// The range of inside IP addresses for the tunnel. Any specified CIDR blocks
+	// The action to take when the establishing the tunnel for the VPN connection.
+	// By default, your customer gateway device must initiate the IKE negotiation
+	// and bring up the tunnel. Specify start for AWS to initiate the IKE negotiation.
+	//
+	// Valid Values: add | start
+	//
+	// Default: add
+	StartupAction *string `type:"string"`
+
+	// The range of inside IPv4 addresses for the tunnel. Any specified CIDR blocks
 	// must be unique across all VPN connections that use the same virtual private
 	// gateway.
 	//
@@ -111709,6 +114468,12 @@ type VpnTunnelOptionsSpecification struct {
 	//
 	//    * 169.254.169.252/30
 	TunnelInsideCidr *string `type:"string"`
+
+	// The range of inside IPv6 addresses for the tunnel. Any specified CIDR blocks
+	// must be unique across all VPN connections that use the same transit gateway.
+	//
+	// Constraints: A size /126 CIDR block from the local fd00::/8 range.
+	TunnelInsideIpv6Cidr *string `type:"string"`
 }
 
 // String returns the string representation
@@ -111719,6 +114484,12 @@ func (s VpnTunnelOptionsSpecification) String() string {
 // GoString returns the string representation
 func (s VpnTunnelOptionsSpecification) GoString() string {
 	return s.String()
+}
+
+// SetDPDTimeoutAction sets the DPDTimeoutAction field's value.
+func (s *VpnTunnelOptionsSpecification) SetDPDTimeoutAction(v string) *VpnTunnelOptionsSpecification {
+	s.DPDTimeoutAction = &v
+	return s
 }
 
 // SetDPDTimeoutSeconds sets the DPDTimeoutSeconds field's value.
@@ -111805,9 +114576,21 @@ func (s *VpnTunnelOptionsSpecification) SetReplayWindowSize(v int64) *VpnTunnelO
 	return s
 }
 
+// SetStartupAction sets the StartupAction field's value.
+func (s *VpnTunnelOptionsSpecification) SetStartupAction(v string) *VpnTunnelOptionsSpecification {
+	s.StartupAction = &v
+	return s
+}
+
 // SetTunnelInsideCidr sets the TunnelInsideCidr field's value.
 func (s *VpnTunnelOptionsSpecification) SetTunnelInsideCidr(v string) *VpnTunnelOptionsSpecification {
 	s.TunnelInsideCidr = &v
+	return s
+}
+
+// SetTunnelInsideIpv6Cidr sets the TunnelInsideIpv6Cidr field's value.
+func (s *VpnTunnelOptionsSpecification) SetTunnelInsideIpv6Cidr(v string) *VpnTunnelOptionsSpecification {
+	s.TunnelInsideIpv6Cidr = &v
 	return s
 }
 
@@ -111892,6 +114675,14 @@ const (
 	AccountAttributeNameDefaultVpc = "default-vpc"
 )
 
+// AccountAttributeName_Values returns all elements of the AccountAttributeName enum
+func AccountAttributeName_Values() []string {
+	return []string{
+		AccountAttributeNameSupportedPlatforms,
+		AccountAttributeNameDefaultVpc,
+	}
+}
+
 const (
 	// ActivityStatusError is a ActivityStatus enum value
 	ActivityStatusError = "error"
@@ -111906,6 +114697,16 @@ const (
 	ActivityStatusFulfilled = "fulfilled"
 )
 
+// ActivityStatus_Values returns all elements of the ActivityStatus enum
+func ActivityStatus_Values() []string {
+	return []string{
+		ActivityStatusError,
+		ActivityStatusPendingFulfillment,
+		ActivityStatusPendingTermination,
+		ActivityStatusFulfilled,
+	}
+}
+
 const (
 	// AffinityDefault is a Affinity enum value
 	AffinityDefault = "default"
@@ -111913,6 +114714,14 @@ const (
 	// AffinityHost is a Affinity enum value
 	AffinityHost = "host"
 )
+
+// Affinity_Values returns all elements of the Affinity enum
+func Affinity_Values() []string {
+	return []string{
+		AffinityDefault,
+		AffinityHost,
+	}
+}
 
 const (
 	// AllocationStateAvailable is a AllocationState enum value
@@ -111934,6 +114743,18 @@ const (
 	AllocationStatePending = "pending"
 )
 
+// AllocationState_Values returns all elements of the AllocationState enum
+func AllocationState_Values() []string {
+	return []string{
+		AllocationStateAvailable,
+		AllocationStateUnderAssessment,
+		AllocationStatePermanentFailure,
+		AllocationStateReleased,
+		AllocationStateReleasedPermanentFailure,
+		AllocationStatePending,
+	}
+}
+
 const (
 	// AllocationStrategyLowestPrice is a AllocationStrategy enum value
 	AllocationStrategyLowestPrice = "lowestPrice"
@@ -111945,6 +114766,15 @@ const (
 	AllocationStrategyCapacityOptimized = "capacityOptimized"
 )
 
+// AllocationStrategy_Values returns all elements of the AllocationStrategy enum
+func AllocationStrategy_Values() []string {
+	return []string{
+		AllocationStrategyLowestPrice,
+		AllocationStrategyDiversified,
+		AllocationStrategyCapacityOptimized,
+	}
+}
+
 const (
 	// AllowsMultipleInstanceTypesOn is a AllowsMultipleInstanceTypes enum value
 	AllowsMultipleInstanceTypesOn = "on"
@@ -111952,6 +114782,14 @@ const (
 	// AllowsMultipleInstanceTypesOff is a AllowsMultipleInstanceTypes enum value
 	AllowsMultipleInstanceTypesOff = "off"
 )
+
+// AllowsMultipleInstanceTypes_Values returns all elements of the AllowsMultipleInstanceTypes enum
+func AllowsMultipleInstanceTypes_Values() []string {
+	return []string{
+		AllowsMultipleInstanceTypesOn,
+		AllowsMultipleInstanceTypesOff,
+	}
+}
 
 const (
 	// ArchitectureTypeI386 is a ArchitectureType enum value
@@ -111964,6 +114802,15 @@ const (
 	ArchitectureTypeArm64 = "arm64"
 )
 
+// ArchitectureType_Values returns all elements of the ArchitectureType enum
+func ArchitectureType_Values() []string {
+	return []string{
+		ArchitectureTypeI386,
+		ArchitectureTypeX8664,
+		ArchitectureTypeArm64,
+	}
+}
+
 const (
 	// ArchitectureValuesI386 is a ArchitectureValues enum value
 	ArchitectureValuesI386 = "i386"
@@ -111975,10 +114822,26 @@ const (
 	ArchitectureValuesArm64 = "arm64"
 )
 
+// ArchitectureValues_Values returns all elements of the ArchitectureValues enum
+func ArchitectureValues_Values() []string {
+	return []string{
+		ArchitectureValuesI386,
+		ArchitectureValuesX8664,
+		ArchitectureValuesArm64,
+	}
+}
+
 const (
 	// AssociatedNetworkTypeVpc is a AssociatedNetworkType enum value
 	AssociatedNetworkTypeVpc = "vpc"
 )
+
+// AssociatedNetworkType_Values returns all elements of the AssociatedNetworkType enum
+func AssociatedNetworkType_Values() []string {
+	return []string{
+		AssociatedNetworkTypeVpc,
+	}
+}
 
 const (
 	// AssociationStatusCodeAssociating is a AssociationStatusCode enum value
@@ -111997,6 +114860,17 @@ const (
 	AssociationStatusCodeDisassociated = "disassociated"
 )
 
+// AssociationStatusCode_Values returns all elements of the AssociationStatusCode enum
+func AssociationStatusCode_Values() []string {
+	return []string{
+		AssociationStatusCodeAssociating,
+		AssociationStatusCodeAssociated,
+		AssociationStatusCodeAssociationFailed,
+		AssociationStatusCodeDisassociating,
+		AssociationStatusCodeDisassociated,
+	}
+}
+
 const (
 	// AttachmentStatusAttaching is a AttachmentStatus enum value
 	AttachmentStatusAttaching = "attaching"
@@ -112011,6 +114885,16 @@ const (
 	AttachmentStatusDetached = "detached"
 )
 
+// AttachmentStatus_Values returns all elements of the AttachmentStatus enum
+func AttachmentStatus_Values() []string {
+	return []string{
+		AttachmentStatusAttaching,
+		AttachmentStatusAttached,
+		AttachmentStatusDetaching,
+		AttachmentStatusDetached,
+	}
+}
+
 const (
 	// AutoAcceptSharedAttachmentsValueEnable is a AutoAcceptSharedAttachmentsValue enum value
 	AutoAcceptSharedAttachmentsValueEnable = "enable"
@@ -112019,6 +114903,14 @@ const (
 	AutoAcceptSharedAttachmentsValueDisable = "disable"
 )
 
+// AutoAcceptSharedAttachmentsValue_Values returns all elements of the AutoAcceptSharedAttachmentsValue enum
+func AutoAcceptSharedAttachmentsValue_Values() []string {
+	return []string{
+		AutoAcceptSharedAttachmentsValueEnable,
+		AutoAcceptSharedAttachmentsValueDisable,
+	}
+}
+
 const (
 	// AutoPlacementOn is a AutoPlacement enum value
 	AutoPlacementOn = "on"
@@ -112026,6 +114918,14 @@ const (
 	// AutoPlacementOff is a AutoPlacement enum value
 	AutoPlacementOff = "off"
 )
+
+// AutoPlacement_Values returns all elements of the AutoPlacement enum
+func AutoPlacement_Values() []string {
+	return []string{
+		AutoPlacementOn,
+		AutoPlacementOff,
+	}
+}
 
 const (
 	// AvailabilityZoneOptInStatusOptInNotRequired is a AvailabilityZoneOptInStatus enum value
@@ -112037,6 +114937,15 @@ const (
 	// AvailabilityZoneOptInStatusNotOptedIn is a AvailabilityZoneOptInStatus enum value
 	AvailabilityZoneOptInStatusNotOptedIn = "not-opted-in"
 )
+
+// AvailabilityZoneOptInStatus_Values returns all elements of the AvailabilityZoneOptInStatus enum
+func AvailabilityZoneOptInStatus_Values() []string {
+	return []string{
+		AvailabilityZoneOptInStatusOptInNotRequired,
+		AvailabilityZoneOptInStatusOptedIn,
+		AvailabilityZoneOptInStatusNotOptedIn,
+	}
+}
 
 const (
 	// AvailabilityZoneStateAvailable is a AvailabilityZoneState enum value
@@ -112051,6 +114960,16 @@ const (
 	// AvailabilityZoneStateUnavailable is a AvailabilityZoneState enum value
 	AvailabilityZoneStateUnavailable = "unavailable"
 )
+
+// AvailabilityZoneState_Values returns all elements of the AvailabilityZoneState enum
+func AvailabilityZoneState_Values() []string {
+	return []string{
+		AvailabilityZoneStateAvailable,
+		AvailabilityZoneStateInformation,
+		AvailabilityZoneStateImpaired,
+		AvailabilityZoneStateUnavailable,
+	}
+}
 
 const (
 	// BatchStateSubmitted is a BatchState enum value
@@ -112075,6 +114994,19 @@ const (
 	BatchStateModifying = "modifying"
 )
 
+// BatchState_Values returns all elements of the BatchState enum
+func BatchState_Values() []string {
+	return []string{
+		BatchStateSubmitted,
+		BatchStateActive,
+		BatchStateCancelled,
+		BatchStateFailed,
+		BatchStateCancelledRunning,
+		BatchStateCancelledTerminating,
+		BatchStateModifying,
+	}
+}
+
 const (
 	// BundleTaskStatePending is a BundleTaskState enum value
 	BundleTaskStatePending = "pending"
@@ -112097,6 +115029,19 @@ const (
 	// BundleTaskStateFailed is a BundleTaskState enum value
 	BundleTaskStateFailed = "failed"
 )
+
+// BundleTaskState_Values returns all elements of the BundleTaskState enum
+func BundleTaskState_Values() []string {
+	return []string{
+		BundleTaskStatePending,
+		BundleTaskStateWaitingForShutdown,
+		BundleTaskStateBundling,
+		BundleTaskStateStoring,
+		BundleTaskStateCancelling,
+		BundleTaskStateComplete,
+		BundleTaskStateFailed,
+	}
+}
 
 const (
 	// ByoipCidrStateAdvertised is a ByoipCidrState enum value
@@ -112124,6 +115069,20 @@ const (
 	ByoipCidrStateProvisionedNotPubliclyAdvertisable = "provisioned-not-publicly-advertisable"
 )
 
+// ByoipCidrState_Values returns all elements of the ByoipCidrState enum
+func ByoipCidrState_Values() []string {
+	return []string{
+		ByoipCidrStateAdvertised,
+		ByoipCidrStateDeprovisioned,
+		ByoipCidrStateFailedDeprovision,
+		ByoipCidrStateFailedProvision,
+		ByoipCidrStatePendingDeprovision,
+		ByoipCidrStatePendingProvision,
+		ByoipCidrStateProvisioned,
+		ByoipCidrStateProvisionedNotPubliclyAdvertisable,
+	}
+}
+
 const (
 	// CancelBatchErrorCodeFleetRequestIdDoesNotExist is a CancelBatchErrorCode enum value
 	CancelBatchErrorCodeFleetRequestIdDoesNotExist = "fleetRequestIdDoesNotExist"
@@ -112137,6 +115096,16 @@ const (
 	// CancelBatchErrorCodeUnexpectedError is a CancelBatchErrorCode enum value
 	CancelBatchErrorCodeUnexpectedError = "unexpectedError"
 )
+
+// CancelBatchErrorCode_Values returns all elements of the CancelBatchErrorCode enum
+func CancelBatchErrorCode_Values() []string {
+	return []string{
+		CancelBatchErrorCodeFleetRequestIdDoesNotExist,
+		CancelBatchErrorCodeFleetRequestIdMalformed,
+		CancelBatchErrorCodeFleetRequestNotInCancellableState,
+		CancelBatchErrorCodeUnexpectedError,
+	}
+}
 
 const (
 	// CancelSpotInstanceRequestStateActive is a CancelSpotInstanceRequestState enum value
@@ -112154,6 +115123,17 @@ const (
 	// CancelSpotInstanceRequestStateCompleted is a CancelSpotInstanceRequestState enum value
 	CancelSpotInstanceRequestStateCompleted = "completed"
 )
+
+// CancelSpotInstanceRequestState_Values returns all elements of the CancelSpotInstanceRequestState enum
+func CancelSpotInstanceRequestState_Values() []string {
+	return []string{
+		CancelSpotInstanceRequestStateActive,
+		CancelSpotInstanceRequestStateOpen,
+		CancelSpotInstanceRequestStateClosed,
+		CancelSpotInstanceRequestStateCancelled,
+		CancelSpotInstanceRequestStateCompleted,
+	}
+}
 
 const (
 	// CapacityReservationInstancePlatformLinuxUnix is a CapacityReservationInstancePlatform enum value
@@ -112190,6 +115170,23 @@ const (
 	CapacityReservationInstancePlatformLinuxwithSqlserverEnterprise = "Linux with SQL Server Enterprise"
 )
 
+// CapacityReservationInstancePlatform_Values returns all elements of the CapacityReservationInstancePlatform enum
+func CapacityReservationInstancePlatform_Values() []string {
+	return []string{
+		CapacityReservationInstancePlatformLinuxUnix,
+		CapacityReservationInstancePlatformRedHatEnterpriseLinux,
+		CapacityReservationInstancePlatformSuselinux,
+		CapacityReservationInstancePlatformWindows,
+		CapacityReservationInstancePlatformWindowswithSqlserver,
+		CapacityReservationInstancePlatformWindowswithSqlserverEnterprise,
+		CapacityReservationInstancePlatformWindowswithSqlserverStandard,
+		CapacityReservationInstancePlatformWindowswithSqlserverWeb,
+		CapacityReservationInstancePlatformLinuxwithSqlserverStandard,
+		CapacityReservationInstancePlatformLinuxwithSqlserverWeb,
+		CapacityReservationInstancePlatformLinuxwithSqlserverEnterprise,
+	}
+}
+
 const (
 	// CapacityReservationPreferenceOpen is a CapacityReservationPreference enum value
 	CapacityReservationPreferenceOpen = "open"
@@ -112197,6 +115194,14 @@ const (
 	// CapacityReservationPreferenceNone is a CapacityReservationPreference enum value
 	CapacityReservationPreferenceNone = "none"
 )
+
+// CapacityReservationPreference_Values returns all elements of the CapacityReservationPreference enum
+func CapacityReservationPreference_Values() []string {
+	return []string{
+		CapacityReservationPreferenceOpen,
+		CapacityReservationPreferenceNone,
+	}
+}
 
 const (
 	// CapacityReservationStateActive is a CapacityReservationState enum value
@@ -112215,6 +115220,17 @@ const (
 	CapacityReservationStateFailed = "failed"
 )
 
+// CapacityReservationState_Values returns all elements of the CapacityReservationState enum
+func CapacityReservationState_Values() []string {
+	return []string{
+		CapacityReservationStateActive,
+		CapacityReservationStateExpired,
+		CapacityReservationStateCancelled,
+		CapacityReservationStatePending,
+		CapacityReservationStateFailed,
+	}
+}
+
 const (
 	// CapacityReservationTenancyDefault is a CapacityReservationTenancy enum value
 	CapacityReservationTenancyDefault = "default"
@@ -112223,6 +115239,38 @@ const (
 	CapacityReservationTenancyDedicated = "dedicated"
 )
 
+// CapacityReservationTenancy_Values returns all elements of the CapacityReservationTenancy enum
+func CapacityReservationTenancy_Values() []string {
+	return []string{
+		CapacityReservationTenancyDefault,
+		CapacityReservationTenancyDedicated,
+	}
+}
+
+const (
+	// CarrierGatewayStatePending is a CarrierGatewayState enum value
+	CarrierGatewayStatePending = "pending"
+
+	// CarrierGatewayStateAvailable is a CarrierGatewayState enum value
+	CarrierGatewayStateAvailable = "available"
+
+	// CarrierGatewayStateDeleting is a CarrierGatewayState enum value
+	CarrierGatewayStateDeleting = "deleting"
+
+	// CarrierGatewayStateDeleted is a CarrierGatewayState enum value
+	CarrierGatewayStateDeleted = "deleted"
+)
+
+// CarrierGatewayState_Values returns all elements of the CarrierGatewayState enum
+func CarrierGatewayState_Values() []string {
+	return []string{
+		CarrierGatewayStatePending,
+		CarrierGatewayStateAvailable,
+		CarrierGatewayStateDeleting,
+		CarrierGatewayStateDeleted,
+	}
+}
+
 const (
 	// ClientCertificateRevocationListStatusCodePending is a ClientCertificateRevocationListStatusCode enum value
 	ClientCertificateRevocationListStatusCodePending = "pending"
@@ -112230,6 +115278,14 @@ const (
 	// ClientCertificateRevocationListStatusCodeActive is a ClientCertificateRevocationListStatusCode enum value
 	ClientCertificateRevocationListStatusCodeActive = "active"
 )
+
+// ClientCertificateRevocationListStatusCode_Values returns all elements of the ClientCertificateRevocationListStatusCode enum
+func ClientCertificateRevocationListStatusCode_Values() []string {
+	return []string{
+		ClientCertificateRevocationListStatusCodePending,
+		ClientCertificateRevocationListStatusCodeActive,
+	}
+}
 
 const (
 	// ClientVpnAuthenticationTypeCertificateAuthentication is a ClientVpnAuthenticationType enum value
@@ -112241,6 +115297,15 @@ const (
 	// ClientVpnAuthenticationTypeFederatedAuthentication is a ClientVpnAuthenticationType enum value
 	ClientVpnAuthenticationTypeFederatedAuthentication = "federated-authentication"
 )
+
+// ClientVpnAuthenticationType_Values returns all elements of the ClientVpnAuthenticationType enum
+func ClientVpnAuthenticationType_Values() []string {
+	return []string{
+		ClientVpnAuthenticationTypeCertificateAuthentication,
+		ClientVpnAuthenticationTypeDirectoryServiceAuthentication,
+		ClientVpnAuthenticationTypeFederatedAuthentication,
+	}
+}
 
 const (
 	// ClientVpnAuthorizationRuleStatusCodeAuthorizing is a ClientVpnAuthorizationRuleStatusCode enum value
@@ -112256,6 +115321,16 @@ const (
 	ClientVpnAuthorizationRuleStatusCodeRevoking = "revoking"
 )
 
+// ClientVpnAuthorizationRuleStatusCode_Values returns all elements of the ClientVpnAuthorizationRuleStatusCode enum
+func ClientVpnAuthorizationRuleStatusCode_Values() []string {
+	return []string{
+		ClientVpnAuthorizationRuleStatusCodeAuthorizing,
+		ClientVpnAuthorizationRuleStatusCodeActive,
+		ClientVpnAuthorizationRuleStatusCodeFailed,
+		ClientVpnAuthorizationRuleStatusCodeRevoking,
+	}
+}
+
 const (
 	// ClientVpnConnectionStatusCodeActive is a ClientVpnConnectionStatusCode enum value
 	ClientVpnConnectionStatusCodeActive = "active"
@@ -112269,6 +115344,16 @@ const (
 	// ClientVpnConnectionStatusCodeTerminated is a ClientVpnConnectionStatusCode enum value
 	ClientVpnConnectionStatusCodeTerminated = "terminated"
 )
+
+// ClientVpnConnectionStatusCode_Values returns all elements of the ClientVpnConnectionStatusCode enum
+func ClientVpnConnectionStatusCode_Values() []string {
+	return []string{
+		ClientVpnConnectionStatusCodeActive,
+		ClientVpnConnectionStatusCodeFailedToTerminate,
+		ClientVpnConnectionStatusCodeTerminating,
+		ClientVpnConnectionStatusCodeTerminated,
+	}
+}
 
 const (
 	// ClientVpnEndpointStatusCodePendingAssociate is a ClientVpnEndpointStatusCode enum value
@@ -112284,6 +115369,16 @@ const (
 	ClientVpnEndpointStatusCodeDeleted = "deleted"
 )
 
+// ClientVpnEndpointStatusCode_Values returns all elements of the ClientVpnEndpointStatusCode enum
+func ClientVpnEndpointStatusCode_Values() []string {
+	return []string{
+		ClientVpnEndpointStatusCodePendingAssociate,
+		ClientVpnEndpointStatusCodeAvailable,
+		ClientVpnEndpointStatusCodeDeleting,
+		ClientVpnEndpointStatusCodeDeleted,
+	}
+}
+
 const (
 	// ClientVpnRouteStatusCodeCreating is a ClientVpnRouteStatusCode enum value
 	ClientVpnRouteStatusCodeCreating = "creating"
@@ -112298,6 +115393,16 @@ const (
 	ClientVpnRouteStatusCodeDeleting = "deleting"
 )
 
+// ClientVpnRouteStatusCode_Values returns all elements of the ClientVpnRouteStatusCode enum
+func ClientVpnRouteStatusCode_Values() []string {
+	return []string{
+		ClientVpnRouteStatusCodeCreating,
+		ClientVpnRouteStatusCodeActive,
+		ClientVpnRouteStatusCodeFailed,
+		ClientVpnRouteStatusCodeDeleting,
+	}
+}
+
 const (
 	// ConnectionNotificationStateEnabled is a ConnectionNotificationState enum value
 	ConnectionNotificationStateEnabled = "Enabled"
@@ -112306,15 +115411,37 @@ const (
 	ConnectionNotificationStateDisabled = "Disabled"
 )
 
+// ConnectionNotificationState_Values returns all elements of the ConnectionNotificationState enum
+func ConnectionNotificationState_Values() []string {
+	return []string{
+		ConnectionNotificationStateEnabled,
+		ConnectionNotificationStateDisabled,
+	}
+}
+
 const (
 	// ConnectionNotificationTypeTopic is a ConnectionNotificationType enum value
 	ConnectionNotificationTypeTopic = "Topic"
 )
 
+// ConnectionNotificationType_Values returns all elements of the ConnectionNotificationType enum
+func ConnectionNotificationType_Values() []string {
+	return []string{
+		ConnectionNotificationTypeTopic,
+	}
+}
+
 const (
 	// ContainerFormatOva is a ContainerFormat enum value
 	ContainerFormatOva = "ova"
 )
+
+// ContainerFormat_Values returns all elements of the ContainerFormat enum
+func ContainerFormat_Values() []string {
+	return []string{
+		ContainerFormatOva,
+	}
+}
 
 const (
 	// ConversionTaskStateActive is a ConversionTaskState enum value
@@ -112330,15 +115457,39 @@ const (
 	ConversionTaskStateCompleted = "completed"
 )
 
+// ConversionTaskState_Values returns all elements of the ConversionTaskState enum
+func ConversionTaskState_Values() []string {
+	return []string{
+		ConversionTaskStateActive,
+		ConversionTaskStateCancelling,
+		ConversionTaskStateCancelled,
+		ConversionTaskStateCompleted,
+	}
+}
+
 const (
 	// CopyTagsFromSourceVolume is a CopyTagsFromSource enum value
 	CopyTagsFromSourceVolume = "volume"
 )
 
+// CopyTagsFromSource_Values returns all elements of the CopyTagsFromSource enum
+func CopyTagsFromSource_Values() []string {
+	return []string{
+		CopyTagsFromSourceVolume,
+	}
+}
+
 const (
 	// CurrencyCodeValuesUsd is a CurrencyCodeValues enum value
 	CurrencyCodeValuesUsd = "USD"
 )
+
+// CurrencyCodeValues_Values returns all elements of the CurrencyCodeValues enum
+func CurrencyCodeValues_Values() []string {
+	return []string{
+		CurrencyCodeValuesUsd,
+	}
+}
 
 const (
 	// DatafeedSubscriptionStateActive is a DatafeedSubscriptionState enum value
@@ -112348,6 +115499,14 @@ const (
 	DatafeedSubscriptionStateInactive = "Inactive"
 )
 
+// DatafeedSubscriptionState_Values returns all elements of the DatafeedSubscriptionState enum
+func DatafeedSubscriptionState_Values() []string {
+	return []string{
+		DatafeedSubscriptionStateActive,
+		DatafeedSubscriptionStateInactive,
+	}
+}
+
 const (
 	// DefaultRouteTableAssociationValueEnable is a DefaultRouteTableAssociationValue enum value
 	DefaultRouteTableAssociationValueEnable = "enable"
@@ -112355,6 +115514,14 @@ const (
 	// DefaultRouteTableAssociationValueDisable is a DefaultRouteTableAssociationValue enum value
 	DefaultRouteTableAssociationValueDisable = "disable"
 )
+
+// DefaultRouteTableAssociationValue_Values returns all elements of the DefaultRouteTableAssociationValue enum
+func DefaultRouteTableAssociationValue_Values() []string {
+	return []string{
+		DefaultRouteTableAssociationValueEnable,
+		DefaultRouteTableAssociationValueDisable,
+	}
+}
 
 const (
 	// DefaultRouteTablePropagationValueEnable is a DefaultRouteTablePropagationValue enum value
@@ -112364,6 +115531,14 @@ const (
 	DefaultRouteTablePropagationValueDisable = "disable"
 )
 
+// DefaultRouteTablePropagationValue_Values returns all elements of the DefaultRouteTablePropagationValue enum
+func DefaultRouteTablePropagationValue_Values() []string {
+	return []string{
+		DefaultRouteTablePropagationValueEnable,
+		DefaultRouteTablePropagationValueDisable,
+	}
+}
+
 const (
 	// DefaultTargetCapacityTypeSpot is a DefaultTargetCapacityType enum value
 	DefaultTargetCapacityTypeSpot = "spot"
@@ -112371,6 +115546,14 @@ const (
 	// DefaultTargetCapacityTypeOnDemand is a DefaultTargetCapacityType enum value
 	DefaultTargetCapacityTypeOnDemand = "on-demand"
 )
+
+// DefaultTargetCapacityType_Values returns all elements of the DefaultTargetCapacityType enum
+func DefaultTargetCapacityType_Values() []string {
+	return []string{
+		DefaultTargetCapacityTypeSpot,
+		DefaultTargetCapacityTypeOnDemand,
+	}
+}
 
 const (
 	// DeleteFleetErrorCodeFleetIdDoesNotExist is a DeleteFleetErrorCode enum value
@@ -112386,6 +115569,16 @@ const (
 	DeleteFleetErrorCodeUnexpectedError = "unexpectedError"
 )
 
+// DeleteFleetErrorCode_Values returns all elements of the DeleteFleetErrorCode enum
+func DeleteFleetErrorCode_Values() []string {
+	return []string{
+		DeleteFleetErrorCodeFleetIdDoesNotExist,
+		DeleteFleetErrorCodeFleetIdMalformed,
+		DeleteFleetErrorCodeFleetNotInDeletableState,
+		DeleteFleetErrorCodeUnexpectedError,
+	}
+}
+
 const (
 	// DeleteQueuedReservedInstancesErrorCodeReservedInstancesIdInvalid is a DeleteQueuedReservedInstancesErrorCode enum value
 	DeleteQueuedReservedInstancesErrorCodeReservedInstancesIdInvalid = "reserved-instances-id-invalid"
@@ -112397,6 +115590,15 @@ const (
 	DeleteQueuedReservedInstancesErrorCodeUnexpectedError = "unexpected-error"
 )
 
+// DeleteQueuedReservedInstancesErrorCode_Values returns all elements of the DeleteQueuedReservedInstancesErrorCode enum
+func DeleteQueuedReservedInstancesErrorCode_Values() []string {
+	return []string{
+		DeleteQueuedReservedInstancesErrorCodeReservedInstancesIdInvalid,
+		DeleteQueuedReservedInstancesErrorCodeReservedInstancesNotInQueuedState,
+		DeleteQueuedReservedInstancesErrorCodeUnexpectedError,
+	}
+}
+
 const (
 	// DeviceTypeEbs is a DeviceType enum value
 	DeviceTypeEbs = "ebs"
@@ -112404,6 +115606,14 @@ const (
 	// DeviceTypeInstanceStore is a DeviceType enum value
 	DeviceTypeInstanceStore = "instance-store"
 )
+
+// DeviceType_Values returns all elements of the DeviceType enum
+func DeviceType_Values() []string {
+	return []string{
+		DeviceTypeEbs,
+		DeviceTypeInstanceStore,
+	}
+}
 
 const (
 	// DiskImageFormatVmdk is a DiskImageFormat enum value
@@ -112416,6 +115626,15 @@ const (
 	DiskImageFormatVhd = "VHD"
 )
 
+// DiskImageFormat_Values returns all elements of the DiskImageFormat enum
+func DiskImageFormat_Values() []string {
+	return []string{
+		DiskImageFormatVmdk,
+		DiskImageFormatRaw,
+		DiskImageFormatVhd,
+	}
+}
+
 const (
 	// DiskTypeHdd is a DiskType enum value
 	DiskTypeHdd = "hdd"
@@ -112423,6 +115642,14 @@ const (
 	// DiskTypeSsd is a DiskType enum value
 	DiskTypeSsd = "ssd"
 )
+
+// DiskType_Values returns all elements of the DiskType enum
+func DiskType_Values() []string {
+	return []string{
+		DiskTypeHdd,
+		DiskTypeSsd,
+	}
+}
 
 const (
 	// DnsNameStatePendingVerification is a DnsNameState enum value
@@ -112435,6 +115662,15 @@ const (
 	DnsNameStateFailed = "failed"
 )
 
+// DnsNameState_Values returns all elements of the DnsNameState enum
+func DnsNameState_Values() []string {
+	return []string{
+		DnsNameStatePendingVerification,
+		DnsNameStateVerified,
+		DnsNameStateFailed,
+	}
+}
+
 const (
 	// DnsSupportValueEnable is a DnsSupportValue enum value
 	DnsSupportValueEnable = "enable"
@@ -112442,6 +115678,14 @@ const (
 	// DnsSupportValueDisable is a DnsSupportValue enum value
 	DnsSupportValueDisable = "disable"
 )
+
+// DnsSupportValue_Values returns all elements of the DnsSupportValue enum
+func DnsSupportValue_Values() []string {
+	return []string{
+		DnsSupportValueEnable,
+		DnsSupportValueDisable,
+	}
+}
 
 const (
 	// DomainTypeVpc is a DomainType enum value
@@ -112451,6 +115695,14 @@ const (
 	DomainTypeStandard = "standard"
 )
 
+// DomainType_Values returns all elements of the DomainType enum
+func DomainType_Values() []string {
+	return []string{
+		DomainTypeVpc,
+		DomainTypeStandard,
+	}
+}
+
 const (
 	// EbsEncryptionSupportUnsupported is a EbsEncryptionSupport enum value
 	EbsEncryptionSupportUnsupported = "unsupported"
@@ -112458,6 +115710,14 @@ const (
 	// EbsEncryptionSupportSupported is a EbsEncryptionSupport enum value
 	EbsEncryptionSupportSupported = "supported"
 )
+
+// EbsEncryptionSupport_Values returns all elements of the EbsEncryptionSupport enum
+func EbsEncryptionSupport_Values() []string {
+	return []string{
+		EbsEncryptionSupportUnsupported,
+		EbsEncryptionSupportSupported,
+	}
+}
 
 const (
 	// EbsNvmeSupportUnsupported is a EbsNvmeSupport enum value
@@ -112470,6 +115730,15 @@ const (
 	EbsNvmeSupportRequired = "required"
 )
 
+// EbsNvmeSupport_Values returns all elements of the EbsNvmeSupport enum
+func EbsNvmeSupport_Values() []string {
+	return []string{
+		EbsNvmeSupportUnsupported,
+		EbsNvmeSupportSupported,
+		EbsNvmeSupportRequired,
+	}
+}
+
 const (
 	// EbsOptimizedSupportUnsupported is a EbsOptimizedSupport enum value
 	EbsOptimizedSupportUnsupported = "unsupported"
@@ -112481,10 +115750,26 @@ const (
 	EbsOptimizedSupportDefault = "default"
 )
 
+// EbsOptimizedSupport_Values returns all elements of the EbsOptimizedSupport enum
+func EbsOptimizedSupport_Values() []string {
+	return []string{
+		EbsOptimizedSupportUnsupported,
+		EbsOptimizedSupportSupported,
+		EbsOptimizedSupportDefault,
+	}
+}
+
 const (
 	// ElasticGpuStateAttached is a ElasticGpuState enum value
 	ElasticGpuStateAttached = "ATTACHED"
 )
+
+// ElasticGpuState_Values returns all elements of the ElasticGpuState enum
+func ElasticGpuState_Values() []string {
+	return []string{
+		ElasticGpuStateAttached,
+	}
+}
 
 const (
 	// ElasticGpuStatusOk is a ElasticGpuStatus enum value
@@ -112493,6 +115778,14 @@ const (
 	// ElasticGpuStatusImpaired is a ElasticGpuStatus enum value
 	ElasticGpuStatusImpaired = "IMPAIRED"
 )
+
+// ElasticGpuStatus_Values returns all elements of the ElasticGpuStatus enum
+func ElasticGpuStatus_Values() []string {
+	return []string{
+		ElasticGpuStatusOk,
+		ElasticGpuStatusImpaired,
+	}
+}
 
 const (
 	// EnaSupportUnsupported is a EnaSupport enum value
@@ -112505,6 +115798,15 @@ const (
 	EnaSupportRequired = "required"
 )
 
+// EnaSupport_Values returns all elements of the EnaSupport enum
+func EnaSupport_Values() []string {
+	return []string{
+		EnaSupportUnsupported,
+		EnaSupportSupported,
+		EnaSupportRequired,
+	}
+}
+
 const (
 	// EndDateTypeUnlimited is a EndDateType enum value
 	EndDateTypeUnlimited = "unlimited"
@@ -112512,6 +115814,14 @@ const (
 	// EndDateTypeLimited is a EndDateType enum value
 	EndDateTypeLimited = "limited"
 )
+
+// EndDateType_Values returns all elements of the EndDateType enum
+func EndDateType_Values() []string {
+	return []string{
+		EndDateTypeUnlimited,
+		EndDateTypeLimited,
+	}
+}
 
 const (
 	// EventCodeInstanceReboot is a EventCode enum value
@@ -112530,6 +115840,17 @@ const (
 	EventCodeInstanceStop = "instance-stop"
 )
 
+// EventCode_Values returns all elements of the EventCode enum
+func EventCode_Values() []string {
+	return []string{
+		EventCodeInstanceReboot,
+		EventCodeSystemReboot,
+		EventCodeSystemMaintenance,
+		EventCodeInstanceRetirement,
+		EventCodeInstanceStop,
+	}
+}
+
 const (
 	// EventTypeInstanceChange is a EventType enum value
 	EventTypeInstanceChange = "instanceChange"
@@ -112544,6 +115865,16 @@ const (
 	EventTypeInformation = "information"
 )
 
+// EventType_Values returns all elements of the EventType enum
+func EventType_Values() []string {
+	return []string{
+		EventTypeInstanceChange,
+		EventTypeFleetRequestChange,
+		EventTypeError,
+		EventTypeInformation,
+	}
+}
+
 const (
 	// ExcessCapacityTerminationPolicyNoTermination is a ExcessCapacityTerminationPolicy enum value
 	ExcessCapacityTerminationPolicyNoTermination = "noTermination"
@@ -112551,6 +115882,14 @@ const (
 	// ExcessCapacityTerminationPolicyDefault is a ExcessCapacityTerminationPolicy enum value
 	ExcessCapacityTerminationPolicyDefault = "default"
 )
+
+// ExcessCapacityTerminationPolicy_Values returns all elements of the ExcessCapacityTerminationPolicy enum
+func ExcessCapacityTerminationPolicy_Values() []string {
+	return []string{
+		ExcessCapacityTerminationPolicyNoTermination,
+		ExcessCapacityTerminationPolicyDefault,
+	}
+}
 
 const (
 	// ExportEnvironmentCitrix is a ExportEnvironment enum value
@@ -112562,6 +115901,15 @@ const (
 	// ExportEnvironmentMicrosoft is a ExportEnvironment enum value
 	ExportEnvironmentMicrosoft = "microsoft"
 )
+
+// ExportEnvironment_Values returns all elements of the ExportEnvironment enum
+func ExportEnvironment_Values() []string {
+	return []string{
+		ExportEnvironmentCitrix,
+		ExportEnvironmentVmware,
+		ExportEnvironmentMicrosoft,
+	}
+}
 
 const (
 	// ExportTaskStateActive is a ExportTaskState enum value
@@ -112576,6 +115924,16 @@ const (
 	// ExportTaskStateCompleted is a ExportTaskState enum value
 	ExportTaskStateCompleted = "completed"
 )
+
+// ExportTaskState_Values returns all elements of the ExportTaskState enum
+func ExportTaskState_Values() []string {
+	return []string{
+		ExportTaskStateActive,
+		ExportTaskStateCancelling,
+		ExportTaskStateCancelled,
+		ExportTaskStateCompleted,
+	}
+}
 
 const (
 	// FastSnapshotRestoreStateCodeEnabling is a FastSnapshotRestoreStateCode enum value
@@ -112594,6 +115952,17 @@ const (
 	FastSnapshotRestoreStateCodeDisabled = "disabled"
 )
 
+// FastSnapshotRestoreStateCode_Values returns all elements of the FastSnapshotRestoreStateCode enum
+func FastSnapshotRestoreStateCode_Values() []string {
+	return []string{
+		FastSnapshotRestoreStateCodeEnabling,
+		FastSnapshotRestoreStateCodeOptimizing,
+		FastSnapshotRestoreStateCodeEnabled,
+		FastSnapshotRestoreStateCodeDisabling,
+		FastSnapshotRestoreStateCodeDisabled,
+	}
+}
+
 const (
 	// FleetActivityStatusError is a FleetActivityStatus enum value
 	FleetActivityStatusError = "error"
@@ -112608,10 +115977,27 @@ const (
 	FleetActivityStatusFulfilled = "fulfilled"
 )
 
+// FleetActivityStatus_Values returns all elements of the FleetActivityStatus enum
+func FleetActivityStatus_Values() []string {
+	return []string{
+		FleetActivityStatusError,
+		FleetActivityStatusPendingFulfillment,
+		FleetActivityStatusPendingTermination,
+		FleetActivityStatusFulfilled,
+	}
+}
+
 const (
 	// FleetCapacityReservationUsageStrategyUseCapacityReservationsFirst is a FleetCapacityReservationUsageStrategy enum value
 	FleetCapacityReservationUsageStrategyUseCapacityReservationsFirst = "use-capacity-reservations-first"
 )
+
+// FleetCapacityReservationUsageStrategy_Values returns all elements of the FleetCapacityReservationUsageStrategy enum
+func FleetCapacityReservationUsageStrategy_Values() []string {
+	return []string{
+		FleetCapacityReservationUsageStrategyUseCapacityReservationsFirst,
+	}
+}
 
 const (
 	// FleetEventTypeInstanceChange is a FleetEventType enum value
@@ -112624,6 +116010,15 @@ const (
 	FleetEventTypeServiceError = "service-error"
 )
 
+// FleetEventType_Values returns all elements of the FleetEventType enum
+func FleetEventType_Values() []string {
+	return []string{
+		FleetEventTypeInstanceChange,
+		FleetEventTypeFleetChange,
+		FleetEventTypeServiceError,
+	}
+}
+
 const (
 	// FleetExcessCapacityTerminationPolicyNoTermination is a FleetExcessCapacityTerminationPolicy enum value
 	FleetExcessCapacityTerminationPolicyNoTermination = "no-termination"
@@ -112632,6 +116027,14 @@ const (
 	FleetExcessCapacityTerminationPolicyTermination = "termination"
 )
 
+// FleetExcessCapacityTerminationPolicy_Values returns all elements of the FleetExcessCapacityTerminationPolicy enum
+func FleetExcessCapacityTerminationPolicy_Values() []string {
+	return []string{
+		FleetExcessCapacityTerminationPolicyNoTermination,
+		FleetExcessCapacityTerminationPolicyTermination,
+	}
+}
+
 const (
 	// FleetOnDemandAllocationStrategyLowestPrice is a FleetOnDemandAllocationStrategy enum value
 	FleetOnDemandAllocationStrategyLowestPrice = "lowest-price"
@@ -112639,6 +116042,14 @@ const (
 	// FleetOnDemandAllocationStrategyPrioritized is a FleetOnDemandAllocationStrategy enum value
 	FleetOnDemandAllocationStrategyPrioritized = "prioritized"
 )
+
+// FleetOnDemandAllocationStrategy_Values returns all elements of the FleetOnDemandAllocationStrategy enum
+func FleetOnDemandAllocationStrategy_Values() []string {
+	return []string{
+		FleetOnDemandAllocationStrategyLowestPrice,
+		FleetOnDemandAllocationStrategyPrioritized,
+	}
+}
 
 const (
 	// FleetStateCodeSubmitted is a FleetStateCode enum value
@@ -112663,6 +116074,19 @@ const (
 	FleetStateCodeModifying = "modifying"
 )
 
+// FleetStateCode_Values returns all elements of the FleetStateCode enum
+func FleetStateCode_Values() []string {
+	return []string{
+		FleetStateCodeSubmitted,
+		FleetStateCodeActive,
+		FleetStateCodeDeleted,
+		FleetStateCodeFailed,
+		FleetStateCodeDeletedRunning,
+		FleetStateCodeDeletedTerminating,
+		FleetStateCodeModifying,
+	}
+}
+
 const (
 	// FleetTypeRequest is a FleetType enum value
 	FleetTypeRequest = "request"
@@ -112674,6 +116098,15 @@ const (
 	FleetTypeInstant = "instant"
 )
 
+// FleetType_Values returns all elements of the FleetType enum
+func FleetType_Values() []string {
+	return []string{
+		FleetTypeRequest,
+		FleetTypeMaintain,
+		FleetTypeInstant,
+	}
+}
+
 const (
 	// FlowLogsResourceTypeVpc is a FlowLogsResourceType enum value
 	FlowLogsResourceTypeVpc = "VPC"
@@ -112684,6 +116117,15 @@ const (
 	// FlowLogsResourceTypeNetworkInterface is a FlowLogsResourceType enum value
 	FlowLogsResourceTypeNetworkInterface = "NetworkInterface"
 )
+
+// FlowLogsResourceType_Values returns all elements of the FlowLogsResourceType enum
+func FlowLogsResourceType_Values() []string {
+	return []string{
+		FlowLogsResourceTypeVpc,
+		FlowLogsResourceTypeSubnet,
+		FlowLogsResourceTypeNetworkInterface,
+	}
+}
 
 const (
 	// FpgaImageAttributeNameDescription is a FpgaImageAttributeName enum value
@@ -112699,6 +116141,16 @@ const (
 	FpgaImageAttributeNameProductCodes = "productCodes"
 )
 
+// FpgaImageAttributeName_Values returns all elements of the FpgaImageAttributeName enum
+func FpgaImageAttributeName_Values() []string {
+	return []string{
+		FpgaImageAttributeNameDescription,
+		FpgaImageAttributeNameName,
+		FpgaImageAttributeNameLoadPermission,
+		FpgaImageAttributeNameProductCodes,
+	}
+}
+
 const (
 	// FpgaImageStateCodePending is a FpgaImageStateCode enum value
 	FpgaImageStateCodePending = "pending"
@@ -112713,10 +116165,27 @@ const (
 	FpgaImageStateCodeUnavailable = "unavailable"
 )
 
+// FpgaImageStateCode_Values returns all elements of the FpgaImageStateCode enum
+func FpgaImageStateCode_Values() []string {
+	return []string{
+		FpgaImageStateCodePending,
+		FpgaImageStateCodeFailed,
+		FpgaImageStateCodeAvailable,
+		FpgaImageStateCodeUnavailable,
+	}
+}
+
 const (
 	// GatewayTypeIpsec1 is a GatewayType enum value
 	GatewayTypeIpsec1 = "ipsec.1"
 )
+
+// GatewayType_Values returns all elements of the GatewayType enum
+func GatewayType_Values() []string {
+	return []string{
+		GatewayTypeIpsec1,
+	}
+}
 
 const (
 	// HostRecoveryOn is a HostRecovery enum value
@@ -112726,6 +116195,14 @@ const (
 	HostRecoveryOff = "off"
 )
 
+// HostRecovery_Values returns all elements of the HostRecovery enum
+func HostRecovery_Values() []string {
+	return []string{
+		HostRecoveryOn,
+		HostRecoveryOff,
+	}
+}
+
 const (
 	// HostTenancyDedicated is a HostTenancy enum value
 	HostTenancyDedicated = "dedicated"
@@ -112733,6 +116210,14 @@ const (
 	// HostTenancyHost is a HostTenancy enum value
 	HostTenancyHost = "host"
 )
+
+// HostTenancy_Values returns all elements of the HostTenancy enum
+func HostTenancy_Values() []string {
+	return []string{
+		HostTenancyDedicated,
+		HostTenancyHost,
+	}
+}
 
 const (
 	// HttpTokensStateOptional is a HttpTokensState enum value
@@ -112742,6 +116227,14 @@ const (
 	HttpTokensStateRequired = "required"
 )
 
+// HttpTokensState_Values returns all elements of the HttpTokensState enum
+func HttpTokensState_Values() []string {
+	return []string{
+		HttpTokensStateOptional,
+		HttpTokensStateRequired,
+	}
+}
+
 const (
 	// HypervisorTypeOvm is a HypervisorType enum value
 	HypervisorTypeOvm = "ovm"
@@ -112749,6 +116242,14 @@ const (
 	// HypervisorTypeXen is a HypervisorType enum value
 	HypervisorTypeXen = "xen"
 )
+
+// HypervisorType_Values returns all elements of the HypervisorType enum
+func HypervisorType_Values() []string {
+	return []string{
+		HypervisorTypeOvm,
+		HypervisorTypeXen,
+	}
+}
 
 const (
 	// IamInstanceProfileAssociationStateAssociating is a IamInstanceProfileAssociationState enum value
@@ -112763,6 +116264,16 @@ const (
 	// IamInstanceProfileAssociationStateDisassociated is a IamInstanceProfileAssociationState enum value
 	IamInstanceProfileAssociationStateDisassociated = "disassociated"
 )
+
+// IamInstanceProfileAssociationState_Values returns all elements of the IamInstanceProfileAssociationState enum
+func IamInstanceProfileAssociationState_Values() []string {
+	return []string{
+		IamInstanceProfileAssociationStateAssociating,
+		IamInstanceProfileAssociationStateAssociated,
+		IamInstanceProfileAssociationStateDisassociating,
+		IamInstanceProfileAssociationStateDisassociated,
+	}
+}
 
 const (
 	// ImageAttributeNameDescription is a ImageAttributeName enum value
@@ -112787,6 +116298,19 @@ const (
 	ImageAttributeNameSriovNetSupport = "sriovNetSupport"
 )
 
+// ImageAttributeName_Values returns all elements of the ImageAttributeName enum
+func ImageAttributeName_Values() []string {
+	return []string{
+		ImageAttributeNameDescription,
+		ImageAttributeNameKernel,
+		ImageAttributeNameRamdisk,
+		ImageAttributeNameLaunchPermission,
+		ImageAttributeNameProductCodes,
+		ImageAttributeNameBlockDeviceMapping,
+		ImageAttributeNameSriovNetSupport,
+	}
+}
+
 const (
 	// ImageStatePending is a ImageState enum value
 	ImageStatePending = "pending"
@@ -112810,6 +116334,19 @@ const (
 	ImageStateError = "error"
 )
 
+// ImageState_Values returns all elements of the ImageState enum
+func ImageState_Values() []string {
+	return []string{
+		ImageStatePending,
+		ImageStateAvailable,
+		ImageStateInvalid,
+		ImageStateDeregistered,
+		ImageStateTransient,
+		ImageStateFailed,
+		ImageStateError,
+	}
+}
+
 const (
 	// ImageTypeValuesMachine is a ImageTypeValues enum value
 	ImageTypeValuesMachine = "machine"
@@ -112820,6 +116357,15 @@ const (
 	// ImageTypeValuesRamdisk is a ImageTypeValues enum value
 	ImageTypeValuesRamdisk = "ramdisk"
 )
+
+// ImageTypeValues_Values returns all elements of the ImageTypeValues enum
+func ImageTypeValues_Values() []string {
+	return []string{
+		ImageTypeValuesMachine,
+		ImageTypeValuesKernel,
+		ImageTypeValuesRamdisk,
+	}
+}
 
 const (
 	// InstanceAttributeNameInstanceType is a InstanceAttributeName enum value
@@ -112865,6 +116411,26 @@ const (
 	InstanceAttributeNameEnaSupport = "enaSupport"
 )
 
+// InstanceAttributeName_Values returns all elements of the InstanceAttributeName enum
+func InstanceAttributeName_Values() []string {
+	return []string{
+		InstanceAttributeNameInstanceType,
+		InstanceAttributeNameKernel,
+		InstanceAttributeNameRamdisk,
+		InstanceAttributeNameUserData,
+		InstanceAttributeNameDisableApiTermination,
+		InstanceAttributeNameInstanceInitiatedShutdownBehavior,
+		InstanceAttributeNameRootDeviceName,
+		InstanceAttributeNameBlockDeviceMapping,
+		InstanceAttributeNameProductCodes,
+		InstanceAttributeNameSourceDestCheck,
+		InstanceAttributeNameGroupSet,
+		InstanceAttributeNameEbsOptimized,
+		InstanceAttributeNameSriovNetSupport,
+		InstanceAttributeNameEnaSupport,
+	}
+}
+
 const (
 	// InstanceHealthStatusHealthy is a InstanceHealthStatus enum value
 	InstanceHealthStatusHealthy = "healthy"
@@ -112872,6 +116438,14 @@ const (
 	// InstanceHealthStatusUnhealthy is a InstanceHealthStatus enum value
 	InstanceHealthStatusUnhealthy = "unhealthy"
 )
+
+// InstanceHealthStatus_Values returns all elements of the InstanceHealthStatus enum
+func InstanceHealthStatus_Values() []string {
+	return []string{
+		InstanceHealthStatusHealthy,
+		InstanceHealthStatusUnhealthy,
+	}
+}
 
 const (
 	// InstanceInterruptionBehaviorHibernate is a InstanceInterruptionBehavior enum value
@@ -112884,6 +116458,15 @@ const (
 	InstanceInterruptionBehaviorTerminate = "terminate"
 )
 
+// InstanceInterruptionBehavior_Values returns all elements of the InstanceInterruptionBehavior enum
+func InstanceInterruptionBehavior_Values() []string {
+	return []string{
+		InstanceInterruptionBehaviorHibernate,
+		InstanceInterruptionBehaviorStop,
+		InstanceInterruptionBehaviorTerminate,
+	}
+}
+
 const (
 	// InstanceLifecycleSpot is a InstanceLifecycle enum value
 	InstanceLifecycleSpot = "spot"
@@ -112891,6 +116474,14 @@ const (
 	// InstanceLifecycleOnDemand is a InstanceLifecycle enum value
 	InstanceLifecycleOnDemand = "on-demand"
 )
+
+// InstanceLifecycle_Values returns all elements of the InstanceLifecycle enum
+func InstanceLifecycle_Values() []string {
+	return []string{
+		InstanceLifecycleSpot,
+		InstanceLifecycleOnDemand,
+	}
+}
 
 const (
 	// InstanceLifecycleTypeSpot is a InstanceLifecycleType enum value
@@ -112900,6 +116491,14 @@ const (
 	InstanceLifecycleTypeScheduled = "scheduled"
 )
 
+// InstanceLifecycleType_Values returns all elements of the InstanceLifecycleType enum
+func InstanceLifecycleType_Values() []string {
+	return []string{
+		InstanceLifecycleTypeSpot,
+		InstanceLifecycleTypeScheduled,
+	}
+}
+
 const (
 	// InstanceMatchCriteriaOpen is a InstanceMatchCriteria enum value
 	InstanceMatchCriteriaOpen = "open"
@@ -112907,6 +116506,14 @@ const (
 	// InstanceMatchCriteriaTargeted is a InstanceMatchCriteria enum value
 	InstanceMatchCriteriaTargeted = "targeted"
 )
+
+// InstanceMatchCriteria_Values returns all elements of the InstanceMatchCriteria enum
+func InstanceMatchCriteria_Values() []string {
+	return []string{
+		InstanceMatchCriteriaOpen,
+		InstanceMatchCriteriaTargeted,
+	}
+}
 
 const (
 	// InstanceMetadataEndpointStateDisabled is a InstanceMetadataEndpointState enum value
@@ -112916,6 +116523,14 @@ const (
 	InstanceMetadataEndpointStateEnabled = "enabled"
 )
 
+// InstanceMetadataEndpointState_Values returns all elements of the InstanceMetadataEndpointState enum
+func InstanceMetadataEndpointState_Values() []string {
+	return []string{
+		InstanceMetadataEndpointStateDisabled,
+		InstanceMetadataEndpointStateEnabled,
+	}
+}
+
 const (
 	// InstanceMetadataOptionsStatePending is a InstanceMetadataOptionsState enum value
 	InstanceMetadataOptionsStatePending = "pending"
@@ -112923,6 +116538,14 @@ const (
 	// InstanceMetadataOptionsStateApplied is a InstanceMetadataOptionsState enum value
 	InstanceMetadataOptionsStateApplied = "applied"
 )
+
+// InstanceMetadataOptionsState_Values returns all elements of the InstanceMetadataOptionsState enum
+func InstanceMetadataOptionsState_Values() []string {
+	return []string{
+		InstanceMetadataOptionsStatePending,
+		InstanceMetadataOptionsStateApplied,
+	}
+}
 
 const (
 	// InstanceStateNamePending is a InstanceStateName enum value
@@ -112943,6 +116566,18 @@ const (
 	// InstanceStateNameStopped is a InstanceStateName enum value
 	InstanceStateNameStopped = "stopped"
 )
+
+// InstanceStateName_Values returns all elements of the InstanceStateName enum
+func InstanceStateName_Values() []string {
+	return []string{
+		InstanceStateNamePending,
+		InstanceStateNameRunning,
+		InstanceStateNameShuttingDown,
+		InstanceStateNameTerminated,
+		InstanceStateNameStopping,
+		InstanceStateNameStopped,
+	}
+}
 
 const (
 	// InstanceTypeT1Micro is a InstanceType enum value
@@ -113010,6 +116645,27 @@ const (
 
 	// InstanceTypeT3a2xlarge is a InstanceType enum value
 	InstanceTypeT3a2xlarge = "t3a.2xlarge"
+
+	// InstanceTypeT4gNano is a InstanceType enum value
+	InstanceTypeT4gNano = "t4g.nano"
+
+	// InstanceTypeT4gMicro is a InstanceType enum value
+	InstanceTypeT4gMicro = "t4g.micro"
+
+	// InstanceTypeT4gSmall is a InstanceType enum value
+	InstanceTypeT4gSmall = "t4g.small"
+
+	// InstanceTypeT4gMedium is a InstanceType enum value
+	InstanceTypeT4gMedium = "t4g.medium"
+
+	// InstanceTypeT4gLarge is a InstanceType enum value
+	InstanceTypeT4gLarge = "t4g.large"
+
+	// InstanceTypeT4gXlarge is a InstanceType enum value
+	InstanceTypeT4gXlarge = "t4g.xlarge"
+
+	// InstanceTypeT4g2xlarge is a InstanceType enum value
+	InstanceTypeT4g2xlarge = "t4g.2xlarge"
 
 	// InstanceTypeM1Small is a InstanceType enum value
 	InstanceTypeM1Small = "m1.small"
@@ -113227,6 +116883,33 @@ const (
 	// InstanceTypeR6g16xlarge is a InstanceType enum value
 	InstanceTypeR6g16xlarge = "r6g.16xlarge"
 
+	// InstanceTypeR6gdMetal is a InstanceType enum value
+	InstanceTypeR6gdMetal = "r6gd.metal"
+
+	// InstanceTypeR6gdMedium is a InstanceType enum value
+	InstanceTypeR6gdMedium = "r6gd.medium"
+
+	// InstanceTypeR6gdLarge is a InstanceType enum value
+	InstanceTypeR6gdLarge = "r6gd.large"
+
+	// InstanceTypeR6gdXlarge is a InstanceType enum value
+	InstanceTypeR6gdXlarge = "r6gd.xlarge"
+
+	// InstanceTypeR6gd2xlarge is a InstanceType enum value
+	InstanceTypeR6gd2xlarge = "r6gd.2xlarge"
+
+	// InstanceTypeR6gd4xlarge is a InstanceType enum value
+	InstanceTypeR6gd4xlarge = "r6gd.4xlarge"
+
+	// InstanceTypeR6gd8xlarge is a InstanceType enum value
+	InstanceTypeR6gd8xlarge = "r6gd.8xlarge"
+
+	// InstanceTypeR6gd12xlarge is a InstanceType enum value
+	InstanceTypeR6gd12xlarge = "r6gd.12xlarge"
+
+	// InstanceTypeR6gd16xlarge is a InstanceType enum value
+	InstanceTypeR6gd16xlarge = "r6gd.16xlarge"
+
 	// InstanceTypeX116xlarge is a InstanceType enum value
 	InstanceTypeX116xlarge = "x1.16xlarge"
 
@@ -113401,6 +117084,30 @@ const (
 	// InstanceTypeC5a24xlarge is a InstanceType enum value
 	InstanceTypeC5a24xlarge = "c5a.24xlarge"
 
+	// InstanceTypeC5adLarge is a InstanceType enum value
+	InstanceTypeC5adLarge = "c5ad.large"
+
+	// InstanceTypeC5adXlarge is a InstanceType enum value
+	InstanceTypeC5adXlarge = "c5ad.xlarge"
+
+	// InstanceTypeC5ad2xlarge is a InstanceType enum value
+	InstanceTypeC5ad2xlarge = "c5ad.2xlarge"
+
+	// InstanceTypeC5ad4xlarge is a InstanceType enum value
+	InstanceTypeC5ad4xlarge = "c5ad.4xlarge"
+
+	// InstanceTypeC5ad8xlarge is a InstanceType enum value
+	InstanceTypeC5ad8xlarge = "c5ad.8xlarge"
+
+	// InstanceTypeC5ad12xlarge is a InstanceType enum value
+	InstanceTypeC5ad12xlarge = "c5ad.12xlarge"
+
+	// InstanceTypeC5ad16xlarge is a InstanceType enum value
+	InstanceTypeC5ad16xlarge = "c5ad.16xlarge"
+
+	// InstanceTypeC5ad24xlarge is a InstanceType enum value
+	InstanceTypeC5ad24xlarge = "c5ad.24xlarge"
+
 	// InstanceTypeC5dLarge is a InstanceType enum value
 	InstanceTypeC5dLarge = "c5d.large"
 
@@ -113472,6 +117179,33 @@ const (
 
 	// InstanceTypeC6g16xlarge is a InstanceType enum value
 	InstanceTypeC6g16xlarge = "c6g.16xlarge"
+
+	// InstanceTypeC6gdMetal is a InstanceType enum value
+	InstanceTypeC6gdMetal = "c6gd.metal"
+
+	// InstanceTypeC6gdMedium is a InstanceType enum value
+	InstanceTypeC6gdMedium = "c6gd.medium"
+
+	// InstanceTypeC6gdLarge is a InstanceType enum value
+	InstanceTypeC6gdLarge = "c6gd.large"
+
+	// InstanceTypeC6gdXlarge is a InstanceType enum value
+	InstanceTypeC6gdXlarge = "c6gd.xlarge"
+
+	// InstanceTypeC6gd2xlarge is a InstanceType enum value
+	InstanceTypeC6gd2xlarge = "c6gd.2xlarge"
+
+	// InstanceTypeC6gd4xlarge is a InstanceType enum value
+	InstanceTypeC6gd4xlarge = "c6gd.4xlarge"
+
+	// InstanceTypeC6gd8xlarge is a InstanceType enum value
+	InstanceTypeC6gd8xlarge = "c6gd.8xlarge"
+
+	// InstanceTypeC6gd12xlarge is a InstanceType enum value
+	InstanceTypeC6gd12xlarge = "c6gd.12xlarge"
+
+	// InstanceTypeC6gd16xlarge is a InstanceType enum value
+	InstanceTypeC6gd16xlarge = "c6gd.16xlarge"
 
 	// InstanceTypeCc14xlarge is a InstanceType enum value
 	InstanceTypeCc14xlarge = "cc1.4xlarge"
@@ -113865,7 +117599,389 @@ const (
 
 	// InstanceTypeM6g16xlarge is a InstanceType enum value
 	InstanceTypeM6g16xlarge = "m6g.16xlarge"
+
+	// InstanceTypeM6gdMetal is a InstanceType enum value
+	InstanceTypeM6gdMetal = "m6gd.metal"
+
+	// InstanceTypeM6gdMedium is a InstanceType enum value
+	InstanceTypeM6gdMedium = "m6gd.medium"
+
+	// InstanceTypeM6gdLarge is a InstanceType enum value
+	InstanceTypeM6gdLarge = "m6gd.large"
+
+	// InstanceTypeM6gdXlarge is a InstanceType enum value
+	InstanceTypeM6gdXlarge = "m6gd.xlarge"
+
+	// InstanceTypeM6gd2xlarge is a InstanceType enum value
+	InstanceTypeM6gd2xlarge = "m6gd.2xlarge"
+
+	// InstanceTypeM6gd4xlarge is a InstanceType enum value
+	InstanceTypeM6gd4xlarge = "m6gd.4xlarge"
+
+	// InstanceTypeM6gd8xlarge is a InstanceType enum value
+	InstanceTypeM6gd8xlarge = "m6gd.8xlarge"
+
+	// InstanceTypeM6gd12xlarge is a InstanceType enum value
+	InstanceTypeM6gd12xlarge = "m6gd.12xlarge"
+
+	// InstanceTypeM6gd16xlarge is a InstanceType enum value
+	InstanceTypeM6gd16xlarge = "m6gd.16xlarge"
 )
+
+// InstanceType_Values returns all elements of the InstanceType enum
+func InstanceType_Values() []string {
+	return []string{
+		InstanceTypeT1Micro,
+		InstanceTypeT2Nano,
+		InstanceTypeT2Micro,
+		InstanceTypeT2Small,
+		InstanceTypeT2Medium,
+		InstanceTypeT2Large,
+		InstanceTypeT2Xlarge,
+		InstanceTypeT22xlarge,
+		InstanceTypeT3Nano,
+		InstanceTypeT3Micro,
+		InstanceTypeT3Small,
+		InstanceTypeT3Medium,
+		InstanceTypeT3Large,
+		InstanceTypeT3Xlarge,
+		InstanceTypeT32xlarge,
+		InstanceTypeT3aNano,
+		InstanceTypeT3aMicro,
+		InstanceTypeT3aSmall,
+		InstanceTypeT3aMedium,
+		InstanceTypeT3aLarge,
+		InstanceTypeT3aXlarge,
+		InstanceTypeT3a2xlarge,
+		InstanceTypeT4gNano,
+		InstanceTypeT4gMicro,
+		InstanceTypeT4gSmall,
+		InstanceTypeT4gMedium,
+		InstanceTypeT4gLarge,
+		InstanceTypeT4gXlarge,
+		InstanceTypeT4g2xlarge,
+		InstanceTypeM1Small,
+		InstanceTypeM1Medium,
+		InstanceTypeM1Large,
+		InstanceTypeM1Xlarge,
+		InstanceTypeM3Medium,
+		InstanceTypeM3Large,
+		InstanceTypeM3Xlarge,
+		InstanceTypeM32xlarge,
+		InstanceTypeM4Large,
+		InstanceTypeM4Xlarge,
+		InstanceTypeM42xlarge,
+		InstanceTypeM44xlarge,
+		InstanceTypeM410xlarge,
+		InstanceTypeM416xlarge,
+		InstanceTypeM2Xlarge,
+		InstanceTypeM22xlarge,
+		InstanceTypeM24xlarge,
+		InstanceTypeCr18xlarge,
+		InstanceTypeR3Large,
+		InstanceTypeR3Xlarge,
+		InstanceTypeR32xlarge,
+		InstanceTypeR34xlarge,
+		InstanceTypeR38xlarge,
+		InstanceTypeR4Large,
+		InstanceTypeR4Xlarge,
+		InstanceTypeR42xlarge,
+		InstanceTypeR44xlarge,
+		InstanceTypeR48xlarge,
+		InstanceTypeR416xlarge,
+		InstanceTypeR5Large,
+		InstanceTypeR5Xlarge,
+		InstanceTypeR52xlarge,
+		InstanceTypeR54xlarge,
+		InstanceTypeR58xlarge,
+		InstanceTypeR512xlarge,
+		InstanceTypeR516xlarge,
+		InstanceTypeR524xlarge,
+		InstanceTypeR5Metal,
+		InstanceTypeR5aLarge,
+		InstanceTypeR5aXlarge,
+		InstanceTypeR5a2xlarge,
+		InstanceTypeR5a4xlarge,
+		InstanceTypeR5a8xlarge,
+		InstanceTypeR5a12xlarge,
+		InstanceTypeR5a16xlarge,
+		InstanceTypeR5a24xlarge,
+		InstanceTypeR5dLarge,
+		InstanceTypeR5dXlarge,
+		InstanceTypeR5d2xlarge,
+		InstanceTypeR5d4xlarge,
+		InstanceTypeR5d8xlarge,
+		InstanceTypeR5d12xlarge,
+		InstanceTypeR5d16xlarge,
+		InstanceTypeR5d24xlarge,
+		InstanceTypeR5dMetal,
+		InstanceTypeR5adLarge,
+		InstanceTypeR5adXlarge,
+		InstanceTypeR5ad2xlarge,
+		InstanceTypeR5ad4xlarge,
+		InstanceTypeR5ad8xlarge,
+		InstanceTypeR5ad12xlarge,
+		InstanceTypeR5ad16xlarge,
+		InstanceTypeR5ad24xlarge,
+		InstanceTypeR6gMetal,
+		InstanceTypeR6gMedium,
+		InstanceTypeR6gLarge,
+		InstanceTypeR6gXlarge,
+		InstanceTypeR6g2xlarge,
+		InstanceTypeR6g4xlarge,
+		InstanceTypeR6g8xlarge,
+		InstanceTypeR6g12xlarge,
+		InstanceTypeR6g16xlarge,
+		InstanceTypeR6gdMetal,
+		InstanceTypeR6gdMedium,
+		InstanceTypeR6gdLarge,
+		InstanceTypeR6gdXlarge,
+		InstanceTypeR6gd2xlarge,
+		InstanceTypeR6gd4xlarge,
+		InstanceTypeR6gd8xlarge,
+		InstanceTypeR6gd12xlarge,
+		InstanceTypeR6gd16xlarge,
+		InstanceTypeX116xlarge,
+		InstanceTypeX132xlarge,
+		InstanceTypeX1eXlarge,
+		InstanceTypeX1e2xlarge,
+		InstanceTypeX1e4xlarge,
+		InstanceTypeX1e8xlarge,
+		InstanceTypeX1e16xlarge,
+		InstanceTypeX1e32xlarge,
+		InstanceTypeI2Xlarge,
+		InstanceTypeI22xlarge,
+		InstanceTypeI24xlarge,
+		InstanceTypeI28xlarge,
+		InstanceTypeI3Large,
+		InstanceTypeI3Xlarge,
+		InstanceTypeI32xlarge,
+		InstanceTypeI34xlarge,
+		InstanceTypeI38xlarge,
+		InstanceTypeI316xlarge,
+		InstanceTypeI3Metal,
+		InstanceTypeI3enLarge,
+		InstanceTypeI3enXlarge,
+		InstanceTypeI3en2xlarge,
+		InstanceTypeI3en3xlarge,
+		InstanceTypeI3en6xlarge,
+		InstanceTypeI3en12xlarge,
+		InstanceTypeI3en24xlarge,
+		InstanceTypeI3enMetal,
+		InstanceTypeHi14xlarge,
+		InstanceTypeHs18xlarge,
+		InstanceTypeC1Medium,
+		InstanceTypeC1Xlarge,
+		InstanceTypeC3Large,
+		InstanceTypeC3Xlarge,
+		InstanceTypeC32xlarge,
+		InstanceTypeC34xlarge,
+		InstanceTypeC38xlarge,
+		InstanceTypeC4Large,
+		InstanceTypeC4Xlarge,
+		InstanceTypeC42xlarge,
+		InstanceTypeC44xlarge,
+		InstanceTypeC48xlarge,
+		InstanceTypeC5Large,
+		InstanceTypeC5Xlarge,
+		InstanceTypeC52xlarge,
+		InstanceTypeC54xlarge,
+		InstanceTypeC59xlarge,
+		InstanceTypeC512xlarge,
+		InstanceTypeC518xlarge,
+		InstanceTypeC524xlarge,
+		InstanceTypeC5Metal,
+		InstanceTypeC5aLarge,
+		InstanceTypeC5aXlarge,
+		InstanceTypeC5a2xlarge,
+		InstanceTypeC5a4xlarge,
+		InstanceTypeC5a8xlarge,
+		InstanceTypeC5a12xlarge,
+		InstanceTypeC5a16xlarge,
+		InstanceTypeC5a24xlarge,
+		InstanceTypeC5adLarge,
+		InstanceTypeC5adXlarge,
+		InstanceTypeC5ad2xlarge,
+		InstanceTypeC5ad4xlarge,
+		InstanceTypeC5ad8xlarge,
+		InstanceTypeC5ad12xlarge,
+		InstanceTypeC5ad16xlarge,
+		InstanceTypeC5ad24xlarge,
+		InstanceTypeC5dLarge,
+		InstanceTypeC5dXlarge,
+		InstanceTypeC5d2xlarge,
+		InstanceTypeC5d4xlarge,
+		InstanceTypeC5d9xlarge,
+		InstanceTypeC5d12xlarge,
+		InstanceTypeC5d18xlarge,
+		InstanceTypeC5d24xlarge,
+		InstanceTypeC5dMetal,
+		InstanceTypeC5nLarge,
+		InstanceTypeC5nXlarge,
+		InstanceTypeC5n2xlarge,
+		InstanceTypeC5n4xlarge,
+		InstanceTypeC5n9xlarge,
+		InstanceTypeC5n18xlarge,
+		InstanceTypeC6gMetal,
+		InstanceTypeC6gMedium,
+		InstanceTypeC6gLarge,
+		InstanceTypeC6gXlarge,
+		InstanceTypeC6g2xlarge,
+		InstanceTypeC6g4xlarge,
+		InstanceTypeC6g8xlarge,
+		InstanceTypeC6g12xlarge,
+		InstanceTypeC6g16xlarge,
+		InstanceTypeC6gdMetal,
+		InstanceTypeC6gdMedium,
+		InstanceTypeC6gdLarge,
+		InstanceTypeC6gdXlarge,
+		InstanceTypeC6gd2xlarge,
+		InstanceTypeC6gd4xlarge,
+		InstanceTypeC6gd8xlarge,
+		InstanceTypeC6gd12xlarge,
+		InstanceTypeC6gd16xlarge,
+		InstanceTypeCc14xlarge,
+		InstanceTypeCc28xlarge,
+		InstanceTypeG22xlarge,
+		InstanceTypeG28xlarge,
+		InstanceTypeG34xlarge,
+		InstanceTypeG38xlarge,
+		InstanceTypeG316xlarge,
+		InstanceTypeG3sXlarge,
+		InstanceTypeG4dnXlarge,
+		InstanceTypeG4dn2xlarge,
+		InstanceTypeG4dn4xlarge,
+		InstanceTypeG4dn8xlarge,
+		InstanceTypeG4dn12xlarge,
+		InstanceTypeG4dn16xlarge,
+		InstanceTypeG4dnMetal,
+		InstanceTypeCg14xlarge,
+		InstanceTypeP2Xlarge,
+		InstanceTypeP28xlarge,
+		InstanceTypeP216xlarge,
+		InstanceTypeP32xlarge,
+		InstanceTypeP38xlarge,
+		InstanceTypeP316xlarge,
+		InstanceTypeP3dn24xlarge,
+		InstanceTypeD2Xlarge,
+		InstanceTypeD22xlarge,
+		InstanceTypeD24xlarge,
+		InstanceTypeD28xlarge,
+		InstanceTypeF12xlarge,
+		InstanceTypeF14xlarge,
+		InstanceTypeF116xlarge,
+		InstanceTypeM5Large,
+		InstanceTypeM5Xlarge,
+		InstanceTypeM52xlarge,
+		InstanceTypeM54xlarge,
+		InstanceTypeM58xlarge,
+		InstanceTypeM512xlarge,
+		InstanceTypeM516xlarge,
+		InstanceTypeM524xlarge,
+		InstanceTypeM5Metal,
+		InstanceTypeM5aLarge,
+		InstanceTypeM5aXlarge,
+		InstanceTypeM5a2xlarge,
+		InstanceTypeM5a4xlarge,
+		InstanceTypeM5a8xlarge,
+		InstanceTypeM5a12xlarge,
+		InstanceTypeM5a16xlarge,
+		InstanceTypeM5a24xlarge,
+		InstanceTypeM5dLarge,
+		InstanceTypeM5dXlarge,
+		InstanceTypeM5d2xlarge,
+		InstanceTypeM5d4xlarge,
+		InstanceTypeM5d8xlarge,
+		InstanceTypeM5d12xlarge,
+		InstanceTypeM5d16xlarge,
+		InstanceTypeM5d24xlarge,
+		InstanceTypeM5dMetal,
+		InstanceTypeM5adLarge,
+		InstanceTypeM5adXlarge,
+		InstanceTypeM5ad2xlarge,
+		InstanceTypeM5ad4xlarge,
+		InstanceTypeM5ad8xlarge,
+		InstanceTypeM5ad12xlarge,
+		InstanceTypeM5ad16xlarge,
+		InstanceTypeM5ad24xlarge,
+		InstanceTypeH12xlarge,
+		InstanceTypeH14xlarge,
+		InstanceTypeH18xlarge,
+		InstanceTypeH116xlarge,
+		InstanceTypeZ1dLarge,
+		InstanceTypeZ1dXlarge,
+		InstanceTypeZ1d2xlarge,
+		InstanceTypeZ1d3xlarge,
+		InstanceTypeZ1d6xlarge,
+		InstanceTypeZ1d12xlarge,
+		InstanceTypeZ1dMetal,
+		InstanceTypeU6tb1Metal,
+		InstanceTypeU9tb1Metal,
+		InstanceTypeU12tb1Metal,
+		InstanceTypeU18tb1Metal,
+		InstanceTypeU24tb1Metal,
+		InstanceTypeA1Medium,
+		InstanceTypeA1Large,
+		InstanceTypeA1Xlarge,
+		InstanceTypeA12xlarge,
+		InstanceTypeA14xlarge,
+		InstanceTypeA1Metal,
+		InstanceTypeM5dnLarge,
+		InstanceTypeM5dnXlarge,
+		InstanceTypeM5dn2xlarge,
+		InstanceTypeM5dn4xlarge,
+		InstanceTypeM5dn8xlarge,
+		InstanceTypeM5dn12xlarge,
+		InstanceTypeM5dn16xlarge,
+		InstanceTypeM5dn24xlarge,
+		InstanceTypeM5nLarge,
+		InstanceTypeM5nXlarge,
+		InstanceTypeM5n2xlarge,
+		InstanceTypeM5n4xlarge,
+		InstanceTypeM5n8xlarge,
+		InstanceTypeM5n12xlarge,
+		InstanceTypeM5n16xlarge,
+		InstanceTypeM5n24xlarge,
+		InstanceTypeR5dnLarge,
+		InstanceTypeR5dnXlarge,
+		InstanceTypeR5dn2xlarge,
+		InstanceTypeR5dn4xlarge,
+		InstanceTypeR5dn8xlarge,
+		InstanceTypeR5dn12xlarge,
+		InstanceTypeR5dn16xlarge,
+		InstanceTypeR5dn24xlarge,
+		InstanceTypeR5nLarge,
+		InstanceTypeR5nXlarge,
+		InstanceTypeR5n2xlarge,
+		InstanceTypeR5n4xlarge,
+		InstanceTypeR5n8xlarge,
+		InstanceTypeR5n12xlarge,
+		InstanceTypeR5n16xlarge,
+		InstanceTypeR5n24xlarge,
+		InstanceTypeInf1Xlarge,
+		InstanceTypeInf12xlarge,
+		InstanceTypeInf16xlarge,
+		InstanceTypeInf124xlarge,
+		InstanceTypeM6gMetal,
+		InstanceTypeM6gMedium,
+		InstanceTypeM6gLarge,
+		InstanceTypeM6gXlarge,
+		InstanceTypeM6g2xlarge,
+		InstanceTypeM6g4xlarge,
+		InstanceTypeM6g8xlarge,
+		InstanceTypeM6g12xlarge,
+		InstanceTypeM6g16xlarge,
+		InstanceTypeM6gdMetal,
+		InstanceTypeM6gdMedium,
+		InstanceTypeM6gdLarge,
+		InstanceTypeM6gdXlarge,
+		InstanceTypeM6gd2xlarge,
+		InstanceTypeM6gd4xlarge,
+		InstanceTypeM6gd8xlarge,
+		InstanceTypeM6gd12xlarge,
+		InstanceTypeM6gd16xlarge,
+	}
+}
 
 const (
 	// InstanceTypeHypervisorNitro is a InstanceTypeHypervisor enum value
@@ -113875,6 +117991,14 @@ const (
 	InstanceTypeHypervisorXen = "xen"
 )
 
+// InstanceTypeHypervisor_Values returns all elements of the InstanceTypeHypervisor enum
+func InstanceTypeHypervisor_Values() []string {
+	return []string{
+		InstanceTypeHypervisorNitro,
+		InstanceTypeHypervisorXen,
+	}
+}
+
 const (
 	// InterfacePermissionTypeInstanceAttach is a InterfacePermissionType enum value
 	InterfacePermissionTypeInstanceAttach = "INSTANCE-ATTACH"
@@ -113883,6 +118007,14 @@ const (
 	InterfacePermissionTypeEipAssociate = "EIP-ASSOCIATE"
 )
 
+// InterfacePermissionType_Values returns all elements of the InterfacePermissionType enum
+func InterfacePermissionType_Values() []string {
+	return []string{
+		InterfacePermissionTypeInstanceAttach,
+		InterfacePermissionTypeEipAssociate,
+	}
+}
+
 const (
 	// Ipv6SupportValueEnable is a Ipv6SupportValue enum value
 	Ipv6SupportValueEnable = "enable"
@@ -113890,6 +118022,14 @@ const (
 	// Ipv6SupportValueDisable is a Ipv6SupportValue enum value
 	Ipv6SupportValueDisable = "disable"
 )
+
+// Ipv6SupportValue_Values returns all elements of the Ipv6SupportValue enum
+func Ipv6SupportValue_Values() []string {
+	return []string{
+		Ipv6SupportValueEnable,
+		Ipv6SupportValueDisable,
+	}
+}
 
 const (
 	// LaunchTemplateErrorCodeLaunchTemplateIdDoesNotExist is a LaunchTemplateErrorCode enum value
@@ -113911,6 +118051,18 @@ const (
 	LaunchTemplateErrorCodeUnexpectedError = "unexpectedError"
 )
 
+// LaunchTemplateErrorCode_Values returns all elements of the LaunchTemplateErrorCode enum
+func LaunchTemplateErrorCode_Values() []string {
+	return []string{
+		LaunchTemplateErrorCodeLaunchTemplateIdDoesNotExist,
+		LaunchTemplateErrorCodeLaunchTemplateIdMalformed,
+		LaunchTemplateErrorCodeLaunchTemplateNameDoesNotExist,
+		LaunchTemplateErrorCodeLaunchTemplateNameMalformed,
+		LaunchTemplateErrorCodeLaunchTemplateVersionDoesNotExist,
+		LaunchTemplateErrorCodeUnexpectedError,
+	}
+}
+
 const (
 	// LaunchTemplateHttpTokensStateOptional is a LaunchTemplateHttpTokensState enum value
 	LaunchTemplateHttpTokensStateOptional = "optional"
@@ -113918,6 +118070,14 @@ const (
 	// LaunchTemplateHttpTokensStateRequired is a LaunchTemplateHttpTokensState enum value
 	LaunchTemplateHttpTokensStateRequired = "required"
 )
+
+// LaunchTemplateHttpTokensState_Values returns all elements of the LaunchTemplateHttpTokensState enum
+func LaunchTemplateHttpTokensState_Values() []string {
+	return []string{
+		LaunchTemplateHttpTokensStateOptional,
+		LaunchTemplateHttpTokensStateRequired,
+	}
+}
 
 const (
 	// LaunchTemplateInstanceMetadataEndpointStateDisabled is a LaunchTemplateInstanceMetadataEndpointState enum value
@@ -113927,6 +118087,14 @@ const (
 	LaunchTemplateInstanceMetadataEndpointStateEnabled = "enabled"
 )
 
+// LaunchTemplateInstanceMetadataEndpointState_Values returns all elements of the LaunchTemplateInstanceMetadataEndpointState enum
+func LaunchTemplateInstanceMetadataEndpointState_Values() []string {
+	return []string{
+		LaunchTemplateInstanceMetadataEndpointStateDisabled,
+		LaunchTemplateInstanceMetadataEndpointStateEnabled,
+	}
+}
+
 const (
 	// LaunchTemplateInstanceMetadataOptionsStatePending is a LaunchTemplateInstanceMetadataOptionsState enum value
 	LaunchTemplateInstanceMetadataOptionsStatePending = "pending"
@@ -113934,6 +118102,14 @@ const (
 	// LaunchTemplateInstanceMetadataOptionsStateApplied is a LaunchTemplateInstanceMetadataOptionsState enum value
 	LaunchTemplateInstanceMetadataOptionsStateApplied = "applied"
 )
+
+// LaunchTemplateInstanceMetadataOptionsState_Values returns all elements of the LaunchTemplateInstanceMetadataOptionsState enum
+func LaunchTemplateInstanceMetadataOptionsState_Values() []string {
+	return []string{
+		LaunchTemplateInstanceMetadataOptionsStatePending,
+		LaunchTemplateInstanceMetadataOptionsStateApplied,
+	}
+}
 
 const (
 	// ListingStateAvailable is a ListingState enum value
@@ -113949,6 +118125,16 @@ const (
 	ListingStatePending = "pending"
 )
 
+// ListingState_Values returns all elements of the ListingState enum
+func ListingState_Values() []string {
+	return []string{
+		ListingStateAvailable,
+		ListingStateSold,
+		ListingStateCancelled,
+		ListingStatePending,
+	}
+}
+
 const (
 	// ListingStatusActive is a ListingStatus enum value
 	ListingStatusActive = "active"
@@ -113962,6 +118148,16 @@ const (
 	// ListingStatusClosed is a ListingStatus enum value
 	ListingStatusClosed = "closed"
 )
+
+// ListingStatus_Values returns all elements of the ListingStatus enum
+func ListingStatus_Values() []string {
+	return []string{
+		ListingStatusActive,
+		ListingStatusPending,
+		ListingStatusCancelled,
+		ListingStatusClosed,
+	}
+}
 
 const (
 	// LocalGatewayRouteStatePending is a LocalGatewayRouteState enum value
@@ -113980,6 +118176,17 @@ const (
 	LocalGatewayRouteStateDeleted = "deleted"
 )
 
+// LocalGatewayRouteState_Values returns all elements of the LocalGatewayRouteState enum
+func LocalGatewayRouteState_Values() []string {
+	return []string{
+		LocalGatewayRouteStatePending,
+		LocalGatewayRouteStateActive,
+		LocalGatewayRouteStateBlackhole,
+		LocalGatewayRouteStateDeleting,
+		LocalGatewayRouteStateDeleted,
+	}
+}
+
 const (
 	// LocalGatewayRouteTypeStatic is a LocalGatewayRouteType enum value
 	LocalGatewayRouteTypeStatic = "static"
@@ -113987,6 +118194,14 @@ const (
 	// LocalGatewayRouteTypePropagated is a LocalGatewayRouteType enum value
 	LocalGatewayRouteTypePropagated = "propagated"
 )
+
+// LocalGatewayRouteType_Values returns all elements of the LocalGatewayRouteType enum
+func LocalGatewayRouteType_Values() []string {
+	return []string{
+		LocalGatewayRouteTypeStatic,
+		LocalGatewayRouteTypePropagated,
+	}
+}
 
 const (
 	// LocationTypeRegion is a LocationType enum value
@@ -113999,6 +118214,15 @@ const (
 	LocationTypeAvailabilityZoneId = "availability-zone-id"
 )
 
+// LocationType_Values returns all elements of the LocationType enum
+func LocationType_Values() []string {
+	return []string{
+		LocationTypeRegion,
+		LocationTypeAvailabilityZone,
+		LocationTypeAvailabilityZoneId,
+	}
+}
+
 const (
 	// LogDestinationTypeCloudWatchLogs is a LogDestinationType enum value
 	LogDestinationTypeCloudWatchLogs = "cloud-watch-logs"
@@ -114007,10 +118231,25 @@ const (
 	LogDestinationTypeS3 = "s3"
 )
 
+// LogDestinationType_Values returns all elements of the LogDestinationType enum
+func LogDestinationType_Values() []string {
+	return []string{
+		LogDestinationTypeCloudWatchLogs,
+		LogDestinationTypeS3,
+	}
+}
+
 const (
 	// MarketTypeSpot is a MarketType enum value
 	MarketTypeSpot = "spot"
 )
+
+// MarketType_Values returns all elements of the MarketType enum
+func MarketType_Values() []string {
+	return []string{
+		MarketTypeSpot,
+	}
+}
 
 const (
 	// MembershipTypeStatic is a MembershipType enum value
@@ -114020,6 +118259,14 @@ const (
 	MembershipTypeIgmp = "igmp"
 )
 
+// MembershipType_Values returns all elements of the MembershipType enum
+func MembershipType_Values() []string {
+	return []string{
+		MembershipTypeStatic,
+		MembershipTypeIgmp,
+	}
+}
+
 const (
 	// ModifyAvailabilityZoneOptInStatusOptedIn is a ModifyAvailabilityZoneOptInStatus enum value
 	ModifyAvailabilityZoneOptInStatusOptedIn = "opted-in"
@@ -114027,6 +118274,14 @@ const (
 	// ModifyAvailabilityZoneOptInStatusNotOptedIn is a ModifyAvailabilityZoneOptInStatus enum value
 	ModifyAvailabilityZoneOptInStatusNotOptedIn = "not-opted-in"
 )
+
+// ModifyAvailabilityZoneOptInStatus_Values returns all elements of the ModifyAvailabilityZoneOptInStatus enum
+func ModifyAvailabilityZoneOptInStatus_Values() []string {
+	return []string{
+		ModifyAvailabilityZoneOptInStatusOptedIn,
+		ModifyAvailabilityZoneOptInStatusNotOptedIn,
+	}
+}
 
 const (
 	// MonitoringStateDisabled is a MonitoringState enum value
@@ -114042,6 +118297,16 @@ const (
 	MonitoringStatePending = "pending"
 )
 
+// MonitoringState_Values returns all elements of the MonitoringState enum
+func MonitoringState_Values() []string {
+	return []string{
+		MonitoringStateDisabled,
+		MonitoringStateDisabling,
+		MonitoringStateEnabled,
+		MonitoringStatePending,
+	}
+}
+
 const (
 	// MoveStatusMovingToVpc is a MoveStatus enum value
 	MoveStatusMovingToVpc = "movingToVpc"
@@ -114050,6 +118315,14 @@ const (
 	MoveStatusRestoringToClassic = "restoringToClassic"
 )
 
+// MoveStatus_Values returns all elements of the MoveStatus enum
+func MoveStatus_Values() []string {
+	return []string{
+		MoveStatusMovingToVpc,
+		MoveStatusRestoringToClassic,
+	}
+}
+
 const (
 	// MulticastSupportValueEnable is a MulticastSupportValue enum value
 	MulticastSupportValueEnable = "enable"
@@ -114057,6 +118330,14 @@ const (
 	// MulticastSupportValueDisable is a MulticastSupportValue enum value
 	MulticastSupportValueDisable = "disable"
 )
+
+// MulticastSupportValue_Values returns all elements of the MulticastSupportValue enum
+func MulticastSupportValue_Values() []string {
+	return []string{
+		MulticastSupportValueEnable,
+		MulticastSupportValueDisable,
+	}
+}
 
 const (
 	// NatGatewayStatePending is a NatGatewayState enum value
@@ -114075,6 +118356,17 @@ const (
 	NatGatewayStateDeleted = "deleted"
 )
 
+// NatGatewayState_Values returns all elements of the NatGatewayState enum
+func NatGatewayState_Values() []string {
+	return []string{
+		NatGatewayStatePending,
+		NatGatewayStateFailed,
+		NatGatewayStateAvailable,
+		NatGatewayStateDeleting,
+		NatGatewayStateDeleted,
+	}
+}
+
 const (
 	// NetworkInterfaceAttributeDescription is a NetworkInterfaceAttribute enum value
 	NetworkInterfaceAttributeDescription = "description"
@@ -114089,10 +118381,27 @@ const (
 	NetworkInterfaceAttributeAttachment = "attachment"
 )
 
+// NetworkInterfaceAttribute_Values returns all elements of the NetworkInterfaceAttribute enum
+func NetworkInterfaceAttribute_Values() []string {
+	return []string{
+		NetworkInterfaceAttributeDescription,
+		NetworkInterfaceAttributeGroupSet,
+		NetworkInterfaceAttributeSourceDestCheck,
+		NetworkInterfaceAttributeAttachment,
+	}
+}
+
 const (
 	// NetworkInterfaceCreationTypeEfa is a NetworkInterfaceCreationType enum value
 	NetworkInterfaceCreationTypeEfa = "efa"
 )
+
+// NetworkInterfaceCreationType_Values returns all elements of the NetworkInterfaceCreationType enum
+func NetworkInterfaceCreationType_Values() []string {
+	return []string{
+		NetworkInterfaceCreationTypeEfa,
+	}
+}
 
 const (
 	// NetworkInterfacePermissionStateCodePending is a NetworkInterfacePermissionStateCode enum value
@@ -114107,6 +118416,16 @@ const (
 	// NetworkInterfacePermissionStateCodeRevoked is a NetworkInterfacePermissionStateCode enum value
 	NetworkInterfacePermissionStateCodeRevoked = "revoked"
 )
+
+// NetworkInterfacePermissionStateCode_Values returns all elements of the NetworkInterfacePermissionStateCode enum
+func NetworkInterfacePermissionStateCode_Values() []string {
+	return []string{
+		NetworkInterfacePermissionStateCodePending,
+		NetworkInterfacePermissionStateCodeGranted,
+		NetworkInterfacePermissionStateCodeRevoking,
+		NetworkInterfacePermissionStateCodeRevoked,
+	}
+}
 
 const (
 	// NetworkInterfaceStatusAvailable is a NetworkInterfaceStatus enum value
@@ -114125,6 +118444,17 @@ const (
 	NetworkInterfaceStatusDetaching = "detaching"
 )
 
+// NetworkInterfaceStatus_Values returns all elements of the NetworkInterfaceStatus enum
+func NetworkInterfaceStatus_Values() []string {
+	return []string{
+		NetworkInterfaceStatusAvailable,
+		NetworkInterfaceStatusAssociated,
+		NetworkInterfaceStatusAttaching,
+		NetworkInterfaceStatusInUse,
+		NetworkInterfaceStatusDetaching,
+	}
+}
+
 const (
 	// NetworkInterfaceTypeInterface is a NetworkInterfaceType enum value
 	NetworkInterfaceTypeInterface = "interface"
@@ -114136,6 +118466,15 @@ const (
 	NetworkInterfaceTypeEfa = "efa"
 )
 
+// NetworkInterfaceType_Values returns all elements of the NetworkInterfaceType enum
+func NetworkInterfaceType_Values() []string {
+	return []string{
+		NetworkInterfaceTypeInterface,
+		NetworkInterfaceTypeNatGateway,
+		NetworkInterfaceTypeEfa,
+	}
+}
+
 const (
 	// OfferingClassTypeStandard is a OfferingClassType enum value
 	OfferingClassTypeStandard = "standard"
@@ -114143,6 +118482,14 @@ const (
 	// OfferingClassTypeConvertible is a OfferingClassType enum value
 	OfferingClassTypeConvertible = "convertible"
 )
+
+// OfferingClassType_Values returns all elements of the OfferingClassType enum
+func OfferingClassType_Values() []string {
+	return []string{
+		OfferingClassTypeStandard,
+		OfferingClassTypeConvertible,
+	}
+}
 
 const (
 	// OfferingTypeValuesHeavyUtilization is a OfferingTypeValues enum value
@@ -114164,6 +118511,18 @@ const (
 	OfferingTypeValuesAllUpfront = "All Upfront"
 )
 
+// OfferingTypeValues_Values returns all elements of the OfferingTypeValues enum
+func OfferingTypeValues_Values() []string {
+	return []string{
+		OfferingTypeValuesHeavyUtilization,
+		OfferingTypeValuesMediumUtilization,
+		OfferingTypeValuesLightUtilization,
+		OfferingTypeValuesNoUpfront,
+		OfferingTypeValuesPartialUpfront,
+		OfferingTypeValuesAllUpfront,
+	}
+}
+
 const (
 	// OnDemandAllocationStrategyLowestPrice is a OnDemandAllocationStrategy enum value
 	OnDemandAllocationStrategyLowestPrice = "lowestPrice"
@@ -114172,6 +118531,14 @@ const (
 	OnDemandAllocationStrategyPrioritized = "prioritized"
 )
 
+// OnDemandAllocationStrategy_Values returns all elements of the OnDemandAllocationStrategy enum
+func OnDemandAllocationStrategy_Values() []string {
+	return []string{
+		OnDemandAllocationStrategyLowestPrice,
+		OnDemandAllocationStrategyPrioritized,
+	}
+}
+
 const (
 	// OperationTypeAdd is a OperationType enum value
 	OperationTypeAdd = "add"
@@ -114179,6 +118546,14 @@ const (
 	// OperationTypeRemove is a OperationType enum value
 	OperationTypeRemove = "remove"
 )
+
+// OperationType_Values returns all elements of the OperationType enum
+func OperationType_Values() []string {
+	return []string{
+		OperationTypeAdd,
+		OperationTypeRemove,
+	}
+}
 
 const (
 	// PaymentOptionAllUpfront is a PaymentOption enum value
@@ -114191,10 +118566,26 @@ const (
 	PaymentOptionNoUpfront = "NoUpfront"
 )
 
+// PaymentOption_Values returns all elements of the PaymentOption enum
+func PaymentOption_Values() []string {
+	return []string{
+		PaymentOptionAllUpfront,
+		PaymentOptionPartialUpfront,
+		PaymentOptionNoUpfront,
+	}
+}
+
 const (
 	// PermissionGroupAll is a PermissionGroup enum value
 	PermissionGroupAll = "all"
 )
+
+// PermissionGroup_Values returns all elements of the PermissionGroup enum
+func PermissionGroup_Values() []string {
+	return []string{
+		PermissionGroupAll,
+	}
+}
 
 const (
 	// PlacementGroupStatePending is a PlacementGroupState enum value
@@ -114210,6 +118601,16 @@ const (
 	PlacementGroupStateDeleted = "deleted"
 )
 
+// PlacementGroupState_Values returns all elements of the PlacementGroupState enum
+func PlacementGroupState_Values() []string {
+	return []string{
+		PlacementGroupStatePending,
+		PlacementGroupStateAvailable,
+		PlacementGroupStateDeleting,
+		PlacementGroupStateDeleted,
+	}
+}
+
 const (
 	// PlacementGroupStrategyCluster is a PlacementGroupStrategy enum value
 	PlacementGroupStrategyCluster = "cluster"
@@ -114220,6 +118621,15 @@ const (
 	// PlacementGroupStrategySpread is a PlacementGroupStrategy enum value
 	PlacementGroupStrategySpread = "spread"
 )
+
+// PlacementGroupStrategy_Values returns all elements of the PlacementGroupStrategy enum
+func PlacementGroupStrategy_Values() []string {
+	return []string{
+		PlacementGroupStrategyCluster,
+		PlacementGroupStrategyPartition,
+		PlacementGroupStrategySpread,
+	}
+}
 
 const (
 	// PlacementStrategyCluster is a PlacementStrategy enum value
@@ -114232,10 +118642,26 @@ const (
 	PlacementStrategyPartition = "partition"
 )
 
+// PlacementStrategy_Values returns all elements of the PlacementStrategy enum
+func PlacementStrategy_Values() []string {
+	return []string{
+		PlacementStrategyCluster,
+		PlacementStrategySpread,
+		PlacementStrategyPartition,
+	}
+}
+
 const (
 	// PlatformValuesWindows is a PlatformValues enum value
 	PlatformValuesWindows = "Windows"
 )
+
+// PlatformValues_Values returns all elements of the PlatformValues enum
+func PlatformValues_Values() []string {
+	return []string{
+		PlatformValuesWindows,
+	}
+}
 
 const (
 	// PrefixListStateCreateInProgress is a PrefixListState enum value
@@ -114275,6 +118701,24 @@ const (
 	PrefixListStateDeleteFailed = "delete-failed"
 )
 
+// PrefixListState_Values returns all elements of the PrefixListState enum
+func PrefixListState_Values() []string {
+	return []string{
+		PrefixListStateCreateInProgress,
+		PrefixListStateCreateComplete,
+		PrefixListStateCreateFailed,
+		PrefixListStateModifyInProgress,
+		PrefixListStateModifyComplete,
+		PrefixListStateModifyFailed,
+		PrefixListStateRestoreInProgress,
+		PrefixListStateRestoreComplete,
+		PrefixListStateRestoreFailed,
+		PrefixListStateDeleteInProgress,
+		PrefixListStateDeleteComplete,
+		PrefixListStateDeleteFailed,
+	}
+}
+
 const (
 	// PrincipalTypeAll is a PrincipalType enum value
 	PrincipalTypeAll = "All"
@@ -114295,6 +118739,18 @@ const (
 	PrincipalTypeRole = "Role"
 )
 
+// PrincipalType_Values returns all elements of the PrincipalType enum
+func PrincipalType_Values() []string {
+	return []string{
+		PrincipalTypeAll,
+		PrincipalTypeService,
+		PrincipalTypeOrganizationUnit,
+		PrincipalTypeAccount,
+		PrincipalTypeUser,
+		PrincipalTypeRole,
+	}
+}
+
 const (
 	// ProductCodeValuesDevpay is a ProductCodeValues enum value
 	ProductCodeValuesDevpay = "devpay"
@@ -114302,6 +118758,14 @@ const (
 	// ProductCodeValuesMarketplace is a ProductCodeValues enum value
 	ProductCodeValuesMarketplace = "marketplace"
 )
+
+// ProductCodeValues_Values returns all elements of the ProductCodeValues enum
+func ProductCodeValues_Values() []string {
+	return []string{
+		ProductCodeValuesDevpay,
+		ProductCodeValuesMarketplace,
+	}
+}
 
 const (
 	// RIProductDescriptionLinuxUnix is a RIProductDescription enum value
@@ -114317,10 +118781,27 @@ const (
 	RIProductDescriptionWindowsAmazonVpc = "Windows (Amazon VPC)"
 )
 
+// RIProductDescription_Values returns all elements of the RIProductDescription enum
+func RIProductDescription_Values() []string {
+	return []string{
+		RIProductDescriptionLinuxUnix,
+		RIProductDescriptionLinuxUnixamazonVpc,
+		RIProductDescriptionWindows,
+		RIProductDescriptionWindowsAmazonVpc,
+	}
+}
+
 const (
 	// RecurringChargeFrequencyHourly is a RecurringChargeFrequency enum value
 	RecurringChargeFrequencyHourly = "Hourly"
 )
+
+// RecurringChargeFrequency_Values returns all elements of the RecurringChargeFrequency enum
+func RecurringChargeFrequency_Values() []string {
+	return []string{
+		RecurringChargeFrequencyHourly,
+	}
+}
 
 const (
 	// ReportInstanceReasonCodesInstanceStuckInState is a ReportInstanceReasonCodes enum value
@@ -114351,6 +118832,21 @@ const (
 	ReportInstanceReasonCodesOther = "other"
 )
 
+// ReportInstanceReasonCodes_Values returns all elements of the ReportInstanceReasonCodes enum
+func ReportInstanceReasonCodes_Values() []string {
+	return []string{
+		ReportInstanceReasonCodesInstanceStuckInState,
+		ReportInstanceReasonCodesUnresponsive,
+		ReportInstanceReasonCodesNotAcceptingCredentials,
+		ReportInstanceReasonCodesPasswordNotAvailable,
+		ReportInstanceReasonCodesPerformanceNetwork,
+		ReportInstanceReasonCodesPerformanceInstanceStore,
+		ReportInstanceReasonCodesPerformanceEbsVolume,
+		ReportInstanceReasonCodesPerformanceOther,
+		ReportInstanceReasonCodesOther,
+	}
+}
+
 const (
 	// ReportStatusTypeOk is a ReportStatusType enum value
 	ReportStatusTypeOk = "ok"
@@ -114358,6 +118854,14 @@ const (
 	// ReportStatusTypeImpaired is a ReportStatusType enum value
 	ReportStatusTypeImpaired = "impaired"
 )
+
+// ReportStatusType_Values returns all elements of the ReportStatusType enum
+func ReportStatusType_Values() []string {
+	return []string{
+		ReportStatusTypeOk,
+		ReportStatusTypeImpaired,
+	}
+}
 
 const (
 	// ReservationStatePaymentPending is a ReservationState enum value
@@ -114372,6 +118876,16 @@ const (
 	// ReservationStateRetired is a ReservationState enum value
 	ReservationStateRetired = "retired"
 )
+
+// ReservationState_Values returns all elements of the ReservationState enum
+func ReservationState_Values() []string {
+	return []string{
+		ReservationStatePaymentPending,
+		ReservationStatePaymentFailed,
+		ReservationStateActive,
+		ReservationStateRetired,
+	}
+}
 
 const (
 	// ReservedInstanceStatePaymentPending is a ReservedInstanceState enum value
@@ -114393,15 +118907,41 @@ const (
 	ReservedInstanceStateQueuedDeleted = "queued-deleted"
 )
 
+// ReservedInstanceState_Values returns all elements of the ReservedInstanceState enum
+func ReservedInstanceState_Values() []string {
+	return []string{
+		ReservedInstanceStatePaymentPending,
+		ReservedInstanceStateActive,
+		ReservedInstanceStatePaymentFailed,
+		ReservedInstanceStateRetired,
+		ReservedInstanceStateQueued,
+		ReservedInstanceStateQueuedDeleted,
+	}
+}
+
 const (
 	// ResetFpgaImageAttributeNameLoadPermission is a ResetFpgaImageAttributeName enum value
 	ResetFpgaImageAttributeNameLoadPermission = "loadPermission"
 )
 
+// ResetFpgaImageAttributeName_Values returns all elements of the ResetFpgaImageAttributeName enum
+func ResetFpgaImageAttributeName_Values() []string {
+	return []string{
+		ResetFpgaImageAttributeNameLoadPermission,
+	}
+}
+
 const (
 	// ResetImageAttributeNameLaunchPermission is a ResetImageAttributeName enum value
 	ResetImageAttributeNameLaunchPermission = "launchPermission"
 )
+
+// ResetImageAttributeName_Values returns all elements of the ResetImageAttributeName enum
+func ResetImageAttributeName_Values() []string {
+	return []string{
+		ResetImageAttributeNameLaunchPermission,
+	}
+}
 
 const (
 	// ResourceTypeClientVpnEndpoint is a ResourceType enum value
@@ -114415,6 +118955,9 @@ const (
 
 	// ResourceTypeDhcpOptions is a ResourceType enum value
 	ResourceTypeDhcpOptions = "dhcp-options"
+
+	// ResourceTypeEgressOnlyInternetGateway is a ResourceType enum value
+	ResourceTypeEgressOnlyInternetGateway = "egress-only-internet-gateway"
 
 	// ResourceTypeElasticIp is a ResourceType enum value
 	ResourceTypeElasticIp = "elastic-ip"
@@ -114534,6 +119077,56 @@ const (
 	ResourceTypeVpcFlowLog = "vpc-flow-log"
 )
 
+// ResourceType_Values returns all elements of the ResourceType enum
+func ResourceType_Values() []string {
+	return []string{
+		ResourceTypeClientVpnEndpoint,
+		ResourceTypeCustomerGateway,
+		ResourceTypeDedicatedHost,
+		ResourceTypeDhcpOptions,
+		ResourceTypeEgressOnlyInternetGateway,
+		ResourceTypeElasticIp,
+		ResourceTypeElasticGpu,
+		ResourceTypeExportImageTask,
+		ResourceTypeExportInstanceTask,
+		ResourceTypeFleet,
+		ResourceTypeFpgaImage,
+		ResourceTypeHostReservation,
+		ResourceTypeImage,
+		ResourceTypeImportImageTask,
+		ResourceTypeImportSnapshotTask,
+		ResourceTypeInstance,
+		ResourceTypeInternetGateway,
+		ResourceTypeKeyPair,
+		ResourceTypeLaunchTemplate,
+		ResourceTypeLocalGatewayRouteTableVpcAssociation,
+		ResourceTypeNatgateway,
+		ResourceTypeNetworkAcl,
+		ResourceTypeNetworkInterface,
+		ResourceTypePlacementGroup,
+		ResourceTypeReservedInstances,
+		ResourceTypeRouteTable,
+		ResourceTypeSecurityGroup,
+		ResourceTypeSnapshot,
+		ResourceTypeSpotFleetRequest,
+		ResourceTypeSpotInstancesRequest,
+		ResourceTypeSubnet,
+		ResourceTypeTrafficMirrorFilter,
+		ResourceTypeTrafficMirrorSession,
+		ResourceTypeTrafficMirrorTarget,
+		ResourceTypeTransitGateway,
+		ResourceTypeTransitGatewayAttachment,
+		ResourceTypeTransitGatewayMulticastDomain,
+		ResourceTypeTransitGatewayRouteTable,
+		ResourceTypeVolume,
+		ResourceTypeVpc,
+		ResourceTypeVpcPeeringConnection,
+		ResourceTypeVpnConnection,
+		ResourceTypeVpnGateway,
+		ResourceTypeVpcFlowLog,
+	}
+}
+
 const (
 	// RootDeviceTypeEbs is a RootDeviceType enum value
 	RootDeviceTypeEbs = "ebs"
@@ -114541,6 +119134,14 @@ const (
 	// RootDeviceTypeInstanceStore is a RootDeviceType enum value
 	RootDeviceTypeInstanceStore = "instance-store"
 )
+
+// RootDeviceType_Values returns all elements of the RootDeviceType enum
+func RootDeviceType_Values() []string {
+	return []string{
+		RootDeviceTypeEbs,
+		RootDeviceTypeInstanceStore,
+	}
+}
 
 const (
 	// RouteOriginCreateRouteTable is a RouteOrigin enum value
@@ -114553,6 +119154,15 @@ const (
 	RouteOriginEnableVgwRoutePropagation = "EnableVgwRoutePropagation"
 )
 
+// RouteOrigin_Values returns all elements of the RouteOrigin enum
+func RouteOrigin_Values() []string {
+	return []string{
+		RouteOriginCreateRouteTable,
+		RouteOriginCreateRoute,
+		RouteOriginEnableVgwRoutePropagation,
+	}
+}
+
 const (
 	// RouteStateActive is a RouteState enum value
 	RouteStateActive = "active"
@@ -114560,6 +119170,14 @@ const (
 	// RouteStateBlackhole is a RouteState enum value
 	RouteStateBlackhole = "blackhole"
 )
+
+// RouteState_Values returns all elements of the RouteState enum
+func RouteState_Values() []string {
+	return []string{
+		RouteStateActive,
+		RouteStateBlackhole,
+	}
+}
 
 const (
 	// RouteTableAssociationStateCodeAssociating is a RouteTableAssociationStateCode enum value
@@ -114578,6 +119196,17 @@ const (
 	RouteTableAssociationStateCodeFailed = "failed"
 )
 
+// RouteTableAssociationStateCode_Values returns all elements of the RouteTableAssociationStateCode enum
+func RouteTableAssociationStateCode_Values() []string {
+	return []string{
+		RouteTableAssociationStateCodeAssociating,
+		RouteTableAssociationStateCodeAssociated,
+		RouteTableAssociationStateCodeDisassociating,
+		RouteTableAssociationStateCodeDisassociated,
+		RouteTableAssociationStateCodeFailed,
+	}
+}
+
 const (
 	// RuleActionAllow is a RuleAction enum value
 	RuleActionAllow = "allow"
@@ -114586,6 +119215,14 @@ const (
 	RuleActionDeny = "deny"
 )
 
+// RuleAction_Values returns all elements of the RuleAction enum
+func RuleAction_Values() []string {
+	return []string{
+		RuleActionAllow,
+		RuleActionDeny,
+	}
+}
+
 const (
 	// ScopeAvailabilityZone is a Scope enum value
 	ScopeAvailabilityZone = "Availability Zone"
@@ -114593,6 +119230,14 @@ const (
 	// ScopeRegion is a Scope enum value
 	ScopeRegion = "Region"
 )
+
+// Scope_Values returns all elements of the Scope enum
+func Scope_Values() []string {
+	return []string{
+		ScopeAvailabilityZone,
+		ScopeRegion,
+	}
+}
 
 const (
 	// ServiceStatePending is a ServiceState enum value
@@ -114611,6 +119256,17 @@ const (
 	ServiceStateFailed = "Failed"
 )
 
+// ServiceState_Values returns all elements of the ServiceState enum
+func ServiceState_Values() []string {
+	return []string{
+		ServiceStatePending,
+		ServiceStateAvailable,
+		ServiceStateDeleting,
+		ServiceStateDeleted,
+		ServiceStateFailed,
+	}
+}
+
 const (
 	// ServiceTypeInterface is a ServiceType enum value
 	ServiceTypeInterface = "Interface"
@@ -114618,6 +119274,14 @@ const (
 	// ServiceTypeGateway is a ServiceType enum value
 	ServiceTypeGateway = "Gateway"
 )
+
+// ServiceType_Values returns all elements of the ServiceType enum
+func ServiceType_Values() []string {
+	return []string{
+		ServiceTypeInterface,
+		ServiceTypeGateway,
+	}
+}
 
 const (
 	// ShutdownBehaviorStop is a ShutdownBehavior enum value
@@ -114627,6 +119291,14 @@ const (
 	ShutdownBehaviorTerminate = "terminate"
 )
 
+// ShutdownBehavior_Values returns all elements of the ShutdownBehavior enum
+func ShutdownBehavior_Values() []string {
+	return []string{
+		ShutdownBehaviorStop,
+		ShutdownBehaviorTerminate,
+	}
+}
+
 const (
 	// SnapshotAttributeNameProductCodes is a SnapshotAttributeName enum value
 	SnapshotAttributeNameProductCodes = "productCodes"
@@ -114634,6 +119306,14 @@ const (
 	// SnapshotAttributeNameCreateVolumePermission is a SnapshotAttributeName enum value
 	SnapshotAttributeNameCreateVolumePermission = "createVolumePermission"
 )
+
+// SnapshotAttributeName_Values returns all elements of the SnapshotAttributeName enum
+func SnapshotAttributeName_Values() []string {
+	return []string{
+		SnapshotAttributeNameProductCodes,
+		SnapshotAttributeNameCreateVolumePermission,
+	}
+}
 
 const (
 	// SnapshotStatePending is a SnapshotState enum value
@@ -114646,6 +119326,15 @@ const (
 	SnapshotStateError = "error"
 )
 
+// SnapshotState_Values returns all elements of the SnapshotState enum
+func SnapshotState_Values() []string {
+	return []string{
+		SnapshotStatePending,
+		SnapshotStateCompleted,
+		SnapshotStateError,
+	}
+}
+
 const (
 	// SpotAllocationStrategyLowestPrice is a SpotAllocationStrategy enum value
 	SpotAllocationStrategyLowestPrice = "lowest-price"
@@ -114657,6 +119346,15 @@ const (
 	SpotAllocationStrategyCapacityOptimized = "capacity-optimized"
 )
 
+// SpotAllocationStrategy_Values returns all elements of the SpotAllocationStrategy enum
+func SpotAllocationStrategy_Values() []string {
+	return []string{
+		SpotAllocationStrategyLowestPrice,
+		SpotAllocationStrategyDiversified,
+		SpotAllocationStrategyCapacityOptimized,
+	}
+}
+
 const (
 	// SpotInstanceInterruptionBehaviorHibernate is a SpotInstanceInterruptionBehavior enum value
 	SpotInstanceInterruptionBehaviorHibernate = "hibernate"
@@ -114667,6 +119365,15 @@ const (
 	// SpotInstanceInterruptionBehaviorTerminate is a SpotInstanceInterruptionBehavior enum value
 	SpotInstanceInterruptionBehaviorTerminate = "terminate"
 )
+
+// SpotInstanceInterruptionBehavior_Values returns all elements of the SpotInstanceInterruptionBehavior enum
+func SpotInstanceInterruptionBehavior_Values() []string {
+	return []string{
+		SpotInstanceInterruptionBehaviorHibernate,
+		SpotInstanceInterruptionBehaviorStop,
+		SpotInstanceInterruptionBehaviorTerminate,
+	}
+}
 
 const (
 	// SpotInstanceStateOpen is a SpotInstanceState enum value
@@ -114685,6 +119392,17 @@ const (
 	SpotInstanceStateFailed = "failed"
 )
 
+// SpotInstanceState_Values returns all elements of the SpotInstanceState enum
+func SpotInstanceState_Values() []string {
+	return []string{
+		SpotInstanceStateOpen,
+		SpotInstanceStateActive,
+		SpotInstanceStateClosed,
+		SpotInstanceStateCancelled,
+		SpotInstanceStateFailed,
+	}
+}
+
 const (
 	// SpotInstanceTypeOneTime is a SpotInstanceType enum value
 	SpotInstanceTypeOneTime = "one-time"
@@ -114692,6 +119410,14 @@ const (
 	// SpotInstanceTypePersistent is a SpotInstanceType enum value
 	SpotInstanceTypePersistent = "persistent"
 )
+
+// SpotInstanceType_Values returns all elements of the SpotInstanceType enum
+func SpotInstanceType_Values() []string {
+	return []string{
+		SpotInstanceTypeOneTime,
+		SpotInstanceTypePersistent,
+	}
+}
 
 const (
 	// StatePendingAcceptance is a State enum value
@@ -114719,6 +119445,20 @@ const (
 	StateExpired = "Expired"
 )
 
+// State_Values returns all elements of the State enum
+func State_Values() []string {
+	return []string{
+		StatePendingAcceptance,
+		StatePending,
+		StateAvailable,
+		StateDeleting,
+		StateDeleted,
+		StateRejected,
+		StateFailed,
+		StateExpired,
+	}
+}
+
 const (
 	// StatusMoveInProgress is a Status enum value
 	StatusMoveInProgress = "MoveInProgress"
@@ -114730,10 +119470,26 @@ const (
 	StatusInClassic = "InClassic"
 )
 
+// Status_Values returns all elements of the Status enum
+func Status_Values() []string {
+	return []string{
+		StatusMoveInProgress,
+		StatusInVpc,
+		StatusInClassic,
+	}
+}
+
 const (
 	// StatusNameReachability is a StatusName enum value
 	StatusNameReachability = "reachability"
 )
+
+// StatusName_Values returns all elements of the StatusName enum
+func StatusName_Values() []string {
+	return []string{
+		StatusNameReachability,
+	}
+}
 
 const (
 	// StatusTypePassed is a StatusType enum value
@@ -114748,6 +119504,16 @@ const (
 	// StatusTypeInitializing is a StatusType enum value
 	StatusTypeInitializing = "initializing"
 )
+
+// StatusType_Values returns all elements of the StatusType enum
+func StatusType_Values() []string {
+	return []string{
+		StatusTypePassed,
+		StatusTypeFailed,
+		StatusTypeInsufficientData,
+		StatusTypeInitializing,
+	}
+}
 
 const (
 	// SubnetCidrBlockStateCodeAssociating is a SubnetCidrBlockStateCode enum value
@@ -114769,6 +119535,18 @@ const (
 	SubnetCidrBlockStateCodeFailed = "failed"
 )
 
+// SubnetCidrBlockStateCode_Values returns all elements of the SubnetCidrBlockStateCode enum
+func SubnetCidrBlockStateCode_Values() []string {
+	return []string{
+		SubnetCidrBlockStateCodeAssociating,
+		SubnetCidrBlockStateCodeAssociated,
+		SubnetCidrBlockStateCodeDisassociating,
+		SubnetCidrBlockStateCodeDisassociated,
+		SubnetCidrBlockStateCodeFailing,
+		SubnetCidrBlockStateCodeFailed,
+	}
+}
+
 const (
 	// SubnetStatePending is a SubnetState enum value
 	SubnetStatePending = "pending"
@@ -114776,6 +119554,14 @@ const (
 	// SubnetStateAvailable is a SubnetState enum value
 	SubnetStateAvailable = "available"
 )
+
+// SubnetState_Values returns all elements of the SubnetState enum
+func SubnetState_Values() []string {
+	return []string{
+		SubnetStatePending,
+		SubnetStateAvailable,
+	}
+}
 
 const (
 	// SummaryStatusOk is a SummaryStatus enum value
@@ -114794,6 +119580,17 @@ const (
 	SummaryStatusInitializing = "initializing"
 )
 
+// SummaryStatus_Values returns all elements of the SummaryStatus enum
+func SummaryStatus_Values() []string {
+	return []string{
+		SummaryStatusOk,
+		SummaryStatusImpaired,
+		SummaryStatusInsufficientData,
+		SummaryStatusNotApplicable,
+		SummaryStatusInitializing,
+	}
+}
+
 const (
 	// TelemetryStatusUp is a TelemetryStatus enum value
 	TelemetryStatusUp = "UP"
@@ -114801,6 +119598,14 @@ const (
 	// TelemetryStatusDown is a TelemetryStatus enum value
 	TelemetryStatusDown = "DOWN"
 )
+
+// TelemetryStatus_Values returns all elements of the TelemetryStatus enum
+func TelemetryStatus_Values() []string {
+	return []string{
+		TelemetryStatusUp,
+		TelemetryStatusDown,
+	}
+}
 
 const (
 	// TenancyDefault is a Tenancy enum value
@@ -114813,6 +119618,15 @@ const (
 	TenancyHost = "host"
 )
 
+// Tenancy_Values returns all elements of the Tenancy enum
+func Tenancy_Values() []string {
+	return []string{
+		TenancyDefault,
+		TenancyDedicated,
+		TenancyHost,
+	}
+}
+
 const (
 	// TrafficDirectionIngress is a TrafficDirection enum value
 	TrafficDirectionIngress = "ingress"
@@ -114820,6 +119634,14 @@ const (
 	// TrafficDirectionEgress is a TrafficDirection enum value
 	TrafficDirectionEgress = "egress"
 )
+
+// TrafficDirection_Values returns all elements of the TrafficDirection enum
+func TrafficDirection_Values() []string {
+	return []string{
+		TrafficDirectionIngress,
+		TrafficDirectionEgress,
+	}
+}
 
 const (
 	// TrafficMirrorFilterRuleFieldDestinationPortRange is a TrafficMirrorFilterRuleField enum value
@@ -114835,10 +119657,27 @@ const (
 	TrafficMirrorFilterRuleFieldDescription = "description"
 )
 
+// TrafficMirrorFilterRuleField_Values returns all elements of the TrafficMirrorFilterRuleField enum
+func TrafficMirrorFilterRuleField_Values() []string {
+	return []string{
+		TrafficMirrorFilterRuleFieldDestinationPortRange,
+		TrafficMirrorFilterRuleFieldSourcePortRange,
+		TrafficMirrorFilterRuleFieldProtocol,
+		TrafficMirrorFilterRuleFieldDescription,
+	}
+}
+
 const (
 	// TrafficMirrorNetworkServiceAmazonDns is a TrafficMirrorNetworkService enum value
 	TrafficMirrorNetworkServiceAmazonDns = "amazon-dns"
 )
+
+// TrafficMirrorNetworkService_Values returns all elements of the TrafficMirrorNetworkService enum
+func TrafficMirrorNetworkService_Values() []string {
+	return []string{
+		TrafficMirrorNetworkServiceAmazonDns,
+	}
+}
 
 const (
 	// TrafficMirrorRuleActionAccept is a TrafficMirrorRuleAction enum value
@@ -114847,6 +119686,14 @@ const (
 	// TrafficMirrorRuleActionReject is a TrafficMirrorRuleAction enum value
 	TrafficMirrorRuleActionReject = "reject"
 )
+
+// TrafficMirrorRuleAction_Values returns all elements of the TrafficMirrorRuleAction enum
+func TrafficMirrorRuleAction_Values() []string {
+	return []string{
+		TrafficMirrorRuleActionAccept,
+		TrafficMirrorRuleActionReject,
+	}
+}
 
 const (
 	// TrafficMirrorSessionFieldPacketLength is a TrafficMirrorSessionField enum value
@@ -114859,6 +119706,15 @@ const (
 	TrafficMirrorSessionFieldVirtualNetworkId = "virtual-network-id"
 )
 
+// TrafficMirrorSessionField_Values returns all elements of the TrafficMirrorSessionField enum
+func TrafficMirrorSessionField_Values() []string {
+	return []string{
+		TrafficMirrorSessionFieldPacketLength,
+		TrafficMirrorSessionFieldDescription,
+		TrafficMirrorSessionFieldVirtualNetworkId,
+	}
+}
+
 const (
 	// TrafficMirrorTargetTypeNetworkInterface is a TrafficMirrorTargetType enum value
 	TrafficMirrorTargetTypeNetworkInterface = "network-interface"
@@ -114866,6 +119722,14 @@ const (
 	// TrafficMirrorTargetTypeNetworkLoadBalancer is a TrafficMirrorTargetType enum value
 	TrafficMirrorTargetTypeNetworkLoadBalancer = "network-load-balancer"
 )
+
+// TrafficMirrorTargetType_Values returns all elements of the TrafficMirrorTargetType enum
+func TrafficMirrorTargetType_Values() []string {
+	return []string{
+		TrafficMirrorTargetTypeNetworkInterface,
+		TrafficMirrorTargetTypeNetworkLoadBalancer,
+	}
+}
 
 const (
 	// TrafficTypeAccept is a TrafficType enum value
@@ -114877,6 +119741,15 @@ const (
 	// TrafficTypeAll is a TrafficType enum value
 	TrafficTypeAll = "ALL"
 )
+
+// TrafficType_Values returns all elements of the TrafficType enum
+func TrafficType_Values() []string {
+	return []string{
+		TrafficTypeAccept,
+		TrafficTypeReject,
+		TrafficTypeAll,
+	}
+}
 
 const (
 	// TransitGatewayAssociationStateAssociating is a TransitGatewayAssociationState enum value
@@ -114892,6 +119765,16 @@ const (
 	TransitGatewayAssociationStateDisassociated = "disassociated"
 )
 
+// TransitGatewayAssociationState_Values returns all elements of the TransitGatewayAssociationState enum
+func TransitGatewayAssociationState_Values() []string {
+	return []string{
+		TransitGatewayAssociationStateAssociating,
+		TransitGatewayAssociationStateAssociated,
+		TransitGatewayAssociationStateDisassociating,
+		TransitGatewayAssociationStateDisassociated,
+	}
+}
+
 const (
 	// TransitGatewayAttachmentResourceTypeVpc is a TransitGatewayAttachmentResourceType enum value
 	TransitGatewayAttachmentResourceTypeVpc = "vpc"
@@ -114902,13 +119785,30 @@ const (
 	// TransitGatewayAttachmentResourceTypeDirectConnectGateway is a TransitGatewayAttachmentResourceType enum value
 	TransitGatewayAttachmentResourceTypeDirectConnectGateway = "direct-connect-gateway"
 
+	// TransitGatewayAttachmentResourceTypePeering is a TransitGatewayAttachmentResourceType enum value
+	TransitGatewayAttachmentResourceTypePeering = "peering"
+
 	// TransitGatewayAttachmentResourceTypeTgwPeering is a TransitGatewayAttachmentResourceType enum value
 	TransitGatewayAttachmentResourceTypeTgwPeering = "tgw-peering"
 )
 
+// TransitGatewayAttachmentResourceType_Values returns all elements of the TransitGatewayAttachmentResourceType enum
+func TransitGatewayAttachmentResourceType_Values() []string {
+	return []string{
+		TransitGatewayAttachmentResourceTypeVpc,
+		TransitGatewayAttachmentResourceTypeVpn,
+		TransitGatewayAttachmentResourceTypeDirectConnectGateway,
+		TransitGatewayAttachmentResourceTypePeering,
+		TransitGatewayAttachmentResourceTypeTgwPeering,
+	}
+}
+
 const (
 	// TransitGatewayAttachmentStateInitiating is a TransitGatewayAttachmentState enum value
 	TransitGatewayAttachmentStateInitiating = "initiating"
+
+	// TransitGatewayAttachmentStateInitiatingRequest is a TransitGatewayAttachmentState enum value
+	TransitGatewayAttachmentStateInitiatingRequest = "initiatingRequest"
 
 	// TransitGatewayAttachmentStatePendingAcceptance is a TransitGatewayAttachmentState enum value
 	TransitGatewayAttachmentStatePendingAcceptance = "pendingAcceptance"
@@ -114944,6 +119844,25 @@ const (
 	TransitGatewayAttachmentStateFailing = "failing"
 )
 
+// TransitGatewayAttachmentState_Values returns all elements of the TransitGatewayAttachmentState enum
+func TransitGatewayAttachmentState_Values() []string {
+	return []string{
+		TransitGatewayAttachmentStateInitiating,
+		TransitGatewayAttachmentStateInitiatingRequest,
+		TransitGatewayAttachmentStatePendingAcceptance,
+		TransitGatewayAttachmentStateRollingBack,
+		TransitGatewayAttachmentStatePending,
+		TransitGatewayAttachmentStateAvailable,
+		TransitGatewayAttachmentStateModifying,
+		TransitGatewayAttachmentStateDeleting,
+		TransitGatewayAttachmentStateDeleted,
+		TransitGatewayAttachmentStateFailed,
+		TransitGatewayAttachmentStateRejected,
+		TransitGatewayAttachmentStateRejecting,
+		TransitGatewayAttachmentStateFailing,
+	}
+}
+
 const (
 	// TransitGatewayMulitcastDomainAssociationStateAssociating is a TransitGatewayMulitcastDomainAssociationState enum value
 	TransitGatewayMulitcastDomainAssociationStateAssociating = "associating"
@@ -114957,6 +119876,16 @@ const (
 	// TransitGatewayMulitcastDomainAssociationStateDisassociated is a TransitGatewayMulitcastDomainAssociationState enum value
 	TransitGatewayMulitcastDomainAssociationStateDisassociated = "disassociated"
 )
+
+// TransitGatewayMulitcastDomainAssociationState_Values returns all elements of the TransitGatewayMulitcastDomainAssociationState enum
+func TransitGatewayMulitcastDomainAssociationState_Values() []string {
+	return []string{
+		TransitGatewayMulitcastDomainAssociationStateAssociating,
+		TransitGatewayMulitcastDomainAssociationStateAssociated,
+		TransitGatewayMulitcastDomainAssociationStateDisassociating,
+		TransitGatewayMulitcastDomainAssociationStateDisassociated,
+	}
+}
 
 const (
 	// TransitGatewayMulticastDomainStatePending is a TransitGatewayMulticastDomainState enum value
@@ -114972,6 +119901,40 @@ const (
 	TransitGatewayMulticastDomainStateDeleted = "deleted"
 )
 
+// TransitGatewayMulticastDomainState_Values returns all elements of the TransitGatewayMulticastDomainState enum
+func TransitGatewayMulticastDomainState_Values() []string {
+	return []string{
+		TransitGatewayMulticastDomainStatePending,
+		TransitGatewayMulticastDomainStateAvailable,
+		TransitGatewayMulticastDomainStateDeleting,
+		TransitGatewayMulticastDomainStateDeleted,
+	}
+}
+
+const (
+	// TransitGatewayPrefixListReferenceStatePending is a TransitGatewayPrefixListReferenceState enum value
+	TransitGatewayPrefixListReferenceStatePending = "pending"
+
+	// TransitGatewayPrefixListReferenceStateAvailable is a TransitGatewayPrefixListReferenceState enum value
+	TransitGatewayPrefixListReferenceStateAvailable = "available"
+
+	// TransitGatewayPrefixListReferenceStateModifying is a TransitGatewayPrefixListReferenceState enum value
+	TransitGatewayPrefixListReferenceStateModifying = "modifying"
+
+	// TransitGatewayPrefixListReferenceStateDeleting is a TransitGatewayPrefixListReferenceState enum value
+	TransitGatewayPrefixListReferenceStateDeleting = "deleting"
+)
+
+// TransitGatewayPrefixListReferenceState_Values returns all elements of the TransitGatewayPrefixListReferenceState enum
+func TransitGatewayPrefixListReferenceState_Values() []string {
+	return []string{
+		TransitGatewayPrefixListReferenceStatePending,
+		TransitGatewayPrefixListReferenceStateAvailable,
+		TransitGatewayPrefixListReferenceStateModifying,
+		TransitGatewayPrefixListReferenceStateDeleting,
+	}
+}
+
 const (
 	// TransitGatewayPropagationStateEnabling is a TransitGatewayPropagationState enum value
 	TransitGatewayPropagationStateEnabling = "enabling"
@@ -114985,6 +119948,16 @@ const (
 	// TransitGatewayPropagationStateDisabled is a TransitGatewayPropagationState enum value
 	TransitGatewayPropagationStateDisabled = "disabled"
 )
+
+// TransitGatewayPropagationState_Values returns all elements of the TransitGatewayPropagationState enum
+func TransitGatewayPropagationState_Values() []string {
+	return []string{
+		TransitGatewayPropagationStateEnabling,
+		TransitGatewayPropagationStateEnabled,
+		TransitGatewayPropagationStateDisabling,
+		TransitGatewayPropagationStateDisabled,
+	}
+}
 
 const (
 	// TransitGatewayRouteStatePending is a TransitGatewayRouteState enum value
@@ -115003,6 +119976,17 @@ const (
 	TransitGatewayRouteStateDeleted = "deleted"
 )
 
+// TransitGatewayRouteState_Values returns all elements of the TransitGatewayRouteState enum
+func TransitGatewayRouteState_Values() []string {
+	return []string{
+		TransitGatewayRouteStatePending,
+		TransitGatewayRouteStateActive,
+		TransitGatewayRouteStateBlackhole,
+		TransitGatewayRouteStateDeleting,
+		TransitGatewayRouteStateDeleted,
+	}
+}
+
 const (
 	// TransitGatewayRouteTableStatePending is a TransitGatewayRouteTableState enum value
 	TransitGatewayRouteTableStatePending = "pending"
@@ -115017,6 +120001,16 @@ const (
 	TransitGatewayRouteTableStateDeleted = "deleted"
 )
 
+// TransitGatewayRouteTableState_Values returns all elements of the TransitGatewayRouteTableState enum
+func TransitGatewayRouteTableState_Values() []string {
+	return []string{
+		TransitGatewayRouteTableStatePending,
+		TransitGatewayRouteTableStateAvailable,
+		TransitGatewayRouteTableStateDeleting,
+		TransitGatewayRouteTableStateDeleted,
+	}
+}
+
 const (
 	// TransitGatewayRouteTypeStatic is a TransitGatewayRouteType enum value
 	TransitGatewayRouteTypeStatic = "static"
@@ -115024,6 +120018,14 @@ const (
 	// TransitGatewayRouteTypePropagated is a TransitGatewayRouteType enum value
 	TransitGatewayRouteTypePropagated = "propagated"
 )
+
+// TransitGatewayRouteType_Values returns all elements of the TransitGatewayRouteType enum
+func TransitGatewayRouteType_Values() []string {
+	return []string{
+		TransitGatewayRouteTypeStatic,
+		TransitGatewayRouteTypePropagated,
+	}
+}
 
 const (
 	// TransitGatewayStatePending is a TransitGatewayState enum value
@@ -115042,6 +120044,17 @@ const (
 	TransitGatewayStateDeleted = "deleted"
 )
 
+// TransitGatewayState_Values returns all elements of the TransitGatewayState enum
+func TransitGatewayState_Values() []string {
+	return []string{
+		TransitGatewayStatePending,
+		TransitGatewayStateAvailable,
+		TransitGatewayStateModifying,
+		TransitGatewayStateDeleting,
+		TransitGatewayStateDeleted,
+	}
+}
+
 const (
 	// TransportProtocolTcp is a TransportProtocol enum value
 	TransportProtocolTcp = "tcp"
@@ -115049,6 +120062,30 @@ const (
 	// TransportProtocolUdp is a TransportProtocol enum value
 	TransportProtocolUdp = "udp"
 )
+
+// TransportProtocol_Values returns all elements of the TransportProtocol enum
+func TransportProtocol_Values() []string {
+	return []string{
+		TransportProtocolTcp,
+		TransportProtocolUdp,
+	}
+}
+
+const (
+	// TunnelInsideIpVersionIpv4 is a TunnelInsideIpVersion enum value
+	TunnelInsideIpVersionIpv4 = "ipv4"
+
+	// TunnelInsideIpVersionIpv6 is a TunnelInsideIpVersion enum value
+	TunnelInsideIpVersionIpv6 = "ipv6"
+)
+
+// TunnelInsideIpVersion_Values returns all elements of the TunnelInsideIpVersion enum
+func TunnelInsideIpVersion_Values() []string {
+	return []string{
+		TunnelInsideIpVersionIpv4,
+		TunnelInsideIpVersionIpv6,
+	}
+}
 
 const (
 	// UnlimitedSupportedInstanceFamilyT2 is a UnlimitedSupportedInstanceFamily enum value
@@ -115059,7 +120096,20 @@ const (
 
 	// UnlimitedSupportedInstanceFamilyT3a is a UnlimitedSupportedInstanceFamily enum value
 	UnlimitedSupportedInstanceFamilyT3a = "t3a"
+
+	// UnlimitedSupportedInstanceFamilyT4g is a UnlimitedSupportedInstanceFamily enum value
+	UnlimitedSupportedInstanceFamilyT4g = "t4g"
 )
+
+// UnlimitedSupportedInstanceFamily_Values returns all elements of the UnlimitedSupportedInstanceFamily enum
+func UnlimitedSupportedInstanceFamily_Values() []string {
+	return []string{
+		UnlimitedSupportedInstanceFamilyT2,
+		UnlimitedSupportedInstanceFamilyT3,
+		UnlimitedSupportedInstanceFamilyT3a,
+		UnlimitedSupportedInstanceFamilyT4g,
+	}
+}
 
 const (
 	// UnsuccessfulInstanceCreditSpecificationErrorCodeInvalidInstanceIdMalformed is a UnsuccessfulInstanceCreditSpecificationErrorCode enum value
@@ -115075,6 +120125,16 @@ const (
 	UnsuccessfulInstanceCreditSpecificationErrorCodeInstanceCreditSpecificationNotSupported = "InstanceCreditSpecification.NotSupported"
 )
 
+// UnsuccessfulInstanceCreditSpecificationErrorCode_Values returns all elements of the UnsuccessfulInstanceCreditSpecificationErrorCode enum
+func UnsuccessfulInstanceCreditSpecificationErrorCode_Values() []string {
+	return []string{
+		UnsuccessfulInstanceCreditSpecificationErrorCodeInvalidInstanceIdMalformed,
+		UnsuccessfulInstanceCreditSpecificationErrorCodeInvalidInstanceIdNotFound,
+		UnsuccessfulInstanceCreditSpecificationErrorCodeIncorrectInstanceState,
+		UnsuccessfulInstanceCreditSpecificationErrorCodeInstanceCreditSpecificationNotSupported,
+	}
+}
+
 const (
 	// UsageClassTypeSpot is a UsageClassType enum value
 	UsageClassTypeSpot = "spot"
@@ -115083,6 +120143,14 @@ const (
 	UsageClassTypeOnDemand = "on-demand"
 )
 
+// UsageClassType_Values returns all elements of the UsageClassType enum
+func UsageClassType_Values() []string {
+	return []string{
+		UsageClassTypeSpot,
+		UsageClassTypeOnDemand,
+	}
+}
+
 const (
 	// VirtualizationTypeHvm is a VirtualizationType enum value
 	VirtualizationTypeHvm = "hvm"
@@ -115090,6 +120158,14 @@ const (
 	// VirtualizationTypeParavirtual is a VirtualizationType enum value
 	VirtualizationTypeParavirtual = "paravirtual"
 )
+
+// VirtualizationType_Values returns all elements of the VirtualizationType enum
+func VirtualizationType_Values() []string {
+	return []string{
+		VirtualizationTypeHvm,
+		VirtualizationTypeParavirtual,
+	}
+}
 
 const (
 	// VolumeAttachmentStateAttaching is a VolumeAttachmentState enum value
@@ -115108,6 +120184,17 @@ const (
 	VolumeAttachmentStateBusy = "busy"
 )
 
+// VolumeAttachmentState_Values returns all elements of the VolumeAttachmentState enum
+func VolumeAttachmentState_Values() []string {
+	return []string{
+		VolumeAttachmentStateAttaching,
+		VolumeAttachmentStateAttached,
+		VolumeAttachmentStateDetaching,
+		VolumeAttachmentStateDetached,
+		VolumeAttachmentStateBusy,
+	}
+}
+
 const (
 	// VolumeAttributeNameAutoEnableIo is a VolumeAttributeName enum value
 	VolumeAttributeNameAutoEnableIo = "autoEnableIO"
@@ -115115,6 +120202,14 @@ const (
 	// VolumeAttributeNameProductCodes is a VolumeAttributeName enum value
 	VolumeAttributeNameProductCodes = "productCodes"
 )
+
+// VolumeAttributeName_Values returns all elements of the VolumeAttributeName enum
+func VolumeAttributeName_Values() []string {
+	return []string{
+		VolumeAttributeNameAutoEnableIo,
+		VolumeAttributeNameProductCodes,
+	}
+}
 
 const (
 	// VolumeModificationStateModifying is a VolumeModificationState enum value
@@ -115129,6 +120224,16 @@ const (
 	// VolumeModificationStateFailed is a VolumeModificationState enum value
 	VolumeModificationStateFailed = "failed"
 )
+
+// VolumeModificationState_Values returns all elements of the VolumeModificationState enum
+func VolumeModificationState_Values() []string {
+	return []string{
+		VolumeModificationStateModifying,
+		VolumeModificationStateOptimizing,
+		VolumeModificationStateCompleted,
+		VolumeModificationStateFailed,
+	}
+}
 
 const (
 	// VolumeStateCreating is a VolumeState enum value
@@ -115150,6 +120255,18 @@ const (
 	VolumeStateError = "error"
 )
 
+// VolumeState_Values returns all elements of the VolumeState enum
+func VolumeState_Values() []string {
+	return []string{
+		VolumeStateCreating,
+		VolumeStateAvailable,
+		VolumeStateInUse,
+		VolumeStateDeleting,
+		VolumeStateDeleted,
+		VolumeStateError,
+	}
+}
+
 const (
 	// VolumeStatusInfoStatusOk is a VolumeStatusInfoStatus enum value
 	VolumeStatusInfoStatusOk = "ok"
@@ -115161,6 +120278,15 @@ const (
 	VolumeStatusInfoStatusInsufficientData = "insufficient-data"
 )
 
+// VolumeStatusInfoStatus_Values returns all elements of the VolumeStatusInfoStatus enum
+func VolumeStatusInfoStatus_Values() []string {
+	return []string{
+		VolumeStatusInfoStatusOk,
+		VolumeStatusInfoStatusImpaired,
+		VolumeStatusInfoStatusInsufficientData,
+	}
+}
+
 const (
 	// VolumeStatusNameIoEnabled is a VolumeStatusName enum value
 	VolumeStatusNameIoEnabled = "io-enabled"
@@ -115169,12 +120295,23 @@ const (
 	VolumeStatusNameIoPerformance = "io-performance"
 )
 
+// VolumeStatusName_Values returns all elements of the VolumeStatusName enum
+func VolumeStatusName_Values() []string {
+	return []string{
+		VolumeStatusNameIoEnabled,
+		VolumeStatusNameIoPerformance,
+	}
+}
+
 const (
 	// VolumeTypeStandard is a VolumeType enum value
 	VolumeTypeStandard = "standard"
 
 	// VolumeTypeIo1 is a VolumeType enum value
 	VolumeTypeIo1 = "io1"
+
+	// VolumeTypeIo2 is a VolumeType enum value
+	VolumeTypeIo2 = "io2"
 
 	// VolumeTypeGp2 is a VolumeType enum value
 	VolumeTypeGp2 = "gp2"
@@ -115186,6 +120323,18 @@ const (
 	VolumeTypeSt1 = "st1"
 )
 
+// VolumeType_Values returns all elements of the VolumeType enum
+func VolumeType_Values() []string {
+	return []string{
+		VolumeTypeStandard,
+		VolumeTypeIo1,
+		VolumeTypeIo2,
+		VolumeTypeGp2,
+		VolumeTypeSc1,
+		VolumeTypeSt1,
+	}
+}
+
 const (
 	// VpcAttributeNameEnableDnsSupport is a VpcAttributeName enum value
 	VpcAttributeNameEnableDnsSupport = "enableDnsSupport"
@@ -115193,6 +120342,14 @@ const (
 	// VpcAttributeNameEnableDnsHostnames is a VpcAttributeName enum value
 	VpcAttributeNameEnableDnsHostnames = "enableDnsHostnames"
 )
+
+// VpcAttributeName_Values returns all elements of the VpcAttributeName enum
+func VpcAttributeName_Values() []string {
+	return []string{
+		VpcAttributeNameEnableDnsSupport,
+		VpcAttributeNameEnableDnsHostnames,
+	}
+}
 
 const (
 	// VpcCidrBlockStateCodeAssociating is a VpcCidrBlockStateCode enum value
@@ -115214,6 +120371,18 @@ const (
 	VpcCidrBlockStateCodeFailed = "failed"
 )
 
+// VpcCidrBlockStateCode_Values returns all elements of the VpcCidrBlockStateCode enum
+func VpcCidrBlockStateCode_Values() []string {
+	return []string{
+		VpcCidrBlockStateCodeAssociating,
+		VpcCidrBlockStateCodeAssociated,
+		VpcCidrBlockStateCodeDisassociating,
+		VpcCidrBlockStateCodeDisassociated,
+		VpcCidrBlockStateCodeFailing,
+		VpcCidrBlockStateCodeFailed,
+	}
+}
+
 const (
 	// VpcEndpointTypeInterface is a VpcEndpointType enum value
 	VpcEndpointTypeInterface = "Interface"
@@ -115221,6 +120390,14 @@ const (
 	// VpcEndpointTypeGateway is a VpcEndpointType enum value
 	VpcEndpointTypeGateway = "Gateway"
 )
+
+// VpcEndpointType_Values returns all elements of the VpcEndpointType enum
+func VpcEndpointType_Values() []string {
+	return []string{
+		VpcEndpointTypeInterface,
+		VpcEndpointTypeGateway,
+	}
+}
 
 const (
 	// VpcPeeringConnectionStateReasonCodeInitiatingRequest is a VpcPeeringConnectionStateReasonCode enum value
@@ -115251,6 +120428,21 @@ const (
 	VpcPeeringConnectionStateReasonCodeDeleting = "deleting"
 )
 
+// VpcPeeringConnectionStateReasonCode_Values returns all elements of the VpcPeeringConnectionStateReasonCode enum
+func VpcPeeringConnectionStateReasonCode_Values() []string {
+	return []string{
+		VpcPeeringConnectionStateReasonCodeInitiatingRequest,
+		VpcPeeringConnectionStateReasonCodePendingAcceptance,
+		VpcPeeringConnectionStateReasonCodeActive,
+		VpcPeeringConnectionStateReasonCodeDeleted,
+		VpcPeeringConnectionStateReasonCodeRejected,
+		VpcPeeringConnectionStateReasonCodeFailed,
+		VpcPeeringConnectionStateReasonCodeExpired,
+		VpcPeeringConnectionStateReasonCodeProvisioning,
+		VpcPeeringConnectionStateReasonCodeDeleting,
+	}
+}
+
 const (
 	// VpcStatePending is a VpcState enum value
 	VpcStatePending = "pending"
@@ -115259,10 +120451,25 @@ const (
 	VpcStateAvailable = "available"
 )
 
+// VpcState_Values returns all elements of the VpcState enum
+func VpcState_Values() []string {
+	return []string{
+		VpcStatePending,
+		VpcStateAvailable,
+	}
+}
+
 const (
 	// VpcTenancyDefault is a VpcTenancy enum value
 	VpcTenancyDefault = "default"
 )
+
+// VpcTenancy_Values returns all elements of the VpcTenancy enum
+func VpcTenancy_Values() []string {
+	return []string{
+		VpcTenancyDefault,
+	}
+}
 
 const (
 	// VpnEcmpSupportValueEnable is a VpnEcmpSupportValue enum value
@@ -115272,10 +120479,25 @@ const (
 	VpnEcmpSupportValueDisable = "disable"
 )
 
+// VpnEcmpSupportValue_Values returns all elements of the VpnEcmpSupportValue enum
+func VpnEcmpSupportValue_Values() []string {
+	return []string{
+		VpnEcmpSupportValueEnable,
+		VpnEcmpSupportValueDisable,
+	}
+}
+
 const (
 	// VpnProtocolOpenvpn is a VpnProtocol enum value
 	VpnProtocolOpenvpn = "openvpn"
 )
+
+// VpnProtocol_Values returns all elements of the VpnProtocol enum
+func VpnProtocol_Values() []string {
+	return []string{
+		VpnProtocolOpenvpn,
+	}
+}
 
 const (
 	// VpnStatePending is a VpnState enum value
@@ -115291,7 +120513,24 @@ const (
 	VpnStateDeleted = "deleted"
 )
 
+// VpnState_Values returns all elements of the VpnState enum
+func VpnState_Values() []string {
+	return []string{
+		VpnStatePending,
+		VpnStateAvailable,
+		VpnStateDeleting,
+		VpnStateDeleted,
+	}
+}
+
 const (
 	// VpnStaticRouteSourceStatic is a VpnStaticRouteSource enum value
 	VpnStaticRouteSourceStatic = "Static"
 )
+
+// VpnStaticRouteSource_Values returns all elements of the VpnStaticRouteSource enum
+func VpnStaticRouteSource_Values() []string {
+	return []string{
+		VpnStaticRouteSourceStatic,
+	}
+}
