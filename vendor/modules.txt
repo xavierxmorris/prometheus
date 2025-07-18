@@ -91,7 +91,7 @@ github.com/dgrijalva/jwt-go
 github.com/dgryski/go-sip13
 # github.com/digitalocean/godo v1.38.0
 github.com/digitalocean/godo
-# github.com/docker/distribution v2.7.1+incompatible
+# github.com/docker/distribution v2.8.2+incompatible
 github.com/docker/distribution/digestset
 github.com/docker/distribution/reference
 github.com/docker/distribution/registry/api/errcode
